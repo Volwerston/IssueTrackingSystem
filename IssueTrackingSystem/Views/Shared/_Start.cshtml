@@ -1,0 +1,38 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Bug Tracking System</title>
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="container-fluid">
+    <div class="jumbotron text-center" style="margin-top:0px;">
+        <h3>Bug Tracking System</h3>
+        </div>
+        </div>
+
+
+        <div class="container">
+            <div class="text-center">
+           @RenderBody()
+            </div>
+            <div class="text-center">
+        <footer class="text-center">
+            <p>&copy; @DateTime.Today.Date - by Yuriy Stetskyi</p>
+        </footer>
+                </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

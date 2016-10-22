@@ -1,0 +1,15 @@
+﻿@model BTS.Models.User
+
+@{
+    ViewBag.Title = "LogIn";
+    Layout = "~/Views/Shared/_Start.cshtml";
+}
+
+<h2>LogIn</h2>
+
+@{ 
+    var dat = Model.ToString();
+}
+
+<h4>User Data:</h4>
+<p>@dat</p>
