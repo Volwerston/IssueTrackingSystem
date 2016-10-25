@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Security;
 
 namespace BTS.Controllers
 {
@@ -13,25 +14,42 @@ namespace BTS.Controllers
 
         private DBModel db = new DBModel();
         // GET: Bts
+
+        [AllowAnonymous]
         public ActionResult Index()
         {
-            User user = new User();
-            return View(user);
+            return View();
         }
 
-
-        public ActionResult LogIn(User u)
+        [AllowAnonymous]
+        public ActionResult LogIn(string Login, string Password)
         {
-
             // change logic
-            if (ModelState.IsValid)
+
+            bool authenticated = false;
+
+            if(db.Open())
             {
-                return View();
+                if(db.isAuthenticated(Login, Password))
+                {
+                    FormsAuthentication.SetAuthCookie(Login, true);
+                    authenticated = true;
+                }
+
+                db.Close();
             }
 
-            return RedirectToAction("Index");
+            if (!authenticated) 
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return RedirectToAction("Main");
+            }
         }
 
+        [AllowAnonymous]
         public ActionResult SignUp()
         {
             User user = new User();
@@ -75,6 +93,7 @@ namespace BTS.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         public ActionResult PasswordUpdate()
         {
             return View();
@@ -115,8 +134,13 @@ namespace BTS.Controllers
             return View();
         }
 
+        [Authorize]
+        public ActionResult Main()
+        {
+            return View();
+        }
 
-
+        [AllowAnonymous]
         // just to see that image is properly saved in db
         public ActionResult Show()
         {

@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Web;
 using System.Web.Configuration;
+using System.Web.Security;
 
 namespace BTS.Models
 {
@@ -47,9 +48,12 @@ namespace BTS.Models
 
         private string insertAccount(User u)
         {
+
+            string passw = FormsAuthentication.HashPasswordForStoringInConfigFile(u.Password, "SHA1");
+
             string insertCmdString = "INSERT INTO Users(NAME, SURNAME, NICKNAME, BIRTHDATE, EMAIL, AVATAR, PASSWORD, STATUS) "
                         + " VALUES('" + u.Name + "', '" + u.Surname + "', '" + u.Nickname + "', CONVERT(smalldatetime,'" + u.BirthDate.ToString().Substring(0, 10) + "',104), '"
-                        + u.Email + "',@Avatar,'" + u.Password + "', '" + u.Status + "');";
+                        + u.Email + "',@Avatar,'" + passw + "', '" + u.Status + "');";
 
             SqlParameter param = new SqlParameter("@Avatar", SqlDbType.Binary);
 
@@ -76,7 +80,7 @@ namespace BTS.Models
                 return "Success";
             }
             catch
-            {
+            {		
                 transaction2.Rollback();
 
                 return "Fail";
@@ -245,6 +249,42 @@ namespace BTS.Models
             catch
             {
                 return false;
+            }
+        }
+
+        internal bool isAuthenticated(string nickname, string password)
+        {
+            string encryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "SHA1");
+
+            string cmdString = "SELECT * FROM Users WHERE NICKNAME='" + nickname + 
+                "' AND PASSWORD='" + encryptedPassword + "';";
+
+            using (SqlCommand cmd = new SqlCommand(cmdString, connection))
+            {
+                SqlTransaction transaction = connection.BeginTransaction("FindUser");
+                cmd.Transaction = transaction;
+
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                    transaction.Commit();
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if(reader.HasRows)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
             }
         }
     }
