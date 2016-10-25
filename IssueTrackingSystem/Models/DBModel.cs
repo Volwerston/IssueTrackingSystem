@@ -125,7 +125,7 @@ namespace BTS.Models
             }
         }
 
-        internal string getPassword(string email)
+        internal string getNickname(string email)
         {
             string toReturn = "";
             string cmdString = "SELECT * FROM Users WHERE EMAIL='" + email + "';";
@@ -145,8 +145,10 @@ namespace BTS.Models
 
                     if (reader.Read())
                     {
-                        toReturn = reader["PASSWORD"].ToString();
+                        toReturn = reader["NICKNAME"].ToString();
                     }
+
+                    reader.Close();
                 }
                 catch
                 {
@@ -155,13 +157,6 @@ namespace BTS.Models
             }
 
             return toReturn;
-        }
-
-        internal static byte[] GetBytes(string str)
-        {
-            byte[] bytes = new byte[str.Length * sizeof(char)];
-            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-            return bytes;
         }
 
         internal List<User> getUsers()
@@ -222,7 +217,34 @@ namespace BTS.Models
             }
         }
 
-        internal bool SendPassword(string toMail, string password)
+        internal bool isEmailSent(string email)
+        {
+            bool toReturn = false;
+
+            SqlCommand cmd = new SqlCommand("ResetPassword", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            string nickname = getNickname(email);
+
+            SqlParameter paramUsername = new SqlParameter("@UserName", nickname);
+
+            cmd.Parameters.Add(paramUsername);
+
+            SqlDataReader rdr = cmd.ExecuteReader();
+
+            while (rdr.Read())
+                {
+                    if (Convert.ToBoolean(rdr["ReturnCode"]))
+                    {
+                        toReturn = SendPasswordResetLetter(rdr["Email"].ToString(), nickname, rdr["UniqueId"].ToString());
+                    }
+            }
+
+            return toReturn;
+        }
+
+
+        private bool SendPasswordResetLetter(string toMail, string username, string uniqueid)
         {
             string smtpHost = "smtp.gmail.com";
             int smtpPort = 587;
@@ -238,8 +260,11 @@ namespace BTS.Models
             string msgTo = toMail;
             string msgSubject = "Password Notification";
 
-            string msgBody = "Your password is: " + password;
+            string msgBody = "Dear " + username + ", <br/><br/>";
+            msgBody += "Please follow this link: http://its.local/Bts/ChangePassword.cshtml?uid=" + uniqueid + " to change your password";
             MailMessage message = new MailMessage(msgFrom, msgTo, msgSubject, msgBody);
+
+            message.IsBodyHtml = true;
 
             try
             {

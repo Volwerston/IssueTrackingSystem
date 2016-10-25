@@ -110,13 +110,11 @@ namespace BTS.Controllers
             {
                 if (db.Open())
                 {
-                    string password = db.getPassword(email);
-
                     bool letterSent = false;
 
-                    if (password != "")
+                    if (email != "")
                     {
-                        letterSent = db.SendPassword(email, password);
+                        letterSent = db.isEmailSent(email);
                     }
 
                     db.Close();
