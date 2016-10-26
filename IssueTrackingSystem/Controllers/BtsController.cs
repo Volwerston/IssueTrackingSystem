@@ -57,36 +57,43 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
-        public ActionResult SignUp(User u, HttpPostedFileBase ava)
+        public ActionResult SignUp(User u, HttpPostedFileBase ava, string confirmPassword)
         {
-
             if (ModelState.IsValid)
             {
-               if(ava != null)
+
+                if (u.Password == confirmPassword)
                 {
-                    u.Avatar = new byte[ava.ContentLength];
-                    ava.InputStream.Read(u.Avatar, 0, ava.ContentLength);
+                    if (ava != null)
+                    {
+                        u.Avatar = new byte[ava.ContentLength];
+                        ava.InputStream.Read(u.Avatar, 0, ava.ContentLength);
+                    }
+
+                    if (db.Open())
+                    {
+
+                        string addResult = db.AddAccount(u);
+
+                        db.Close();
+
+                        if (addResult == "Success")
+                        {
+                            TempData["message"] = "Account has been successfully registered";
+                        }
+                        else if (addResult == "Fail")
+                        {
+                            TempData["message"] = "Internal error. Try again. The problem may be with your birth date";
+                        }
+                        else
+                        {
+                            TempData["message"] = "User with the same nickname or e-mail has already been registered";
+                        }
+                    }
                 }
-
-                if (db.Open())
+                else
                 {
-
-                    string addResult = db.AddAccount(u);
-
-                    db.Close();
-
-                    if (addResult == "Success")
-                    {
-                        TempData["message"] = "Account has been successfully registered";
-                    }
-                    else if (addResult == "Fail")
-                    {
-                        TempData["message"] = "Internal error. Try again. The problem may be with your birth date";
-                    }
-                    else
-                    {
-                        TempData["message"] = "User with the same nickname or e-mail has already been registered";
-                    }
+                    TempData["message"] = "Passwords don't match";
                 }
             }
 
@@ -95,7 +102,7 @@ namespace BTS.Controllers
 
         [AllowAnonymous]
         public ActionResult PasswordUpdate()
-        {
+        { 
             return View();
         }
 

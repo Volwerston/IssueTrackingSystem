@@ -63,10 +63,17 @@
             </div>
 
             <div class="form-group">
+                @Html.Label("Confirm password", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.Editor("confirmPassword", new { htmlAttributes = new { @class = "form-control", @type = "password" } })
+                </div>
+            </div>
+
+            <div class="form-group">
                 @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @{
-                        var dropList = new List<string> { "Admin", "Developer", "Project Manager", "Tester" };
+                        var dropList = new List<string> { "Tester", "Developer", "Project Manager", "Admin" };
                     }
 
                     @Html.DropDownListFor(model => model.Status, new SelectList(dropList, "Status"), null, new { @class = "form-control" })
