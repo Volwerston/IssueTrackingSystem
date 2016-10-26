@@ -138,6 +138,49 @@ namespace BTS.Controllers
             return View();
         }
 
+        
+        public ActionResult ChangePassword()
+        {
+            if (db.Open())
+            {
+                if (!db.IsPasswordResetLinkValid(Request.QueryString["uid"]))
+                {
+                    TempData["message"] = "Password Reset link has expired or is invalid";
+                }
+
+                db.Close();
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult ChangePassword(string password, string confirmPassword)
+        {
+            if (password == confirmPassword)
+            {
+
+                if (db.Open())
+                {
+                    if (db.ChangeUserPassword(Request.QueryString["uid"], password))
+                    {
+                        TempData["message"] = "Password changed successfully";
+                    }
+                    else
+                    {
+                        TempData["message"] = "Password Reset link has expired or is invalid";
+                    }
+
+                    db.Close();
+                }
+            }
+            else
+            {
+                TempData["message"] = "Passwords don't match";
+            }
+
+            return View();
+        }
+
         [AllowAnonymous]
         // just to see that image is properly saved in db
         public ActionResult Show()

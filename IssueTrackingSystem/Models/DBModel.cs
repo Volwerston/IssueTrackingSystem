@@ -243,6 +243,52 @@ namespace BTS.Models
             return toReturn;
         }
 
+        private bool ExecuteSP(string SPName, List<SqlParameter> SPParameters)
+        {
+                SqlCommand cmd = new SqlCommand(SPName, connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                foreach (SqlParameter parameter in SPParameters)
+                {
+                    cmd.Parameters.Add(parameter);
+                }
+
+                return Convert.ToBoolean(cmd.ExecuteScalar());
+        }
+
+        internal bool IsPasswordResetLinkValid(string queryString)
+        {
+            List<SqlParameter> paramList = new List<SqlParameter>()
+              {
+                    new SqlParameter()
+                 {
+                    ParameterName = "@GUID",
+                    Value = queryString
+                 }
+              };
+
+            return ExecuteSP("IsResetLinkValid", paramList);
+        }
+
+        internal bool ChangeUserPassword(string queryString, string password)
+        {
+            List<SqlParameter> paramList = new List<SqlParameter>()
+               {
+                 new SqlParameter()
+                    {
+                         ParameterName = "@GUID",
+                         Value = queryString
+                    },
+                new SqlParameter()
+                     {
+                         ParameterName = "@Password",
+                         Value = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "SHA1")
+                     }
+                };
+
+            return ExecuteSP("ChangePassword", paramList);
+        }
+
 
         private bool SendPasswordResetLetter(string toMail, string username, string uniqueid)
         {
@@ -261,7 +307,7 @@ namespace BTS.Models
             string msgSubject = "Password Notification";
 
             string msgBody = "Dear " + username + ", <br/><br/>";
-            msgBody += "Please follow this link: http://its.local/Bts/ChangePassword.cshtml?uid=" + uniqueid + " to change your password";
+            msgBody += "Please follow this link: http://its.local/Bts/ChangePassword?uid=" + uniqueid + " to change your password";
             MailMessage message = new MailMessage(msgFrom, msgTo, msgSubject, msgBody);
 
             message.IsBodyHtml = true;
