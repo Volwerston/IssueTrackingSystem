@@ -48,8 +48,7 @@
 </div>
 
 <div class="row">
-    <div class="text-center well col-md-offset-2 col-md-8" id="projects">
-        
+    <div class="text-center col-md-offset-2 col-md-8" id="projects" style="padding-top: 10px;padding-bottom: 10px;background-color:rgb(52, 250, 250);height: 300px;overflow-x:hidden; overflow-y: auto;">
     </div>
 </div>
 
@@ -67,7 +66,7 @@
 
     $("#searchButton").click(function () {
 
-        alert("AAA");
+       // alert("AAA");
 
         var checkedOnes = $('#ms option:selected');
 
@@ -82,7 +81,7 @@
         jsonString = jsonString.substring(0, jsonString.length - 1);
         jsonString += "]}"
 
-        alert(jsonString);
+       // alert(jsonString);
 
         $.ajax({
             type: "POST",
@@ -91,10 +90,31 @@
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             success: function (res) {
+
+
+                // I'll correct this A.S.A.P. :)
                 
                 for(var i = 0; i < res.length; ++i)
                 {
-                    $("#projects").append('<div style="background-color:blue;">' + res[i].Name + ' ' + res[i].Description + '<br/></div>');
+                    $("#projects").append('<div style="border-radius:5px; background-color: rgb(0, 255, 144); padding: 10px 10px 10px 10px;margin-top: 10px; margin-bottom: 10px;">'
+
+             + '<div class="row">'
+            +'<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(111, 255, 192); border-radius:3px; margin-bottom: 5px;">'
+                + '<p>' + res[i].Name + '</p>'
+             + '</div>'
+            +'<div class="col-md-5">'
+                
+           + '</div>'
+        +'</div>'
+            +'<div class="row">'
+               +'<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(86, 251, 179); border-radius:3px;">'
+                    + '<p>' + res[i].Description + '</p>'
+               + '</div>'
+                +'<div class="col-md-5">'
+                +'<input type="submit" class="btn btn-info" value="View" />'
+                +'</div>'
+           +' </div>'
+        +'</div>');
                 }
             },
             error: function (xhr, status, error) {
