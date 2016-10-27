@@ -25,7 +25,8 @@ namespace WebApplication7
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
-                      "~/Content/site.css"));
+                      "~/Content/site.css",
+                      "~/Content/multiple-select.css"));
         }
     }
 }

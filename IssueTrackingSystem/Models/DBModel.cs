@@ -253,7 +253,20 @@ namespace BTS.Models
                     cmd.Parameters.Add(parameter);
                 }
 
-                return Convert.ToBoolean(cmd.ExecuteScalar());
+            SqlTransaction transaction = connection.BeginTransaction("ExecuteCommand");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                bool toReturn = Convert.ToBoolean(cmd.ExecuteScalar());
+                transaction.Commit();
+                return toReturn;
+            }
+            catch
+            {
+                transaction.Rollback();
+                return false;
+            }
         }
 
         internal bool IsPasswordResetLinkValid(string queryString)
@@ -357,6 +370,60 @@ namespace BTS.Models
                     return false;
                 }
             }
+        }
+
+        public Project[] GetProjectsByCategories(string[] categories)
+        {
+            return new Project[]
+            {
+                new Project()
+                {
+                    Name = "A",
+                    Description = "AA",
+                    Id = 0,
+                    Logo = null,
+                    Updates = ""
+                }
+            };
+        }
+
+        internal List<Category> getCategories()
+        {
+            List<Category> toReturn = new List<Category>();
+
+            string cmdString = "SELECT * FROM Categories;";
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+
+            SqlTransaction transaction = connection.BeginTransaction("Categories");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                if (rdr.HasRows)
+                {
+                    while(rdr.Read())
+                    {
+                        Category category = new Category();
+                        category.Title = rdr["TITLE"].ToString();
+                        category.Id = Convert.ToInt32(rdr["ID"].ToString());
+                        toReturn.Add(category);
+                    }
+                }
+
+                rdr.Close();
+
+                transaction.Commit();
+
+            }
+            catch
+            {
+                transaction.Rollback();
+            }
+
+            return toReturn;
         }
     }
 }

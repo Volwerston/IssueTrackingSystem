@@ -1,4 +1,5 @@
 ﻿using BTS.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -142,7 +143,32 @@ namespace BTS.Controllers
         [Authorize]
         public ActionResult Main()
         {
-            return View();
+            List<Category> categories = new List<Category>();
+
+            if(db.Open())
+            {
+                categories = db.getCategories();
+                db.Close();
+            }
+
+            return View(categories);
+        }
+
+        [HttpPost]
+ 
+        public string GetProjectsByCategories(string[] categories)
+        {
+
+            Project[] toReturn = null;
+
+            if(db.Open())
+            {
+                toReturn = db.GetProjectsByCategories(categories);
+                db.Close();
+            }
+
+            string returnString = JsonConvert.SerializeObject(toReturn);
+            return returnString;
         }
 
         

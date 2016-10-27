@@ -1,9 +1,106 @@
-﻿
+﻿@model IEnumerable<BTS.Models.Category>
+
 @{
     ViewBag.Title = "Main";
     Layout = "~/Views/Shared/_Start.cshtml";
 }
 
-<h2>Main</h2>
+<div class="text-center">
+    <h2>Main</h2>
+    <p>Hello, registered user!</p>
+</div>
 
-<p>Hello, registered user!</p>
+<div class="row">
+        <div class="col-md-offset-3 col-md-6 well">
+            <div class="form-group">
+                <div class="row">
+                <div class="col-md-4">
+                    @Html.Label("Project Category:", new { @class = "control-label" })
+                </div>
+                <div class="col-md-6">
+                    <select id="ms" multiple="multiple">
+                        @{
+                            foreach (var item in Model)
+                            {
+                                <option>@item.Title</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+                </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4">
+                        @Html.Label("Project Name:", new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-8">
+                        @Html.Editor("projectName", new { htmlAttributes = new { @class="form-control" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-offset-5 col-md-2">
+                    <button type="submit" id="searchButton" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+                </div>
+            </div>
+   </div>
+</div>
+
+<div class="row">
+    <div class="text-center well col-md-offset-2 col-md-8" id="projects">
+        
+    </div>
+</div>
+
+@section scripts
+{
+<script src="~/Scripts/multiple-select.js"></script>
+<script>
+    $(function () {
+        $('#ms').change(function () {
+            console.log($(this).val());
+        }).multipleSelect({
+            width: '100%'
+        });
+    });
+
+    $("#searchButton").click(function () {
+
+        alert("AAA");
+
+        var checkedOnes = $('#ms option:selected');
+
+        var jsonString = "{categories:[";
+
+        var categoryStr = [];
+
+        checkedOnes.each(function () {
+            categoryStr.push($(this).text());
+        });
+
+        jsonString = jsonString.substring(0, jsonString.length - 1);
+        jsonString += "]}"
+
+        alert(jsonString);
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("GetProjectsByCategories", "Bts")",
+            data: JSON.stringify(categoryStr),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (res) {
+                
+                for(var i = 0; i < res.length; ++i)
+                {
+                    $("#projects").append('<div style="background-color:blue;">' + res[i].Name + ' ' + res[i].Description + '<br/></div>');
+                }
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+            }
+        });
+    });
+</script>
+}
