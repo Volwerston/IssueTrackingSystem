@@ -6,32 +6,33 @@
 @using (Html.BeginForm("LogIn", "Bts"))
 {
     @Html.AntiForgeryToken()
+
     <div class="row">
         <div class="col-md-offset-3 col-md-6">
-        <div class="form-horizontal well text-center">
-            <div class="form-group row">
-                <div class="col-md-offset-1 col-md-2">
-                    @Html.Label("Login", new { @class = "control-label" })
+            <div class="form-horizontal well text-center">
+                <div class="form-group row">
+                    <div class="col-md-offset-1 col-md-2">
+                        @Html.Label("Login", new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-9">
+                        @Html.Editor("Login", new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
                 </div>
-                <div class="col-md-9">
-                    @Html.Editor("Login", new { htmlAttributes = new { @class="form-control"} })
+                <div class="form-group row">
+                    <div class="col-md-offset-1 col-md-2">
+                        @Html.Label("Password", new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-9">
+                        @Html.Editor("Password", new { htmlAttributes = new { @class = "form-control", @type = "password" } })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <input type="submit" value="Log in" class="btn btn-success" />
+                    <input type="button" class="btn btn-info" value="Sign up" onclick="location.href='@Url.Action("SignUp", "Bts")'" />
+                    <input type="button" class="btn btn-warning" value="Forgot password" onclick="location.href='@Url.Action("PasswordUpdate", "Bts")'" />
+                    <input type="button" class="btn btn-primary" value="Show the avatars" onclick="location.href='@Url.Action("Show", "Bts")'" />
                 </div>
             </div>
-            <div class="form-group row">
-                <div class="col-md-offset-1 col-md-2">
-                    @Html.Label("Password", new { @class = "control-label" })
-                </div>
-                <div class="col-md-9">
-                    @Html.Editor("Password", new { htmlAttributes = new { @class = "form-control", @type="password" } })
-                </div>
-            </div>
-            <div class="form-group row">
-                <input type="submit" value="Log in" class="btn btn-success" />
-                <input type="button" class="btn btn-info" value="Sign up" onclick="location.href='@Url.Action("SignUp", "Bts")'" />
-                <input type="button" class="btn btn-warning" value="Forgot password" onclick="location.href='@Url.Action("PasswordUpdate", "Bts")'" />
-                <input type="button" class="btn btn-primary" value="Show the avatars"  onclick="location.href='@Url.Action("Show", "Bts")'" />
-            </div>
-          </div>
         </div>
     </div>
 }

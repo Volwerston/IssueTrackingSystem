@@ -1,0 +1,46 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Bug Tracking System</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href='@Url.Action("Main", "Bts")'>Issue Tracking System</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href='@Url.Action("Main", "Bts")'>Main</a></li>
+                <li><a href='@Url.Action("Find usersUsers", "Bts")'>Find users</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#"><span class="glyphicon glyphicon-user"></span> My account</a></li>
+                <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Log out</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        @RenderBody()
+        <div class="text-center">
+            <footer class="text-center">
+                <p>&copy; @DateTime.Today.Year - by Yuriy Stetskyi</p>
+            </footer>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

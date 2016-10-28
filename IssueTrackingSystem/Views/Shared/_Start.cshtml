@@ -1,7 +1,6 @@
 ﻿@{
     Layout = null;
 }
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,24 +11,23 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
+      <div class="jumbotron text-center ">
+            <h3>Bug Tracking System</h3>
+        </div>
     <div class="container-fluid">
-    <div class="jumbotron text-center" style="margin-top:0px;">
-        <h3>Bug Tracking System</h3>
-        </div>
+        @RenderBody()
+
+        <div class="text-center">
+            <footer class="text-center">
+                <p>&copy; @DateTime.Today.Year - by Yuriy Stetskyi</p>
+            </footer>
         </div>
 
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        @RenderSection("scripts", required: false)
 
-        <div class="container">
-           @RenderBody()
-            <div class="text-center">
-        <footer class="text-center">
-            <p>&copy; @DateTime.Today.Year - by Yuriy Stetskyi</p>
-        </footer>
-                </div>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
 </body>
 </html>

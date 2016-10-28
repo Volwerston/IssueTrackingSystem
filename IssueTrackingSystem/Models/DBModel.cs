@@ -372,51 +372,111 @@ namespace BTS.Models
             }
         }
 
-        public Project[] GetProjectsByCategories(string[] categories)
+        public List<Project> GetProjectsByName(string name)
         {
-            return new Project[]
+            List<Project> toReturn = new List<Project>();
+
+            if (name != null)
             {
-                new Project()
+                string cmdString = "SELECT * FROM Projects WHERE NAME = '" + name + "';";
+
+                SqlCommand cmd = new SqlCommand(cmdString, connection);
+
+                SqlTransaction transaction = connection.BeginTransaction("FindByTitle");
+                cmd.Transaction = transaction;
+
+                try
                 {
-                    Name = "A",
-                    Description = "AA",
-                    Id = 0,
-                    Logo = null,
-                    Updates = ""
-                },
-                new Project()
-                {
-                    Name = "A",
-                    Description = "AA",
-                    Id = 0,
-                    Logo = null,
-                    Updates = ""
-                },
-                new Project()
-                {
-                    Name = "A",
-                    Description = "AA",
-                    Id = 0,
-                    Logo = null,
-                    Updates = ""
-                },
-                new Project()
-                {
-                    Name = "A",
-                    Description = "AA",
-                    Id = 0,
-                    Logo = null,
-                    Updates = ""
-                },
-                new Project()
-                {
-                    Name = "A",
-                    Description = "AA",
-                    Id = 0,
-                    Logo = null,
-                    Updates = ""
+                    cmd.ExecuteNonQuery();
+                    transaction.Commit();
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Project project = new Project();
+                        project.Id = Convert.ToInt32(reader["ID"].ToString());
+                        project.Description = reader["DESCRIPTION"].ToString();
+                        project.Name = reader["NAME"].ToString();
+                        project.Updates = reader["UPDATES"].ToString();
+
+                        project.Logo = null; // correct it later
+
+                        toReturn.Add(project);
+                    }
                 }
-            };
+                catch
+                {
+                    transaction.Rollback();
+                }
+            }
+
+            return toReturn;
+        }
+
+        public List<Project> GetProjectsByCategories(int[] categories)
+        {
+            List<Project> toReturn = new List<Project>();
+
+
+            if (categories != null)
+            {
+                string cmdString = "SELECT A.ID, A.NAME, A.DESCRIPTION, A.LOGO, A.UPDATES, B.CATEGORY_ID " +
+                           "FROM Projects A inner join ProjectCategory B on A.ID = B.PROJECT_ID";
+
+                SqlCommand cmd = new SqlCommand(cmdString, connection);
+                SqlTransaction transaction = connection.BeginTransaction("Categories");
+                cmd.Transaction = transaction;
+
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                    transaction.Commit();
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataTable table = new DataTable();
+                    adapter.Fill(table);
+
+                    List<Project> buffer = new List<Project>();
+
+                    foreach (DataRow row in table.Rows)
+                    {
+                        int categoryId = Convert.ToInt32(row["CATEGORY_ID"].ToString());
+
+                        for (int i = 0; i < categories.Length; ++i)
+                        {
+                            if (categories[i] == categoryId)
+                            {
+                                Project project = new Project();
+                                project.Id = Convert.ToInt32(row["ID"].ToString());
+                                project.Description = row["DESCRIPTION"].ToString();
+                                project.Name = row["NAME"].ToString();
+                                project.Updates = row["UPDATES"].ToString();
+
+                                if (row["LOGO"] != DBNull.Value)
+                                {
+                                    project.Logo = (byte[])row["LOGO"];
+                                }
+                                else
+                                {
+                                    project.Logo = null;
+                                }
+
+                                buffer.Add(project);
+
+                                break;
+                            }
+                        }
+                    }
+
+                    toReturn = buffer.GroupBy(x => x.Id).Select(y => y.First()).ToList();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
+            }
+
+            return toReturn;
         }
 
         internal List<Category> getCategories()

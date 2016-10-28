@@ -155,11 +155,25 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
- 
-        public string GetProjectsByCategories(string[] categories)
+        public string GetProjectsByName(string[] prName)
         {
+            List<Project> toReturn = null;
 
-            Project[] toReturn = null;
+            if (db.Open())
+            {
+                toReturn = db.GetProjectsByName(prName[0]);
+                db.Close();
+            }
+
+            string returnString = JsonConvert.SerializeObject(toReturn);
+            return returnString;
+        }
+
+        [HttpPost]
+ 
+        public string GetProjectsByCategories(int[] categories)
+        {
+            List<Project> toReturn = null;
 
             if(db.Open())
             {

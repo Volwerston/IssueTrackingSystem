@@ -220,6 +220,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\Bts\ChangePassword.cshtml" />
+    <Content Include="Views\Shared\_Main.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
