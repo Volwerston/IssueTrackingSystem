@@ -185,7 +185,27 @@ namespace BTS.Controllers
             return returnString;
         }
 
-        
+        public ActionResult ShowProject(string name)
+        {
+            Project project = new Project();
+            List<Bug> projectBugs = null;
+
+            if(db.Open())
+            {
+                project = db.GetProjectsByName(name)[0];
+                projectBugs = db.GetProjectBugs(project);
+                db.Close();
+            }
+
+            ProjectBugs prBugs = new ProjectBugs()
+            {
+                proj = project,
+                bugs = projectBugs
+            };
+
+            return View(prBugs);
+        }
+
         public ActionResult ChangePassword()
         {
             if (db.Open())

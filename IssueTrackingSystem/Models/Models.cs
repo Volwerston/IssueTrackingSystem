@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BTS.Models
@@ -84,7 +85,14 @@ namespace BTS.Models
         [MaxLength(30)]
         public string Status { get; set; }
 
-        public string Estimate { get; set; }
+        public int? Estimate { get; set; }
+    }
+
+    public class ProjectBugs
+    {
+        public Project proj { get; set; }
+
+        public List<Bug> bugs { get; set; }
     }
 
     public class ProjectUser

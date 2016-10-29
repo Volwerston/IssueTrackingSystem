@@ -5,118 +5,75 @@
     Layout = "~/Views/Shared/_Main.cshtml";
 }
 
-<!--
-<div class="row">
-        <div class="col-md-offset-3 col-md-6 well">
-            <div class="form-group">
-                <div class="row">
-                <div class="col-md-4">
-                    @Html.Label("Project Category:", new { @class = "control-label" })
-                </div>
-                <div class="col-md-6">
-                    <select id="ms1" multiple="multiple">
-                        @{
-                            foreach (var item in Model)
-                            {
-                                <option value="@item.Id">@item.Title</option>
-                            }
-                        }
-                    </select>
-                </div>
-            </div>
-                </div>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-md-4">
-                        @Html.Label("Project Name:", new { @class = "control-label" })
-                    </div>
-                    <div class="col-md-8">
-                        <input type="text" id="projectName" class="form-control" />
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-offset-3 col-md-2">
-                    <button type="submit" id="searchCategory" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
-                </div>
-                <div class="col-md-offset-1 col-md-2">
-                    <button type="submit" id="searchName" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
-                </div>
-            </div>
-   </div>
-</div>
-    -->
-
 <div class="row" style="margin: 10px 10px 10px 10px;">
     <div class="col-md-offset-2 col-md-8">
-<div class="panel-group" id="accordion">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-                    Categories Search
-                </a>
-            </h4>
-        </div>
-        <div id="collapse1" class="panel-collapse collapse in">
-            <div class="panel-body" style="padding-bottom: 80px;">
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-md-4">
-                            @Html.Label("Project Category:", new { @class = "control-label" })
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                            Categories Search
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapse1" class="panel-collapse collapse in">
+                    <div class="panel-body" style="padding-bottom: 80px;">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    @Html.Label("Project Category:", new { @class = "control-label" })
+                                </div>
+                                <div class="col-md-6">
+                                    <select id="ms" multiple="multiple">
+                                        @{
+                                            foreach (var item in Model)
+                                            {
+                                                <option value="@item.Id">@item.Title</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <select id="ms" multiple="multiple">
-                                @{
-                                    foreach (var item in Model)
-                                    {
-                                        <option value="@item.Id">@item.Title</option>
-                                    }
-                                }
-                            </select>
+                        <div class="row">
+                            <div class="col-md-offset-5 col-md-2">
+                                <button type="submit" id="searchCategory" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-offset-5 col-md-2">
-                        <button type="submit" id="searchCategory" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+                                Name Search
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapse2" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        @Html.Label("Project Name:", new { @class = "control-label" })
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" id="projectName" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-offset-5 col-md-2">
+                                    <button type="submit" id="searchName" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-        </div>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
-                    Name Search
-                </a>
-            </h4>
-        </div>
-        <div id="collapse2" class="panel-collapse collapse">
-            <div class="panel-body">
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-md-4">
-                            @Html.Label("Project Name:", new { @class = "control-label" })
-                        </div>
-                        <div class="col-md-8">
-                            <input type="text" id="projectName" class="form-control" />
-                        </div>
-                    </div>
             </div>
-                <div class="row">
-                    <div class="col-md-offset-5 col-md-2">
-                        <button type="submit" id="searchName" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
-                    </div>
-                </div>
         </div>
     </div>
 </div>
-</div>
-</div>
-</div>
-</div>
-
 
 <div class="row">
     <div class="text-center col-md-offset-2 col-md-8" id="projects" style="padding-top: 10px;padding-bottom: 10px;background-color:rgb(52, 250, 250);height: 500px;overflow-x:hidden; overflow-y: auto;">
@@ -151,7 +108,7 @@
             $("#projects").empty();
 
             // I'll correct this A.S.A.P. :)
-                
+
             if (res.length > 0) {
                 for (var i = 0; i < res.length; ++i) {
                     $("#projects").append('<div style="border-radius:5px; background-color: rgb(0, 255, 144); padding: 10px 10px 10px 10px;margin-top: 10px; margin-bottom: 10px;">'
@@ -210,7 +167,7 @@
                 $("#projects").empty();
 
                 // I'll correct this A.S.A.P. :)
-                
+
                 if (res.length > 0) {
                     for (var i = 0; i < res.length; ++i) {
                         $("#projects").append('<div style="border-radius:5px; background-color: rgb(0, 255, 144); padding: 10px 10px 10px 10px;margin-top: 10px; margin-bottom: 10px;">'
@@ -228,7 +185,7 @@
                         + '<p>' + res[i].Description + '</p>'
                    + '</div>'
                     + '<div class="col-md-5">'
-                    + '<input type="submit" class="btn btn-info" value="View" />'
+                    + '<a href="@Url.Action("ShowProject","Bts")' + '/?name=' + res[i].Name + '"><input type="submit" class="btn btn-info" value="View"/></a>'
                     + '</div>'
                + ' </div>'
             + '</div>');

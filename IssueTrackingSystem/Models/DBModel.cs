@@ -403,6 +403,8 @@ namespace BTS.Models
 
                         toReturn.Add(project);
                     }
+
+                    reader.Close();
                 }
                 catch
                 {
@@ -474,6 +476,64 @@ namespace BTS.Models
                 {
                     transaction.Rollback();
                 }
+            }
+
+            return toReturn;
+        }
+
+        public List<Bug> GetProjectBugs(Project proj)
+        {
+
+            List<Bug> toReturn = new List<Bug>();
+
+            string cmdString = "SELECT * FROM Bugs WHERE PROJECT_ID = '" + proj.Id + "';";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+
+            SqlTransaction transaction = connection.BeginTransaction("BugsOfProject");
+
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                while(rdr.Read())
+                {
+                    Bug bug = new Bug();
+
+                    bug.Id = Convert.ToInt32(rdr["ID"].ToString());
+                    bug.Subject = rdr["SUBJECT"].ToString();
+                    bug.Description = rdr["DESCRIPTION"].ToString();
+                    bug.Status = rdr["STATUS"].ToString();
+
+                    if(rdr["ESTIMATE"] != DBNull.Value)
+                    {
+                        bug.Estimate = Convert.ToInt32(rdr["ESTIMATE"].ToString());
+                    }
+                    else
+                    {
+                        bug.Estimate = null;
+                    }
+
+                    if(rdr["PHOTO"] != DBNull.Value)
+                    {
+                        bug.Image = (byte[])rdr["PHOTO"];
+                    }
+                    else
+                    {
+                        bug.Image = null;
+                    }
+
+                    toReturn.Add(bug);
+                }
+            }
+            catch
+            {
+                transaction.Rollback();
             }
 
             return toReturn;
