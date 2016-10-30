@@ -8,7 +8,7 @@
 
 <h2>ShowProject</h2>
 
-<div class="row">
+<div class="row" id="table_container">
     <div class="col-md-4" style="background-color: rgb(110, 255, 192); border-radius: 5px;">
         <div class="text-center">
             <p class="text-center">@Html.DisplayFor(model => model.proj.Name)</p>
@@ -22,8 +22,8 @@
         </div>
     </div>
     <div class="col-md-8" style="background-color: rgb(141, 202, 246); border-radius: 5px;padding: 10px 10px 10px 10px;">
-        @if (Model.bugs.Count != 0)
-        {
+
+        <!--
             <table id="bugs" class="display">
                 <thead>
                     <tr>
@@ -44,23 +44,40 @@
            }
                 </tbody>
             </table>
-        }
-        else
-        {
-            <div class="text-center">
-                <p>No bugs found in this projects</p>
-            </div>
-        }
+        -->
+
+        <table id="bugs" class="table display">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Bug bug in Model.bugs)
+                {
+                    <tr>
+                        <td>@bug.Id</td>
+                        <td>@bug.Subject</td>
+                        <td>@bug.Status</td>
+                        <td><a href="@Url.Action("ShowBug", "Bts", new { @id = @bug.Id })">Show bug</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
     </div>
 </div>
 
 @section scripts
 {
-<script src="~/Scripts/datatable.js"></script>
-<script>
+<script type="text/javascript">
     $(document).ready(function ()
-        {
-            $("#bugs").DataTable();
-        });
+    {
+        $('#bugs').DataTable();
+        //$("#table_container a").css({ "background-color": "yellow", "padding": "0px 2px 0px 2px"});
+    });
 </script>
 }

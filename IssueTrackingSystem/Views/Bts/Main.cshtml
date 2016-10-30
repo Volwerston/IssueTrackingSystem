@@ -92,6 +92,29 @@
         });
     });
 
+    function getDivForBug(val)
+    {
+        return '<div style="border-radius:5px; background-color: rgb(0, 255, 144); padding: 10px 10px 10px 10px;margin-top: 10px; margin-bottom: 10px;">'
+
+                 + '<div class="row">'
+                + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(111, 255, 192); border-radius:3px; margin-bottom: 5px;">'
+                    + '<p>' + val.Name + '</p>'
+                 + '</div>'
+                + '<div class="col-md-5">'
+
+               + '</div>'
+            + '</div>'
+                + '<div class="row">'
+                   + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(86, 251, 179); border-radius:3px;">'
+                        + '<p>' + val.Description + '</p>'
+                   + '</div>'
+                    + '<div class="col-md-5">'
+                    + '<a href="@Url.Action("ShowProject","Bts")' + '/?name=' + val.Name + '"><input type="submit" class="btn btn-info" value="View"/></a>'
+                    + '</div>'
+               + ' </div>'
+            + '</div>';
+    }
+
     $("#searchName").click(function () {
 
         var prName = [];
@@ -111,25 +134,7 @@
 
             if (res.length > 0) {
                 for (var i = 0; i < res.length; ++i) {
-                    $("#projects").append('<div style="border-radius:5px; background-color: rgb(0, 255, 144); padding: 10px 10px 10px 10px;margin-top: 10px; margin-bottom: 10px;">'
-
-             + '<div class="row">'
-            + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(111, 255, 192); border-radius:3px; margin-bottom: 5px;">'
-                + '<p>' + res[i].Name + '</p>'
-             + '</div>'
-            + '<div class="col-md-5">'
-
-           + '</div>'
-        + '</div>'
-            + '<div class="row">'
-               + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(86, 251, 179); border-radius:3px;">'
-                    + '<p>' + res[i].Description + '</p>'
-               + '</div>'
-                + '<div class="col-md-5">'
-                + '<input type="submit" class="btn btn-info" value="View" />'
-                + '</div>'
-           + ' </div>'
-        + '</div>');
+                    $("#projects").append(getDivForBug(res[i]));
                 }
             }
             else
@@ -170,25 +175,7 @@
 
                 if (res.length > 0) {
                     for (var i = 0; i < res.length; ++i) {
-                        $("#projects").append('<div style="border-radius:5px; background-color: rgb(0, 255, 144); padding: 10px 10px 10px 10px;margin-top: 10px; margin-bottom: 10px;">'
-
-                 + '<div class="row">'
-                + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(111, 255, 192); border-radius:3px; margin-bottom: 5px;">'
-                    + '<p>' + res[i].Name + '</p>'
-                 + '</div>'
-                + '<div class="col-md-5">'
-
-               + '</div>'
-            + '</div>'
-                + '<div class="row">'
-                   + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(86, 251, 179); border-radius:3px;">'
-                        + '<p>' + res[i].Description + '</p>'
-                   + '</div>'
-                    + '<div class="col-md-5">'
-                    + '<a href="@Url.Action("ShowProject","Bts")' + '/?name=' + res[i].Name + '"><input type="submit" class="btn btn-info" value="View"/></a>'
-                    + '</div>'
-               + ' </div>'
-            + '</div>');
+                        $("#projects").append(getDivForBug(res[i]));
                     }
                 }
                 else
