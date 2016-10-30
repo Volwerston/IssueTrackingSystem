@@ -23,29 +23,8 @@
     </div>
     <div class="col-md-8" style="background-color: rgb(141, 202, 246); border-radius: 5px;padding: 10px 10px 10px 10px;">
 
-        <!--
-            <table id="bugs" class="display">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Subject</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-           @foreach (Bug bug in Model.bugs)
-           {
-            <tr>
-                <td>@bug.Id</td>
-                <td>@bug.Subject</td>
-                <td>@bug.Status</td>
-                <td><a href="@Url.Action("ShowBug", "Bts", new { @id = @bug.Id })">Show bug</a></td>
-            </tr>
-           }
-                </tbody>
-            </table>
-        -->
-
+        @if (Model.bugs.Count != 0)
+        {
         <table id="bugs" class="table display">
             <thead>
                 <tr>
@@ -67,6 +46,13 @@
                 }
             </tbody>
         </table>
+        }
+        else
+        {
+            <div class="text-center">
+                <p>No bugs found</p>
+            </div>
+        }
 
     </div>
 </div>
