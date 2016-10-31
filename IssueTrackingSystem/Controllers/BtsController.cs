@@ -1,4 +1,5 @@
 ﻿using BTS.Models;
+using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,31 +17,30 @@ namespace BTS.Controllers
         private DBModel db = new DBModel();
         // GET: Bts
 
-        [AllowAnonymous]
         public ActionResult Index()
         {
             return View();
         }
 
+
         [AllowAnonymous]
         public ActionResult LogIn(string Login, string Password)
         {
-            // change logic
 
             bool authenticated = false;
 
-            if(db.Open())
+            if (db.Open())
             {
-                if(db.isAuthenticated(Login, Password))
+                if (db.isAuthenticated(Login, Password))
                 {
-                    FormsAuthentication.SetAuthCookie(Login, true);
+                    FormsAuthentication.SetAuthCookie(Login, false);
                     authenticated = true;
                 }
 
                 db.Close();
             }
 
-            if (!authenticated) 
+            if (!authenticated)
             {
                 return RedirectToAction("Index");
             }
@@ -103,7 +103,7 @@ namespace BTS.Controllers
 
         [AllowAnonymous]
         public ActionResult PasswordUpdate()
-        { 
+        {
             return View();
         }
 
@@ -145,7 +145,7 @@ namespace BTS.Controllers
         {
             List<Category> categories = new List<Category>();
 
-            if(db.Open())
+            if (db.Open())
             {
                 categories = db.getCategories();
                 db.Close();
@@ -170,12 +170,11 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
- 
         public string GetProjectsByCategories(int[] categories)
         {
             List<Project> toReturn = null;
 
-            if(db.Open())
+            if (db.Open())
             {
                 toReturn = db.GetProjectsByCategories(categories);
                 db.Close();
@@ -185,12 +184,13 @@ namespace BTS.Controllers
             return returnString;
         }
 
+        [Authorize]
         public ActionResult ShowProject(string name)
         {
             Project project = new Project();
             List<Bug> projectBugs = null;
 
-            if(db.Open())
+            if (db.Open())
             {
                 project = db.GetProjectsByName(name)[0];
                 projectBugs = db.GetProjectBugs(project);
@@ -205,7 +205,8 @@ namespace BTS.Controllers
 
             return View(prBugs);
         }
-
+        
+        [AllowAnonymous]
         public ActionResult ChangePassword()
         {
             if (db.Open())
@@ -248,6 +249,56 @@ namespace BTS.Controllers
             return View();
         }
 
+        [Authorize]
+        public ActionResult AddBug(int projectId)
+        {
+            TempData["projId"] = projectId;
+            Bug bug = new Bug();
+            return View(bug);
+        }
+
+        [HttpPost]
+        public ActionResult AddBug(Bug b)
+        {
+
+            bool bugAdded = false;
+            bool attachmentsAdded = false;
+
+            if (TempData["projId"] != null)
+            { 
+            b.ProjectId = Convert.ToInt32(TempData["projId"].ToString());
+            b.Status = "Unconfirmed";
+            b.TopicStarter = User.Identity.Name;
+
+                if (ModelState.IsValid)
+                {
+                    if (db.Open())
+                    {
+                        bugAdded = db.AddBug(b);
+
+                        if (bugAdded)
+                        {
+                            int bugId = db.GetBugId(b.Subject);
+                            attachmentsAdded = db.AddAttachments(b.Attachments.ToList(), bugId);
+                        }
+
+                        db.Close();
+                    }
+                }
+            }
+
+            if (bugAdded && attachmentsAdded)
+            {
+                TempData["message"] = "Bug successfully added. Wait for admin's confirmation";
+            }
+            else
+            {
+                TempData["message"] = "Something went wrong. Probably the bug has already been noticed or files are too heavy";
+            }
+
+            return View();
+        }
+
         [AllowAnonymous]
         // just to see that image is properly saved in db
         public ActionResult Show()
@@ -258,7 +309,7 @@ namespace BTS.Controllers
             {
                 users = db.getUsers();
                 db.Close();
-            } 
+            }
 
             return View(users);
         }

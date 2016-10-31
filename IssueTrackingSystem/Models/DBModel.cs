@@ -243,6 +243,129 @@ namespace BTS.Models
             return toReturn;
         }
 
+        internal bool AddAttachments(List<HttpPostedFileBase> attachments, int id)
+        {
+            if (id != -1)
+            {
+                bool allSucceeded = true;
+                SqlTransaction transaction = connection.BeginTransaction("InsertAttachments");
+
+                foreach (HttpPostedFileBase attachment in attachments)
+                {
+                    string cmdString = "INSERT INTO Attachments (NAME, DATA, BUG_ID) VALUES(@Name, @Data, @BugId)";
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    cmd.Transaction = transaction;
+
+                    byte[] file = new byte[attachment.ContentLength];
+                    attachment.InputStream.Read(file, 0, attachment.ContentLength);
+
+                    SqlParameter paramName = new SqlParameter("@Name", attachment.GetType().ToString());
+                    SqlParameter paramBugId = new SqlParameter("@BugId", id);
+                    SqlParameter paramData = new SqlParameter("@Data", SqlDbType.Binary);
+                    paramData.Value = file;
+
+                    cmd.Parameters.Add(paramName);
+                    cmd.Parameters.Add(paramData);
+                    cmd.Parameters.Add(paramBugId);
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch
+                    {
+                        allSucceeded = false;
+                        break;
+                    }
+                }
+
+                if (allSucceeded)
+                {
+                    transaction.Commit();
+                }
+                else
+                {
+                    transaction.Rollback();
+                }
+
+                return allSucceeded;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        internal int GetBugId(string subject)
+        {
+            int toReturn = -1;
+            string cmdString = "SELECT ID FROM Bugs WHERE SUBJECT='" + subject + "'";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("GetBugId");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                if(rdr.Read())
+                {
+                    toReturn = Convert.ToInt32(rdr["ID"].ToString());
+                }
+                rdr.Close();
+
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+            }
+
+            return toReturn;
+        }
+
+        internal bool AddBug(Bug b)
+        {
+            bool toReturn = false;
+
+            SqlCommand cmd = new SqlCommand("addBug", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            SqlParameter subject = new SqlParameter("@Subject", b.Subject);
+            SqlParameter description = new SqlParameter("@Description", b.Description);
+            SqlParameter projId = new SqlParameter("@ProjectId", b.ProjectId);
+            SqlParameter status = new SqlParameter("@Status", b.Status);
+            SqlParameter topicStarter = new SqlParameter("@TopicStarter", b.TopicStarter);
+
+            cmd.Parameters.Add(subject);
+            cmd.Parameters.Add(description);
+            cmd.Parameters.Add(projId);
+            cmd.Parameters.Add(status);
+            cmd.Parameters.Add(topicStarter);
+
+            SqlTransaction transaction = connection.BeginTransaction("AddNewBug");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                if((int)cmd.ExecuteScalar() == 1)
+                {
+                    toReturn = true;
+                }
+
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+            }
+
+            return toReturn;
+        }
+
         private bool ExecuteSP(string SPName, List<SqlParameter> SPParameters)
         {
                 SqlCommand cmd = new SqlCommand(SPName, connection);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web;
 
 namespace BTS.Models
 {
@@ -66,7 +67,6 @@ namespace BTS.Models
 
     public class Bug
     {
-        [Required]
         public int Id { get; set; }
 
         [Required]
@@ -78,14 +78,16 @@ namespace BTS.Models
         public string Description { get; set; }
         public byte[] Image { get; set; }
 
-        [Required]
         public int ProjectId { get; set; }
 
-        [Required]
         [MaxLength(30)]
         public string Status { get; set; }
 
         public int? Estimate { get; set; }
+
+        public string TopicStarter { get; set; }
+
+        public IEnumerable<HttpPostedFileBase> Attachments { get; set; }
     }
 
     public class ProjectBugs
