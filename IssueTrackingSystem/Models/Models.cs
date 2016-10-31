@@ -10,35 +10,32 @@ namespace BTS.Models
         [Required]
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Name must include at least 3 characters")]
         [MaxLength(20)]
         [MinLength(3)]
         public string Name { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Surname must include at least 3 characters")]
         [MaxLength(20)]
         [MinLength(3)]
         public string Surname { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Nickname must include at least 3 characters")]
         [MaxLength(20)]
         [MinLength(3)]
         public string Nickname { get; set; }
 
-
-        // + date mask annotation
-
-        [Required]
+        [Required(ErrorMessage = "Date of birth must be filled")]
         [DataType(DataType.Date)]
         [Display(Name = "Date of birth")]
         public DateTime BirthDate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Email must be filled")]
         [MaxLength(30)]
         public string Email { get; set; }
         public byte[] Avatar { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Password must contain at least 5 characters")]
         [MaxLength(20)]
         [MinLength(5)]
         public string Password { get; set; }

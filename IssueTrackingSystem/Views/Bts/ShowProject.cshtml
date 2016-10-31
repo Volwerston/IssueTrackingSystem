@@ -6,8 +6,6 @@
     Layout = "~/Views/Shared/_Main.cshtml";
 }
 
-<h2>ShowProject</h2>
-
 <div class="row" id="table_container">
     <div class="col-md-4" style="background-color: rgb(110, 255, 192); border-radius: 5px;">
         <div class="text-center">
@@ -30,27 +28,27 @@
 
         @if (Model.bugs.Count != 0)
         {
-        <table id="bugs" class="table display">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Subject</th>
-                    <th>Status</th>
-                    <th>View</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (Bug bug in Model.bugs)
-                {
+            <table id="bugs" class="table display">
+                <thead>
                     <tr>
-                        <td>@bug.Id</td>
-                        <td>@bug.Subject</td>
-                        <td>@bug.Status</td>
-                        <td><a href="@Url.Action("ShowBug", "Bts", new { @id = @bug.Id })">Show bug</a></td>
+                        <th>ID</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>View</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (Bug bug in Model.bugs)
+                {
+                        <tr>
+                            <td>@bug.Id</td>
+                            <td>@bug.Subject</td>
+                            <td>@bug.Status</td>
+                            <td><a href="@Url.Action("ShowBug", "Bts", new { @id = @bug.Id })">Show bug</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         }
         else
         {
@@ -64,11 +62,11 @@
 
 @section scripts
 {
-<script type="text/javascript">
-    $(document).ready(function ()
-    {
-        $('#bugs').DataTable();
-        //$("#table_container a").css({ "background-color": "yellow", "padding": "0px 2px 0px 2px"});
-    });
-</script>
+    <script type="text/javascript">
+        $(document).ready(function ()
+        {
+            $('#bugs').DataTable();
+            //$("#table_container a").css({ "background-color": "yellow", "padding": "0px 2px 0px 2px"});
+        });
+    </script>
 }

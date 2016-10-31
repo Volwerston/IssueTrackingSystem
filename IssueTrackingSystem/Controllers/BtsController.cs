@@ -24,7 +24,7 @@ namespace BTS.Controllers
 
 
         [AllowAnonymous]
-        public ActionResult LogIn(string Login, string Password)
+        public ActionResult LogIn(string Login, string Password, bool rememberMe)
         {
 
             bool authenticated = false;
@@ -33,7 +33,7 @@ namespace BTS.Controllers
             {
                 if (db.isAuthenticated(Login, Password))
                 {
-                    FormsAuthentication.SetAuthCookie(Login, false);
+                    FormsAuthentication.SetAuthCookie(Login, rememberMe);
                     authenticated = true;
                 }
 
@@ -42,12 +42,21 @@ namespace BTS.Controllers
 
             if (!authenticated)
             {
+                TempData["message"] = "User name and/or password are incorrect";
                 return RedirectToAction("Index");
             }
             else
             {
                 return RedirectToAction("Main");
             }
+        }
+
+        [Authorize]
+        public ActionResult SignOut()
+        {
+            FormsAuthentication.SignOut();
+
+            return RedirectToAction("Index");
         }
 
         [AllowAnonymous]
