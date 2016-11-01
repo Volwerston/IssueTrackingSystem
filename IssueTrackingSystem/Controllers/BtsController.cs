@@ -23,7 +23,7 @@ namespace BTS.Controllers
         }
 
 
-        [AllowAnonymous]
+
         public ActionResult LogIn(string Login, string Password, bool rememberMe)
         {
 
@@ -59,7 +59,6 @@ namespace BTS.Controllers
             return RedirectToAction("Index");
         }
 
-        [AllowAnonymous]
         public ActionResult SignUp()
         {
             User user = new User();
@@ -110,7 +109,6 @@ namespace BTS.Controllers
             return View();
         }
 
-        [AllowAnonymous]
         public ActionResult PasswordUpdate()
         {
             return View();
@@ -215,7 +213,6 @@ namespace BTS.Controllers
             return View(prBugs);
         }
         
-        [AllowAnonymous]
         public ActionResult ChangePassword()
         {
             if (db.Open())
@@ -258,7 +255,7 @@ namespace BTS.Controllers
             return View();
         }
 
-        [Authorize]
+       [Authorize]
         public ActionResult AddBug(int projectId)
         {
             TempData["projId"] = projectId;
@@ -308,7 +305,7 @@ namespace BTS.Controllers
             return View();
         }
 
-        [AllowAnonymous]
+
         // just to see that image is properly saved in db
         public ActionResult Show()
         {
