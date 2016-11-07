@@ -1,4 +1,5 @@
 ﻿using BTS.Models;
+using IssueTrackingSystem.Models;
 using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 using System;
@@ -31,9 +32,12 @@ namespace BTS.Controllers
 
             if (db.Open())
             {
-                if (db.isAuthenticated(Login, Password))
+                User u = db.getAuthenticatedUser(Login, Password);
+                if (u.Id != -1)
                 {
-                    FormsAuthentication.SetAuthCookie(Login, rememberMe);
+                    Session["Username"] = Login;
+                    Session["Status"] = u.Status;
+
                     authenticated = true;
                 }
 
@@ -51,10 +55,10 @@ namespace BTS.Controllers
             }
         }
 
-        [Authorize]
+        [SystemAuthorize(Roles = "Admin")]
         public ActionResult SignOut()
         {
-            FormsAuthentication.SignOut();
+            Session["Username"] = null;
 
             return RedirectToAction("Index");
         }
@@ -147,7 +151,7 @@ namespace BTS.Controllers
             return View();
         }
 
-        [Authorize]
+        [SystemAuthorize(Roles = "Admin")]
         public ActionResult Main()
         {
             List<Category> categories = new List<Category>();
@@ -191,7 +195,7 @@ namespace BTS.Controllers
             return returnString;
         }
 
-        [Authorize]
+        [SystemAuthorize(Roles = "Admin")]
         public ActionResult ShowProject(string name)
         {
             Project project = new Project();
@@ -255,7 +259,7 @@ namespace BTS.Controllers
             return View();
         }
 
-       [Authorize]
+        [SystemAuthorize(Roles = "Admin")]
         public ActionResult AddBug(int projectId)
         {
             TempData["projId"] = projectId;

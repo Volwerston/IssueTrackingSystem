@@ -252,30 +252,33 @@ namespace BTS.Models
 
                 foreach (HttpPostedFileBase attachment in attachments)
                 {
-                    string cmdString = "INSERT INTO Attachments (NAME, DATA, BUG_ID) VALUES(@Name, @Data, @BugId)";
-                    SqlCommand cmd = new SqlCommand(cmdString, connection);
-                    cmd.Transaction = transaction;
-
-                    byte[] file = new byte[attachment.ContentLength];
-                    attachment.InputStream.Read(file, 0, attachment.ContentLength);
-
-                    SqlParameter paramName = new SqlParameter("@Name", attachment.GetType().ToString());
-                    SqlParameter paramBugId = new SqlParameter("@BugId", id);
-                    SqlParameter paramData = new SqlParameter("@Data", SqlDbType.Binary);
-                    paramData.Value = file;
-
-                    cmd.Parameters.Add(paramName);
-                    cmd.Parameters.Add(paramData);
-                    cmd.Parameters.Add(paramBugId);
-
-                    try
+                    if (attachment != null)
                     {
-                        cmd.ExecuteNonQuery();
-                    }
-                    catch
-                    {
-                        allSucceeded = false;
-                        break;
+                        string cmdString = "INSERT INTO Attachments (NAME, DATA, BUG_ID) VALUES(@Name, @Data, @BugId)";
+                        SqlCommand cmd = new SqlCommand(cmdString, connection);
+                        cmd.Transaction = transaction;
+
+                        byte[] file = new byte[attachment.ContentLength];
+                        attachment.InputStream.Read(file, 0, attachment.ContentLength);
+
+                        SqlParameter paramName = new SqlParameter("@Name", attachment.GetType().ToString());
+                        SqlParameter paramBugId = new SqlParameter("@BugId", id);
+                        SqlParameter paramData = new SqlParameter("@Data", SqlDbType.Binary);
+                        paramData.Value = file;
+
+                        cmd.Parameters.Add(paramName);
+                        cmd.Parameters.Add(paramData);
+                        cmd.Parameters.Add(paramBugId);
+
+                        try
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+                        catch
+                        {
+                            allSucceeded = false;
+                            break;
+                        }
                     }
                 }
 
@@ -459,8 +462,11 @@ namespace BTS.Models
             }
         }
 
-        internal bool isAuthenticated(string nickname, string password)
+        internal User getAuthenticatedUser(string nickname, string password)
         {
+            User toReturn = new User();
+            toReturn.Id = -1;
+
             string encryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "SHA1");
 
             string cmdString = "SELECT * FROM Users WHERE NICKNAME='" + nickname + 
@@ -478,21 +484,19 @@ namespace BTS.Models
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
-                    if(reader.HasRows)
+                    if(reader.Read())
                     {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
+                        toReturn.Id = Convert.ToInt32(reader["ID"].ToString());
+                        toReturn.Status = reader["STATUS"].ToString();
                     }
                 }
                 catch
                 {
                     transaction.Rollback();
-                    return false;
                 }
             }
+
+            return toReturn;
         }
 
         public List<Project> GetProjectsByName(string name)
