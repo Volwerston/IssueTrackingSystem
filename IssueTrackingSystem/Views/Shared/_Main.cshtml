@@ -13,38 +13,41 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <nav class="navbar navbar-inverse" style="margin-top: -50px;">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href='@Url.Action("Main", "Bts")'>Issue Tracking System</a>
-            </div>
-            <ul class="nav navbar-nav">
-                <li class="active"><a href='@Url.Action("Main", "Bts")'>Main</a></li>
-                <li><a href='@Url.Action("FindUsers", "Bts")'>Find users</a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#"><span class="glyphicon glyphicon-user"></span> My account</a></li>
-                <li><a href='@Url.Action("SignOut", "Bts")'><span class="glyphicon glyphicon-log-in"></span> Log out</a></li>
-            </ul>
-        </div>
-    </nav>
-
     <div class="container">
-        @RenderBody()
+        <nav class="navbar navbar-inverse" style="margin-top: -50px;">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href='@Url.Action("Main", "Bts")'>Issue Tracking System</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href='@Url.Action("Main", "Bts")'>Main</a></li>
+                    <li><a href='@Url.Action("FindUsers", "Bts")'>Find users</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#"><span class="glyphicon glyphicon-user"></span> My account</a></li>
+                    <li><a href='@Url.Action("SignOut", "Bts")'><span class="glyphicon glyphicon-log-in"></span> Log out </a></li>
+                </ul>
+                </div>
+</nav>
 
-        <br />
-        <hr />
-        <br />
+        <br/>
 
-        <div class="text-center">
-            <footer class="text-center">
-                <p>&copy; @DateTime.Today.Year - by Yuriy Stetskyi</p>
-            </footer>
+            @RenderBody()
+
+            <br />
+            <hr />
+            <br />
+
+            <div class="text-center">
+                <footer class="text-center">
+                    <p>&copy; @DateTime.Today.Year - by Yuriy Stetskyi</p>
+                </footer>
+            </div>
         </div>
-    </div>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("primaries", required: false)
     @RenderSection("scripts", required: false)
 
 </body>

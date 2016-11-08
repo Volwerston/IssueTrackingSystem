@@ -542,16 +542,25 @@ namespace BTS.Models
             return toReturn;
         }
 
-        public List<Project> GetProjectsByCategories(int[] categories, int lastId)
+        public List<Project> GetProjectsByCategories(int[] categories)
         {
             List<Project> toReturn = new List<Project>();
 
 
             if (categories != null)
             {
-                string cmdString = "SELECT TOP 2 A.ID, A.NAME, A.DESCRIPTION, A.LOGO, A.UPDATES, B.CATEGORY_ID " +
-                           "FROM Projects A inner join ProjectCategory B on A.ID = B.PROJECT_ID " +
-                           "WHERE A.ID > " + lastId + ";";
+                string cmdString = "SELECT DISTINCT TOP 2 A.ID, A.NAME, A.UPDATES, A.DESCRIPTION" +
+                                    " FROM Projects A inner join ProjectCategory B on A.ID = B.PROJECT_ID" +
+                                    " WHERE A.ID > " + categories[categories.Length - 1] + " AND ( ";
+
+                for(int i = 0; i < categories.Length - 1; ++i)
+                {
+                    cmdString += "B.CATEGORY_ID = " + categories[i] + " OR ";
+                }
+
+                cmdString = cmdString.Substring(0, cmdString.Length - 4);
+
+                cmdString += ");";
 
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
                 SqlTransaction transaction = connection.BeginTransaction("Categories");
@@ -566,39 +575,16 @@ namespace BTS.Models
                     DataTable table = new DataTable();
                     adapter.Fill(table);
 
-                    List<Project> buffer = new List<Project>();
-
                     foreach (DataRow row in table.Rows)
-                    {
-                        int categoryId = Convert.ToInt32(row["CATEGORY_ID"].ToString());
-
-                        for (int i = 0; i < categories.Length; ++i)
                         {
-                            if (categories[i] == categoryId)
-                            {
                                 Project project = new Project();
                                 project.Id = Convert.ToInt32(row["ID"].ToString());
                                 project.Description = row["DESCRIPTION"].ToString();
                                 project.Name = row["NAME"].ToString();
                                 project.Updates = row["UPDATES"].ToString();
 
-                                if (row["LOGO"] != DBNull.Value)
-                                {
-                                    project.Logo = (byte[])row["LOGO"];
-                                }
-                                else
-                                {
-                                    project.Logo = null;
-                                }
-
-                                buffer.Add(project);
-
-                                break;
-                            }
-                        }
-                    }
-
-                    toReturn = buffer.GroupBy(x => x.Id).Select(y => y.First()).ToList();
+                                toReturn.Add(project);
+                         }
                 }
                 catch
                 {

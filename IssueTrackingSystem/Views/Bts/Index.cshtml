@@ -6,41 +6,44 @@
 @using (Html.BeginForm("LogIn", "Bts"))
 {
     @Html.AntiForgeryToken()
-
-    <div class="row">
-        <div class="col-md-offset-3 col-md-6  well">
-            <div class="form-horizontal">
+            <div class="form-horizontal well" style="display: table; margin: auto;">
                 <div class="form-group">
-                    <div class="col-md-offset-1 col-md-2">
+                    <div class="col-sm-4">
                         @Html.Label("Login", new { @class = "control-label" })
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-sm-8">
                         @Html.Editor("Login", new { htmlAttributes = new { @class = "form-control" } })
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="col-md-offset-1 col-md-2">
+                    <div class="col-sm-4">
                         @Html.Label("Password", new { @class = "control-label" })
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-sm-8">
                         @Html.Editor("Password", new { htmlAttributes = new { @class = "form-control", @type = "password" } })
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <div class="col-md-offset-1 col-md-3">
-                        @Html.Label("Remember me", new { @class = "control-label" })
+                    <div class="col-sm-4">
+                        @Html.Label("Remember", new { @class = "control-label" })
+                        </div>
+                    <div class="col-sm-8">
                         @Html.CheckBox("rememberMe", false)
                     </div>
-                </div>
+                    </div>
 
                 <div class="form-group">
-                    <div class="col-md-offset-3">
+                    <div class="col-sm-3">
                         <input type="submit" value="Log in" class="btn btn-info" />
+                    </div>
+                    <div class="col-sm-3">
                         <input type="button" class="btn btn-info" value="Sign up" onclick="location.href='@Url.Action("SignUp", "Bts")'" />
+                    </div>
+                    <div class="col-sm-5">
                         <input type="button" class="btn btn-info" value="Forgot password" onclick="location.href='@Url.Action("PasswordUpdate", "Bts")'" />
                     </div>
-                </div>
+                    </div>
 
                 <div class="row text-center">
                     @if (TempData["message"] != null)
@@ -50,8 +53,5 @@
                         </div>
                     }
                 </div>
-            </div>
-
-        </div>
-    </div>
+</div>
 }

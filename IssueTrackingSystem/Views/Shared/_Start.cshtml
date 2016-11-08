@@ -11,10 +11,11 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <div class="jumbotron text-center ">
-        <h3>Issue Tracking System</h3>
-    </div>
-    <div class="container-fluid">
+    <div class="container">
+        <div class="jumbotron text-center">
+            <h3>Issue Tracking System</h3>
+        </div>
+
         @RenderBody()
 
         <br />
@@ -31,6 +32,5 @@
         @RenderSection("scripts", required: false)
 
     </div>
-
 </body>
 </html>

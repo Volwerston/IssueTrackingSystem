@@ -22,3 +22,9 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.container
+{
+    min-width: 400px;
+    max-width: 900px;
+}
