@@ -162,6 +162,8 @@ namespace BTS.Controllers
                 db.Close();
             }
 
+            ViewBag.LastId = 0;
+
             return View(categories);
         }
 
@@ -181,13 +183,13 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
-        public string GetProjectsByCategories(int[] categories)
+        public string GetProjectsByCategories(int[] categories, int lastId)
         {
             List<Project> toReturn = null;
 
             if (db.Open())
             {
-                toReturn = db.GetProjectsByCategories(categories);
+                toReturn = db.GetProjectsByCategories(categories, lastId);
                 db.Close();
             }
 

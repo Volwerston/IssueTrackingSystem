@@ -75,16 +75,16 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="text-center col-md-offset-2 col-md-8" id="projects" style="padding-top: 10px;padding-bottom: 10px;background-color:rgb(52, 250, 250);height: 500px;overflow-x:hidden; overflow-y: auto;">
-    </div>
+<div class="row" id="projects">
+
 </div>
 
 @section scripts
 {
 <script src="~/Scripts/multiple-select.js"></script>
 <script>
-    $(function () {
+
+    $(document).ready(function(){
         $('#ms').change(function () {
             console.log($(this).val());
         }).multipleSelect({
@@ -92,9 +92,19 @@
         });
     });
 
+    /*
+    $(function () {
+        $('#ms').change(function () {
+            console.log($(this).val());
+        }).multipleSelect({
+            width: '100%'
+        });
+    
+    */
+
     function getDivForBug(val)
     {
-        return '<div style="border-radius:5px; background-color: rgb(0, 255, 144); padding: 10px 10px 10px 10px;margin-top: 10px; margin-bottom: 10px;">'
+        return '<div style="border-radius:5px; height: 200px; background-color: rgb(0, 255, 144); padding: 10px 10px 10px 10px;margin-top: 10px; margin-bottom: 10px;">'
 
                  + '<div class="row">'
                 + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(111, 255, 192); border-radius:3px; margin-bottom: 5px;">'
@@ -116,7 +126,6 @@
     }
 
     $("#searchName").click(function () {
-
         var prName = [];
         prName.push($("#projectName").val());
 
@@ -147,9 +156,19 @@
 
     });
 
+    /*
+    $(document).ready(function () {
+        $(document).scroll(function () {
+            if($(window).height() - $(window).scrollTop() < 25)
+            {
+                getDataByCategories();
+            }
+        });
+    });
+    */
 
-    $("#searchCategory").click(function () {
-
+    function getDataByCategories()
+    {
         var checkedOnes = $('#ms option:selected');
 
         var categoryStr = [];
@@ -161,30 +180,35 @@
 
         $.ajax({
             type: "POST",
-            url: "@Url.Action("GetProjectsByCategories", "Bts")",
+            url: "@Url.Action("GetProjectsByCategories", "Bts", new { lastId = ViewBag.LastId })",
             data: JSON.stringify(categoryStr),
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            success: function (res) {
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        success: function (res) {
 
-                $("#projects").empty();
+            $("#projects").empty();
 
-                // I'll correct this A.S.A.P. :)
-
-                if (res.length > 0) {
-                    for (var i = 0; i < res.length; ++i) {
-                        $("#projects").append(getDivForBug(res[i]));
-                    }
+            if (res.length > 0) {
+                for (var i = 0; i < res.length; ++i) {
+                    $("#projects").append(getDivForBug(res[i]));
                 }
-                else
-                {
-                    $("#projects").append('<div class="text-center">No projects were found</div>');
-                }
-            },
-            error: function (xhr, status, error) {
-                alert(error);
+
+                @ViewBag.LastId = res[res.length-1].Id;
             }
-        });
+            else
+            {
+                $("#projects").append('<div class="text-center">No projects were found</div>');
+            }
+        },
+        error: function (xhr, status, error) {
+            alert(error);
+        }
+    });
+    }
+
+
+    $("#searchCategory").click(function () {
+        getDataByCategories();
     });
 </script>
 }

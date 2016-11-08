@@ -542,15 +542,16 @@ namespace BTS.Models
             return toReturn;
         }
 
-        public List<Project> GetProjectsByCategories(int[] categories)
+        public List<Project> GetProjectsByCategories(int[] categories, int lastId)
         {
             List<Project> toReturn = new List<Project>();
 
 
             if (categories != null)
             {
-                string cmdString = "SELECT A.ID, A.NAME, A.DESCRIPTION, A.LOGO, A.UPDATES, B.CATEGORY_ID " +
-                           "FROM Projects A inner join ProjectCategory B on A.ID = B.PROJECT_ID";
+                string cmdString = "SELECT TOP 2 A.ID, A.NAME, A.DESCRIPTION, A.LOGO, A.UPDATES, B.CATEGORY_ID " +
+                           "FROM Projects A inner join ProjectCategory B on A.ID = B.PROJECT_ID " +
+                           "WHERE A.ID > " + lastId + ";";
 
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
                 SqlTransaction transaction = connection.BeginTransaction("Categories");
