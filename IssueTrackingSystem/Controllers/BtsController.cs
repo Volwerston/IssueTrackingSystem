@@ -214,6 +214,8 @@ namespace BTS.Controllers
                 bugs = projectBugs
             };
 
+            ViewBag.CurrEntries = new List<Bug>();
+
             return View(prBugs);
         }
         

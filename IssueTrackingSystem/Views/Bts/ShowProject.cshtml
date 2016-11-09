@@ -1,12 +1,14 @@
 ﻿@model BTS.Models.ProjectBugs
 @using BTS.Models
+@using System.Collections.Generic
+@using Newtonsoft.Json;
 
 @{
     ViewBag.Title = "ShowProject";
     Layout = "~/Views/Shared/_Main.cshtml";
 }
 
-<div class="row" id="table_container">
+<div class="row">
     <div class="col-md-4" style="background-color: rgb(110, 255, 192); border-radius: 5px;">
         <div class="text-center">
             <p class="text-center">@Html.DisplayFor(model => model.proj.Name)</p>
@@ -26,47 +28,244 @@
     </div>
     <div class="col-md-offset-1 col-md-7" style="background-color: rgb(141, 202, 246); border-radius: 5px;padding: 10px 10px 10px 10px;">
 
-        @if (Model.bugs.Count != 0)
-        {
-            <table id="bugs" class="table display">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Subject</th>
-                        <th>Status</th>
-                        <th>View</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (Bug bug in Model.bugs)
-                {
-                        <tr>
-                            <td>@bug.Id</td>
-                            <td>@bug.Subject</td>
-                            <td>@bug.Status</td>
-                            <td><a href="@Url.Action("ShowBug", "Bts", new { @id = @bug.Id })">Show bug</a></td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <div class="text-center">
-                <p>No bugs found</p>
+    <div style="margin: 5px 5px 5px 5px;">
+        <div class="form-horizontal">
+            <div class="form-group">
+                    @Html.Label("Number of items:", new { @class = "control-label col-md-4" })
+                <div class="col-md-5">
+                    @Html.DropDownList("itemsCount", new List<SelectListItem>() {
+                   new SelectListItem() { Text="1", Value = "1", Selected = true },
+                   new SelectListItem() { Text="2", Value = "2"},
+                   new SelectListItem() { Text="3", Value = "3"},
+                   new SelectListItem() { Text="4", Value = "4"},
+                   new SelectListItem() { Text="5", Value = "5"}}, new { id = "itemsCount", @class="form-control" })
+                </div>
             </div>
-        }
+            <div class="form-group">
+                    @Html.Label("Search:", new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.Editor("searchData", new { htmlAttributes = new { @class = "form-control", id="searchData" } })
+                </div>
+            </div>
+        </div>
+        <div id="tableData" style="margin: 5px 5px 5px 5px; color:rgb(141, 202, 246); color: black;">
+
+        </div>
+        <div class="text-center" id="paginationData">
+
+        </div>
+    </div>
 
     </div>
 </div>
 
 @section scripts
 {
-    <script type="text/javascript">
-        $(document).ready(function ()
-        {
-            $('#bugs').DataTable();
-            //$("#table_container a").css({ "background-color": "yellow", "padding": "0px 2px 0px 2px"});
+<script>
+    var allEntries = [];
+    var currEntries = [];
+    var numOfLists;
+
+    $(document).ready(function () {
+
+        populateData("", $("#itemsCount").val());
+        showList(1, $("#itemsCount").val());
+        addPagination($("#itemsCount").val());
+
+
+        $("#itemsCount").change(function () {
+
+            $("#tableData").empty();
+            populateData($("#searchData").val(), $("#itemsCount").val());
+            showList(1, $("#itemsCount").val());
+            addPagination($("#itemsCount").val());
         });
-    </script>
+
+        $("#searchData").keyup(function () {
+            $("#tableData").empty();
+            populateData($("#searchData").val(), $("#itemsCount").val());
+            showList(1, $("#itemsCount").val());
+            addPagination($("#itemsCount").val());
+        });
+
+    });
+
+    function managePagination(itemId) {
+        var listItems = $("#paginationData").find("*");
+
+        var currId;
+
+        listItems.each(function () {
+
+            if ($(this).hasClass("active")) {
+                currId = this.id;
+                $(this).removeClass("active");
+            }
+        });
+
+        if (itemId != "next" && itemId != "prev") {
+            $("#" + itemId).addClass("active");
+
+            $("#tableData").empty();
+            showList(itemId, $("#itemsCount").val());
+        }
+        else if (itemId == "next") {
+
+            var prevId = currId;
+
+            while (currId % 4 != 0) {
+                ++currId;
+            }
+
+            if (currId <= numOfLists) {
+                $("#tableData").empty();
+                $("#paginationData").empty();
+
+                var paginationInfo = '<ul class="pagination"><li  id="prev" onclick="managePagination(\'prev\')"><a href="#">Previous</a></li>';
+
+                if (currId + $("#itemsCount").val() - 1 > currEntries.length) {
+                    for (var i = currId; i <= currEntries.length; ++i) {
+                        paginationInfo += '<li id="' + i + '"  onclick="managePagination(\'' + i + '\')"><a href="#">' + i + '</a></li>';
+
+                        if (i == currId + 2) {
+                            break;
+                        }
+                    }
+                }
+                else {
+                    for (var i = currId; i <= currId + $("#itemsCount").val() - 1; ++i) {
+                        paginationInfo += '<li id="' + i + '"  onclick="managePagination(\'' + i + '\')"><a href="#">' + i + '</a></li>';
+
+                        if (i == currId + 2) {
+                            break;
+                        }
+                    }
+                }
+
+                    paginationInfo += '<li id="next" onclick="managePagination(\'next\')"><a href="#">Next</a></li></ul>';
+
+                    $("#paginationData").append(paginationInfo);
+
+                    $("#" + currId).addClass("active");
+                    showList(currId, $("#itemsCount").val());
+            }
+            else {
+                $("#" + prevId).addClass("active");
+            }
+            }
+            else {
+
+            var prevId = currId;
+
+            while(currId % 3 != 0)
+            {
+                --currId;
+            }
+
+            if(currId != 0)
+            {
+                $("#paginationData").empty();
+                $("#tableData").empty();
+
+                var paginationInfo = '<ul class="pagination"><li  id="prev" onclick="managePagination(\'prev\')"><a href="#">Previous</a></li>';
+
+                for(var i = currId - 2; i <= currId; ++i)
+                {
+                    paginationInfo += '<li id="' + i + '"  onclick="managePagination(\'' + i + '\')"><a href="#">' + i + '</a></li>';
+                }
+
+                paginationInfo += '<li id="next" onclick="managePagination(\'next\')"><a href="#">Next</a></li></ul>';
+
+                $("#paginationData").append(paginationInfo);
+
+                for(var i = 1; i < 3; ++i)
+                {
+                --currId;
+                }
+
+                $("#" + currId).addClass("active");
+                showList(currId, $("#itemsCount").val());
+            }
+            else
+            {
+                $("#" + prevId).addClass("active");
+            }
+            }
+        }
+
+        function populateData(toSearch, numOfItems) {
+
+            if (allEntries.length == 0) {
+
+                var str = '@JsonConvert.SerializeObject(Model.bugs.OrderBy(x => x.Id).ToList())';
+
+                var res = str.replace(/&quot;/g, "\"");
+
+                allEntries = JSON.parse(res);
+            }
+
+            if (toSearch == "") {
+                currEntries = allEntries;
+            }
+            else {
+                currEntries = [];
+
+                for (var i = 0; i < allEntries.length; ++i) {
+                    if (allEntries[i].Subject.indexOf(toSearch) != -1) {
+                        currEntries.push(allEntries[i]);
+                    }
+                }
+            }
+        }
+
+        function showList(numOfList, numOfItems) {
+            var toAppend = '<table class="table"><thead><tr><th>Id</th><th>Subject</th><th>Status</th></tr></thead><tbody>';
+
+            if (numOfItems * numOfList > currEntries.length) {
+                for (var i = numOfItems * (numOfList - 1) ; i < currEntries.length; ++i) {
+                    toAppend += '<tr><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
+                                + currEntries[i].Status + '</td></tr>';
+                }
+            }
+            else {
+                for (var i = numOfItems * (numOfList - 1) ; i < numOfItems * numOfList; ++i) {
+                    toAppend += '<tr><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
+                                + currEntries[i].Status + '</td></tr>';
+                }
+            }
+
+            toAppend += '</tbody></table>';
+
+            if (currEntries.length == 0) {
+                toAppend += '<div class="text-center">No bugs were found</div>'
+            }
+
+            $("#tableData").append(toAppend);
+
+        }
+
+        function addPagination(numOfItems) {
+
+            $("#paginationData").empty();
+
+            var paginationInfo = '<ul class="pagination"><li  id="prev" onclick="managePagination(\'prev\')"><a href="#">Previous</a></li>';
+
+            numOfLists = Math.ceil(currEntries.length / numOfItems);
+
+            paginationInfo += '<li id="1" class="active" onclick="managePagination(\'1\')"><a href="#">1</a></li>';
+
+            for (var i = 2; i <= numOfLists; ++i) {
+                paginationInfo += '<li id="' + i + '"  onclick="managePagination(\'' + i + '\')"><a href="#">' + i + '</a></li>';
+
+                if (i == 3) {
+                    break;
+                }
+            }
+
+            paginationInfo += '<li id="next" onclick="managePagination(\'next\')"><a href="#">Next</a></li></ul>';
+
+            $("#paginationData").append(paginationInfo);
+        }
+
+</script>
 }
