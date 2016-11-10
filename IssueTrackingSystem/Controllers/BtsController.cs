@@ -46,6 +46,7 @@ namespace BTS.Controllers
 
             if (!authenticated)
             {
+                TempData["status"] = "Warning";
                 TempData["message"] = "User name and/or password are incorrect";
                 return RedirectToAction("Index");
             }
@@ -92,20 +93,24 @@ namespace BTS.Controllers
 
                         if (addResult == "Success")
                         {
+                            TempData["status"] = "Success";
                             TempData["message"] = "Account has been successfully registered";
                         }
                         else if (addResult == "Fail")
                         {
+                            TempData["status"] = "Error";
                             TempData["message"] = "Internal error. Try again. The problem may be with your birth date";
                         }
                         else
                         {
+                            TempData["status"] = "Warning";
                             TempData["message"] = "User with the same nickname or e-mail has already been registered";
                         }
                     }
                 }
                 else
                 {
+                    TempData["status"] = "Warning";
                     TempData["message"] = "Passwords don't match";
                 }
             }
@@ -123,6 +128,7 @@ namespace BTS.Controllers
         {
             if (email == "")
             {
+                TempData["status"] = "Notification";
                 TempData["message"] = "Please fill in the input form";
             }
             else
@@ -138,14 +144,9 @@ namespace BTS.Controllers
 
                     db.Close();
 
-                    if (letterSent)
-                    {
-                        TempData["message"] = "Please check your e-mail";
-                    }
-                    else
-                    {
-                        TempData["message"] = "Letter has not been sent. Please check the accuracy of your input";
-                    }
+                    TempData["status"] = "Success";
+                    TempData["message"] = "Please check your e-mail";
+
                 }
             }
             return View();
@@ -225,6 +226,7 @@ namespace BTS.Controllers
             {
                 if (!db.IsPasswordResetLinkValid(Request.QueryString["uid"]))
                 {
+                    TempData["status"] = "Error";
                     TempData["message"] = "Password Reset link has expired or is invalid";
                 }
 
@@ -243,10 +245,12 @@ namespace BTS.Controllers
                 {
                     if (db.ChangeUserPassword(Request.QueryString["uid"], password))
                     {
+                        TempData["status"] = "Success";
                         TempData["message"] = "Password changed successfully";
                     }
                     else
                     {
+                        TempData["status"] = "Error";
                         TempData["message"] = "Password Reset link has expired or is invalid";
                     }
 
@@ -255,6 +259,7 @@ namespace BTS.Controllers
             }
             else
             {
+                TempData["status"] = "Warning";
                 TempData["message"] = "Passwords don't match";
             }
 
@@ -275,7 +280,7 @@ namespace BTS.Controllers
 
             bool bugAdded = false;
             bool attachmentsAdded = false;
-
+            
             if (TempData["projId"] != null)
             { 
             b.ProjectId = Convert.ToInt32(TempData["projId"].ToString());
@@ -301,10 +306,12 @@ namespace BTS.Controllers
 
             if (bugAdded && attachmentsAdded)
             {
+                TempData["status"] = "Success";
                 TempData["message"] = "Bug successfully added. Wait for admin's confirmation";
             }
             else
             {
+                TempData["status"] = "Error";
                 TempData["message"] = "Something went wrong. Probably the bug has already been noticed or files are too heavy";
             }
 

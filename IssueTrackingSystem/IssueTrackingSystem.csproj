@@ -175,6 +175,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\datatable.css" />
     <Content Include="Content\dataTables.bootstrap.min.css" />
+    <Content Include="Content\jquery.growl.css" />
     <Content Include="Content\multiple-select.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -194,6 +195,7 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-1.12.3.js" />
     <Content Include="Scripts\jquery.dataTables.min.js" />
+    <Content Include="Scripts\jquery.growl.js" />
     <Content Include="Scripts\jquery.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />

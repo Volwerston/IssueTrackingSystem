@@ -65,11 +65,15 @@
     var allEntries = [];
     var currEntries = [];
     var numOfLists;
+    var sortOrderId = "byId";
+    var currList;
 
     $(document).ready(function () {
 
         populateData("", $("#itemsCount").val());
-        showList(1, $("#itemsCount").val());
+
+        currList = 1;
+        showList(currList, $("#itemsCount").val());
         addPagination($("#itemsCount").val());
 
 
@@ -77,14 +81,18 @@
 
             $("#tableData").empty();
             populateData($("#searchData").val(), $("#itemsCount").val());
-            showList(1, $("#itemsCount").val());
+
+            currList = 1;
+            showList(currList, $("#itemsCount").val());
             addPagination($("#itemsCount").val());
         });
 
         $("#searchData").keyup(function () {
             $("#tableData").empty();
             populateData($("#searchData").val(), $("#itemsCount").val());
-            showList(1, $("#itemsCount").val());
+
+            currList = 1;
+            showList(currList, $("#itemsCount").val());
             addPagination($("#itemsCount").val());
         });
 
@@ -107,7 +115,9 @@
             $("#" + itemId).addClass("active");
 
             $("#tableData").empty();
-            showList(itemId, $("#itemsCount").val());
+
+            currList = itemId;
+            showList(currList, $("#itemsCount").val());
         }
         else if (itemId == "next") {
 
@@ -147,7 +157,9 @@
                     $("#paginationData").append(paginationInfo);
 
                     $("#" + currId).addClass("active");
-                    showList(currId, $("#itemsCount").val());
+
+                    currList = currId;
+                    showList(currList, $("#itemsCount").val());
             }
             else {
                 $("#" + prevId).addClass("active");
@@ -184,7 +196,9 @@
                 }
 
                 $("#" + currId).addClass("active");
-                showList(currId, $("#itemsCount").val());
+
+                currList = currId;
+                showList(currList, $("#itemsCount").val());
             }
             else
             {
@@ -219,7 +233,10 @@
         }
 
         function showList(numOfList, numOfItems) {
-            var toAppend = '<table class="table"><thead><tr><th>Id</th><th>Subject</th><th>Status</th></tr></thead><tbody>';
+            var toAppend = '<table class="table"><thead><tr><th>' +
+                '<button onclick="changeSortOrder(\'byId\')" class="btn btn-default">Id <span class="glyphicon glyphicon-arrow-down" id="byId"></span></button></th><th>' +
+                '<button onclick="changeSortOrder(\'bySubject\')" class="btn btn-default">Subject <span class="glyphicon glyphicon-arrow-down" id="bySubject"></span></button></th><th>' +
+                '<button onclick="changeSortOrder(\'byStatus\')" class="btn btn-default">Status <span class="glyphicon glyphicon-arrow-down" id="byStatus"></button></th></tr></thead><tbody>';
 
             if (numOfItems * numOfList > currEntries.length) {
                 for (var i = numOfItems * (numOfList - 1) ; i < currEntries.length; ++i) {
@@ -242,6 +259,11 @@
 
             $("#tableData").append(toAppend);
 
+            if(sortOrderId != null)
+            {
+                $("#" + sortOrderId).removeClass("glyphicon-arrow-down");
+                $("#" + sortOrderId).addClass("glyphicon-arrow-up");
+            }
         }
 
         function addPagination(numOfItems) {
@@ -267,5 +289,42 @@
             $("#paginationData").append(paginationInfo);
         }
 
+        function changeSortOrder(byProperty) {
+
+            if (byProperty == "byStatus") {
+                if (sortOrderId == "byStatus") {
+                    sortOrderId = null;
+                    currEntries.sort(function (a, b) { return a.Status < b.Status; });
+                }
+                else {
+                    sortOrderId = "byStatus";
+                    currEntries.sort(function (a, b) { return a.Status > b.Status; })
+                }
+            }
+            else if (byProperty == "bySubject")
+            {
+                if (sortOrderId == "bySubject") {
+                    sortOrderId = null;
+                    currEntries.sort(function (a, b) { return a.Subject < b.Subject; });
+                }
+                else {
+                    sortOrderId = "bySubject";
+                    currEntries.sort(function (a, b) { return a.Subject > b.Subject; })
+                }
+            }
+            else {
+                if (sortOrderId == "byId") {
+                    sortOrderId = null;
+                    currEntries.sort(function (a, b) { return a.Id < b.Id; });
+                }
+                else {
+                    sortOrderId = "byId";
+                    currEntries.sort(function (a, b) { return a.Id > b.Id; })
+                }
+            }
+
+            $("#tableData").empty();
+            showList(currList, $("#itemsCount").val());
+        }
 </script>
 }

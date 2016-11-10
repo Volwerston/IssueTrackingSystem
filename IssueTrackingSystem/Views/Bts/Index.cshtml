@@ -3,9 +3,28 @@
     Layout = "~/Views/Shared/_Start.cshtml";
 }
 
+@if (TempData["status"] != null)
+{
+    @Html.Hidden(TempData["status"].ToString(), TempData["status"].ToString(), new { id = "status" })
+}
+else
+{
+    @Html.Hidden("null", "null", new { id = "status" })
+}
+
+@if (TempData["message"] != null)
+{
+    @Html.Hidden(TempData["message"].ToString(), TempData["message"].ToString(), new { id = "message" })
+}
+else
+{
+    @Html.Hidden("null", "null", new { id = "message" })
+}
+
 @using (Html.BeginForm("LogIn", "Bts"))
 {
     @Html.AntiForgeryToken()
+
             <div class="form-horizontal well" style="display: table; margin: auto;">
                 <div class="form-group">
                     <div class="col-sm-4">
@@ -44,14 +63,18 @@
                         <input type="button" class="btn btn-info" value="Forgot password" onclick="location.href='@Url.Action("PasswordUpdate", "Bts")'" />
                     </div>
                     </div>
-
-                <div class="row text-center">
-                    @if (TempData["message"] != null)
-                {
-                        <div class="text-center">
-                            <p class="text-danger">@TempData["message"]</p>
-                        </div>
-                    }
-                </div>
 </div>
+}
+
+@section scripts
+{
+    <script>
+
+        $(document).ready(function () {
+            if($("#message").val() != "null")
+            {
+                displayMessage($("#status").val(), $("#message").val());
+            }
+        })
+</script>
 }

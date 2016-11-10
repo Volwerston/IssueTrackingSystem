@@ -11,7 +11,8 @@ namespace WebApplication7
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js",
                         "~/Scripts/dataTables.bootstrap.min.js",
-                        "~/Scripts/jquery.dataTables.min.js"));
+                        "~/Scripts/jquery.dataTables.min.js",
+                        "~/Scripts/jquery.growl.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
@@ -30,7 +31,8 @@ namespace WebApplication7
                       "~/Content/bootstrap.min.css",
                       "~/Content/site.css",
                       "~/Content/multiple-select.css",
-                      "~/Content/dataTables.bootstrap.min.css"));
+                      "~/Content/dataTables.bootstrap.min.css",
+                      "~/Content/jquery.growl.css"));
         }
     }
 }
