@@ -211,11 +211,9 @@
 
             if (allEntries.length == 0) {
 
-                var str = '@JsonConvert.SerializeObject(Model.bugs.OrderBy(x => x.Id).ToList())';
+                var str = '@Html.Raw(JsonConvert.SerializeObject(Model.bugs.OrderBy(x => x.Id).ToList()))';
 
-                var res = str.replace(/&quot;/g, "\"");
-
-                allEntries = JSON.parse(res);
+                allEntries = JSON.parse(str);
             }
 
             if (toSearch == "") {

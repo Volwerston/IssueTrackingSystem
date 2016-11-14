@@ -28,6 +28,7 @@ namespace BTS.Models
         [Required(ErrorMessage = "Date of birth must be filled")]
         [DataType(DataType.Date)]
         [Display(Name = "Date of birth")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = false)]
         public DateTime BirthDate { get; set; }
 
         [Required(ErrorMessage = "Email must be filled")]

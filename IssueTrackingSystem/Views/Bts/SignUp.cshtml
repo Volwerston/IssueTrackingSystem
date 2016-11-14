@@ -10,7 +10,7 @@
     @Html.AntiForgeryToken()
 
     <div class="row">
-        <div class="col-md-offset-3 col-md-6">
+        <div class="col-md-offset-2 col-md-7">
             <div class="form-horizontal well">
 
 
@@ -35,78 +35,97 @@
                 }
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label", id="nameLabel" })
+                    </div>
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", id="nameEditor" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger", id="nameValidator" })
                     </div>
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.Surname, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.Surname, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Surname, "", new { @class = "text-danger" })
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.Surname, htmlAttributes: new { @class = "control-label", id = "surnameLabel" })
+                        </div>
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.Surname, new { htmlAttributes = new { @class = "form-control", id = "surnameEditor" } })
+                            @Html.ValidationMessageFor(model => model.Surname, "", new { @class = "text-danger", id = "surnameValidator" })
+                        </div>
+                    </div>
+
+                <div class="form-group">
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.Nickname, htmlAttributes: new { @class = "control-label", id = "nicknameLabel" })
+                        </div>
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.Nickname, new { htmlAttributes = new { @class = "form-control", id = "nicknameEditor" } })
+                            @Html.ValidationMessageFor(model => model.Nickname, "", new { @class = "text-danger", id = "nicknameValidator" })
+                        </div>
+                    </div>
+
+                <div class="form-group">
+                    <div class="col-md-4">
+                    @Html.Label("Birthdate", new { @class = "control-label", id = "birthdateLabel" })
+                        </div>
+                    <div class="col-md-8">
+                        <input name="birthDate" class="datePicker form-control" id="birthdateEditor" />
+                        @Html.ValidationMessageFor(model => model.BirthDate, "", new { @class = "text-danger", id = "birthdateValidator" })
                     </div>
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.Nickname, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.Nickname, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Nickname, "", new { @class = "text-danger" })
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label", id = "emailLabel" })
+                        </div>
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", id = "emailEditor" } })
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger", id = "emailValidator" })
+                        </div>
                     </div>
-                </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.BirthDate, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.BirthDate, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.BirthDate, "", new { @class = "text-danger" })
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label", id = "passwordLabel" })
+                        </div>
+                        <div class="col-md-8">
+                            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", @type = "password", id="passwordEditor"} })
+                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger", id = "passwordValidator" })
+                        </div>
                     </div>
-                </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    <div class="col-md-4">
+                        @Html.Label("Repeat password", htmlAttributes: new { @class = "control-label", id="confPasswordLabel"})
+                        </div>
+                        <div class="col-md-8">
+                            @Html.Editor("confirmPassword", new { htmlAttributes = new { @class = "form-control", @type = "password", id="confPasswordEditor" } })
+                            @Html.ValidationMessage("confirmPassword", "", new { @class = "text-danger", id="confPasswordValidator"})
+                        </div>
                     </div>
-                </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", @type = "password" } })
-                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label"})
+                        </div>
+                        <div class="col-md-8">
+                            @{
+                                var dropList = new List<string> { "Tester", "Developer", "Project Manager", "Admin" };
+                            }
+
+                            @Html.DropDownListFor(model => model.Status, new SelectList(dropList, "Status"), null, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                        </div>
                     </div>
-                </div>
 
                 <div class="form-group">
-                    @Html.Label("Confirm password", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.Editor("confirmPassword", new { htmlAttributes = new { @class = "form-control", @type = "password" } })
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.Avatar, htmlAttributes: new { @class = "control-label" })
+                        </div>
+                        <div class="col-md-8">
+                            <input type="file" name="ava"/>
+                        </div>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @{
-                            var dropList = new List<string> { "Tester", "Developer", "Project Manager", "Admin" };
-                        }
-
-                        @Html.DropDownListFor(model => model.Status, new SelectList(dropList, "Status"), null, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Avatar, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        <input type="file" name="ava" />
-                    </div>
-                </div>
 
                 <div class="form-group">
                     <div class="row">
@@ -123,12 +142,185 @@
 @section scripts
 {
 <script>
+    $(document).ready(function () {
+        if ($("#message").val() != "null") {
+            displayMessage($("#status").val(), $("#message").val());
+        }
 
-        $(document).ready(function () {
-            if($("#message").val() != "null")
-            {
-                displayMessage($("#status").val(), $("#message").val());
+        $(":file").filestyle({ buttonText: "Find file" });
+
+        $(".datePicker").datepicker({
+            format: "dd.mm.yyyy",
+            language: "en",
+            startDate: "01.01.1900",
+            endDate: "@DateTime.Today.Date"
+        });
+
+        $("#nameEditor").focus(function () {
+            $(this).removeClass("text-danger");
+            $("#nameLabel").removeClass("text-danger");
+            $("#nameValidator").text("");
+        });
+
+
+        $("#nameEditor").blur(function () {
+            if ($(this).val() == "") {
+                $(this).addClass("text-danger");
+                $("#nameLabel").addClass("text-danger");
+                $("#nameValidator").text("Name field cannot be empty");
             }
-        })
+            else if ($(this).val().length < 3) {
+                $(this).addClass("text-danger");
+                $("#nameLabel").addClass("text-danger");
+                $("#nameValidator").text("Name field must contain at least 3 characters");
+            }
+            else if ($(this).val().length > 20) {
+                $(this).addClass("text-danger");
+                $("#nameLabel").addClass("text-danger");
+                $("#nameValidator").text("Name field must contain at most 20 characters");
+            }
+        });
+
+
+        $("#surnameEditor").focus(function () {
+            $(this).removeClass("text-danger");
+            $("#surnameLabel").removeClass("text-danger");
+            $("#surnameValidator").text("");
+        });
+
+
+        $("#surnameEditor").blur(function () {
+            if ($(this).val() == "") {
+                $(this).addClass("text-danger");
+                $("#surnameLabel").addClass("text-danger");
+                $("#surnameValidator").text("Surname field cannot be empty");
+            }
+            else if ($(this).val().length < 3) {
+                $(this).addClass("text-danger");
+                $("#surnameLabel").addClass("text-danger");
+                $("#surnameValidator").text("Surname field must contain at least 3 characters");
+            }
+            else if ($(this).val().length > 20) {
+                $(this).addClass("text-danger");
+                $("#surnameLabel").addClass("text-danger");
+                $("#surnameValidator").text("Surname field must contain at most 20 characters");
+            }
+        });
+
+            $("#nicknameEditor").focus(function () {
+                $(this).removeClass("text-danger");
+                $("#nicknameLabel").removeClass("text-danger");
+                $("#nicknameValidator").text("");
+            });
+
+
+            $("#nicknameEditor").blur(function () {
+                if ($(this).val() == "") {
+                    $(this).addClass("text-danger");
+                    $("#nicknameLabel").addClass("text-danger");
+                    $("#nicknameValidator").text("Nickname field cannot be empty");
+                }
+                else if ($(this).val().length < 3) {
+                    $(this).addClass("text-danger");
+                    $("#nicknameLabel").addClass("text-danger");
+                    $("#nicknameValidator").text("Nickname field must contain at least 3 characters");
+                }
+                else if ($(this).val().length > 20) {
+                    $(this).addClass("text-danger");
+                    $("#nicknameLabel").addClass("text-danger");
+                    $("#nicknameValidator").text("Nickname field must contain at most 20 characters");
+                }
+            });
+
+            $("#birthdateEditor").focus(function () {
+                $(this).removeClass("text-danger");
+                $("#birthdateLabel").removeClass("text-danger");
+                $("#birthdateValidator").text("");
+            });
+
+
+            $("#birthdateEditor").blur(function () {
+                if ($(this).val() == "") {
+                    $(this).addClass("text-danger");
+                    $("#birthdateLabel").addClass("text-danger");
+                    $("#birthdateValidator").text("Birthdate field cannot be empty");
+                }
+            });
+
+            $("#emailEditor").focus(function () {
+                $(this).removeClass("text-danger");
+                $("#emailLabel").removeClass("text-danger");
+                $("#emailValidator").text("");
+            });
+
+            $("#emailEditor").blur(function () {
+                if ($(this).val() == "") {
+                    $(this).addClass("text-danger");
+                    $("#emailLabel").addClass("text-danger");
+                    $("#emailValidator").text("Email field cannot be empty");
+                }
+                else
+                {
+                    if ($(this).val().length > 30)
+                    {
+                        $(this).addClass("text-danger");
+                        $("#emailLabel").addClass("text-danger");
+                        $("#emailValidator").text("Email must contain at most 30 characters");
+                    }
+                    else
+                    {
+                        var regex = /^(([^<>()[\]\\.,;:\s@@\"]+(\.[^<>()[\]\\.,;:\s@@\"]+)*)|(\".+\"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                        var testMail = regex.test($("#emailEditor").val());
+
+                        if (!testMail) {
+                            $(this).addClass("text-danger");
+                            $("#emailLabel").addClass("text-danger");
+                            $("#emailValidator").text("Email is invalid");
+                        }
+                    }
+                }
+            });
+
+            $("#passwordEditor").focus(function () {
+                $(this).removeClass("text-danger");
+                $("#passwordLabel").removeClass("text-danger");
+                $("#passwordValidator").text("");
+            });
+
+            $("#passwordEditor").blur(function () {
+                if ($(this).val().length == 0) {
+                    $(this).addClass("text-danger");
+                    $("#passwordLabel").addClass("text-danger");
+                    $("#passwordValidator").text("Password field cannot be empty");
+                }
+                else if($(this).val().length < 5)
+                {
+                    $(this).addClass("text-danger");
+                    $("#passwordLabel").addClass("text-danger");
+                    $("#passwordValidator").text("Password must contain at least 5 characters");
+                }
+                else if($(this).val().length > 20)
+                {
+                    $(this).addClass("text-danger");
+                    $("#passwordLabel").addClass("text-danger");
+                    $("#passwordValidator").text("Password must contain at most 20 characters");
+                }
+            });
+
+            $("#confPasswordEditor").focus(function () {
+                $(this).removeClass("text-danger");
+                $("#confPasswordLabel").removeClass("text-danger");
+                $("#confPasswordValidator").text("");
+            });
+
+            $("#confPasswordEditor").blur(function () {
+                if ($(this).val().length == 0) {
+                    $(this).addClass("text-danger");
+                    $("#confPasswordLabel").addClass("text-danger");
+                    $("#confPasswordValidator").text("Password field cannot be empty");
+                }
+            });
+    });
 </script>
 }

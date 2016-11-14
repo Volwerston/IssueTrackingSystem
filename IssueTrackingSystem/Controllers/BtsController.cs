@@ -71,8 +71,14 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
-        public ActionResult SignUp(User u, HttpPostedFileBase ava, string confirmPassword)
+        public ActionResult SignUp(User u, HttpPostedFileBase ava, string confirmPassword, string birthDate)
         {
+            if (birthDate != "")
+            {
+                u.BirthDate = DateTime.ParseExact(birthDate, "dd.MM.yyyy",
+                                       System.Globalization.CultureInfo.InvariantCulture);
+            }
+
             if (ModelState.IsValid)
             {
 
