@@ -260,6 +260,8 @@ namespace BTS.Controllers
                         TempData["message"] = "Password Reset link has expired or is invalid";
                     }
 
+                    db.deleteExpiredRecords();
+
                     db.Close();
                 }
             }
@@ -324,6 +326,15 @@ namespace BTS.Controllers
             return View();
         }
 
+        public ActionResult NotFoundErrorPage()
+        {
+            return View();
+        }
+
+        public ActionResult GeneralErrorPage()
+        {
+            return View();
+        }
 
         // just to see that image is properly saved in db
         public ActionResult Show()

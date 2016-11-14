@@ -395,6 +395,26 @@ namespace BTS.Models
             }
         }
 
+        internal void deleteExpiredRecords()
+        {
+            SqlCommand cmd = new SqlCommand("DeleteExpiredRecords", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            SqlTransaction transaction = connection.BeginTransaction("ExpiredRecordsDeleting");
+
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+            }
+        }
+
         internal bool IsPasswordResetLinkValid(string queryString)
         {
             List<SqlParameter> paramList = new List<SqlParameter>()
