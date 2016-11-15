@@ -344,6 +344,7 @@ namespace BTS.Controllers
             return View(bug);
         }
 
+        [ValidateInput(false)]
         [HttpPost]
         public ActionResult ReportBug(Bug b)
         {
@@ -359,6 +360,12 @@ namespace BTS.Controllers
 
                 if (ModelState.IsValid)
                 {
+                    string encodedDescripton = HttpUtility.HtmlEncode(b.Description);
+                    string encodedSubject = HttpUtility.HtmlEncode(b.Subject);
+
+                    b.Subject = encodedSubject;
+                    b.Description = encodedDescripton;
+
                     if (db.Open())
                     {
                         bugReported = db.ReportBug(b);
