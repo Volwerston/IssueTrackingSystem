@@ -20,7 +20,32 @@ namespace BTS.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            if (Session["Username"] != null && Session["Status"] != null)
+            {
+                return RedirectToAction("Main");
+            }
+            else
+            {
+                if (Request.Cookies["username"] != null && Request.Cookies["password"] != null)
+                {
+                    if (db.Open())
+                    {
+                        User u = db.getAuthenticatedUser(Request.Cookies["username"].Value, Request.Cookies["password"].Value);
+
+                        db.Close();
+
+                        if (u.Id != -1)
+                        {
+                            Session["Username"] = Request.Cookies["username"].Value;
+                            Session["Status"] = u.Status;
+
+                            return RedirectToAction("Main");
+                        }
+                    }
+                }
+
+                return View();
+            }
         }
 
 
@@ -37,6 +62,19 @@ namespace BTS.Controllers
                 {
                     Session["Username"] = Login;
                     Session["Status"] = u.Status;
+
+                    if(rememberMe)
+                    {
+                        HttpCookie nick = new HttpCookie("username");
+                        nick.Expires = DateTime.Now.AddDays(1d); 
+                        nick.Value = Login;
+                        Response.SetCookie(nick);
+
+                        HttpCookie pass = new HttpCookie("password");
+                        pass.Expires = DateTime.Now.AddDays(1d);
+                        pass.Value = Password;
+                        Response.SetCookie(pass);
+                    }
 
                     authenticated = true;
                 }
@@ -59,7 +97,16 @@ namespace BTS.Controllers
         [SystemAuthorize(Roles = "Admin")]
         public ActionResult SignOut()
         {
-            Session["Username"] = null;
+            Session.Remove("Username");
+            Session.Remove("Status");
+
+            HttpCookie nick = new HttpCookie("username");
+            nick.Expires = DateTime.Now.AddDays(-1d);
+            Response.SetCookie(nick);
+
+            HttpCookie pass = new HttpCookie("password");
+            pass.Expires = DateTime.Now.AddDays(-1d);
+            Response.SetCookie(pass);
 
             return RedirectToAction("Index");
         }
