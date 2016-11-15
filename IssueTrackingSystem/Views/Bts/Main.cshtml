@@ -5,67 +5,51 @@
     Layout = "~/Views/Shared/_Main.cshtml";
 }
 
-<div class="row" style="margin: 10px 10px 10px 10px;">
-    <div class="col-md-offset-2 col-md-8">
-        <div class="panel-group" id="accordion">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-                            Categories Search
-                        </a>
-                    </h4>
-                </div>
-                <div id="collapse1" class="panel-collapse collapse in">
-                    <div class="panel-body" style="padding-bottom: 80px;">
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    @Html.Label("Project Category:", new { @class = "control-label" })
-                                </div>
-                                <div class="col-md-6">
-                                    <select id="ms" multiple="multiple">
-                                        @{
-                                            foreach (var item in Model)
-                                            {
-                                                <option value="@item.Id">@item.Title</option>
-                                            }
-                                        }
-                                    </select>
+<div style="margin: 10px 10px 10px 10px; padding: 10px 10px 10px 10px">
+    <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+            <div class="row">
+                <div class="col-md-offset-1 col-md-10">
+                    <div class="panel-group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" href="#collapse1">Select name</a>
+                                </h4>
+                            </div>
+                            <div id="collapse1" class="panel-collapse collapse">
+                                <div class="form-horizontal" style="margin-top: 10px;">
+                                    <div class="form-group">
+                                        @Html.Label("Project Name:", new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            <input type="text" id="projectName" class="form-control" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin: 10px 10px 10px 10px;">
+                <div class="form-horizontal">
+                    <div class="form-group">
                         <div class="row">
-                            <div class="col-md-offset-5 col-md-2">
-                                <button type="submit" id="searchCategory" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+                            <div class="col-md-offset-1 col-md-3">
+                                @Html.Label("Project Category:", new { @class = "control-label" })
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
-                                Name Search
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapse2" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        @Html.Label("Project Name:", new { @class = "control-label" })
-                                    </div>
-                                    <div class="col-md-8">
-                                        <input type="text" id="projectName" class="form-control" />
-                                    </div>
-                                </div>
+                            <div class="col-md-6">
+                                <select id="ms" multiple="multiple">
+                                    @{
+                                        foreach (var item in Model)
+                                        {
+                                            <option value="@item.Id">@item.Title</option>
+                                        }
+                                    }
+                                </select>
                             </div>
-                            <div class="row">
-                                <div class="col-md-offset-5 col-md-2">
-                                    <button type="submit" id="searchName" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
-                                </div>
+                            <div class="col-md-2">
+                                <button type="submit" id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
                             </div>
                         </div>
                     </div>
@@ -75,137 +59,137 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-offset-2 col-md-8" id="projects">
+    <div class="row">
+        <div class="col-md-offset-2 col-md-8" id="projects">
 
+        </div>
     </div>
-</div>
 
 @section scripts
 {
-<script src="~/Scripts/multiple-select.js"></script>
-<script>
-    var lastId = 0;
+                <script src="~/Scripts/multiple-select.js"></script>
+                <script>
+                    var lastId = 0;
 
-        $(document).ready(function () {
-            $('#ms').change(function () {
-                console.log($(this).val());
-            }).multipleSelect({
-                width: '100%'
-            });
+                    $(document).ready(function () {
+                        $('#ms').change(function () {
+                            console.log($(this).val());
+                        }).multipleSelect({
+                            width: '100%'
+                        });
 
-            $("#searchCategory").click(function ()
-            {
-                lastId = 0;
-                $("#projects").empty();
+                        $(document).scroll(function ()
+                        {
+                            if ($(document).height() - ($(window).height() + $(window).scrollTop()) < 50)
+                            {
+                                getDataByCategories();
+                            }
+                        });
 
-                getDataByCategories();
-            });
+                        $("#search").click(function ()
+                        {
+                            $("#projects").empty();
+                            lastId = 0;
 
-            $(document).scroll(function () {
-                if ($(document).height() - ($(window).height() + $(window).scrollTop()) < 50)
-                {
-                        getDataByCategories();
-                }
-            });
+                            if ($("#projectName").val() != "")
+                            {
+                                getDataByName();
+                            }
+                            else
+                            {
+                                getDataByCategories();
+                            }
+                         });
 
-            $("#searchName").click(function () {
+                        });
 
-                $("#projects").empty();
-                lastId = 0;
-                var prName = [];
-                prName.push($("#projectName").val());
-
-                $.ajax({
-                    type: "POST",
-                    url: "@Url.Action("GetProjectsByName", "Bts")",
-                    data: JSON.stringify(prName),
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                success: function (res) {
-
-                    if (res.length > 0) {
-                        for (var i = 0; i < res.length; ++i) {
-                            $("#projects").append(getDivForBug(res[i]));
-                        }
-                    }
-                    else
+                    function getDataByName()
                     {
-                        $("#projects").append('<div class="text-center">No projects were found</div>');
+                        var prName = [];
+                        prName.push($("#projectName").val());
+
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("GetProjectsByName", "Bts")",
+                            data: JSON.stringify(prName),
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (res) {
+
+                                if (res.length > 0) {
+                                    for (var i = 0; i < res.length; ++i) {
+                                        $("#projects").append(getDivForBug(res[i]));
+                                    }
+                                }
+                                else {
+                                    $("#projects").append('<div class="text-center">No projects were found</div>');
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                alert(error);
+                            }
+                        });
                     }
-                },
-                error: function (xhr, status, error) {
-                    alert(error);
-                }
-            });
-
-        });
-
-        });
 
 
-        function getDivForBug(val)
-        {
-            return '<div style="border-radius:5px; height: 200px; background-color: rgb(0, 255, 144); padding: 10px 10px 10px 10px; margin: 10px 10px 10px 10px;">'
+                    function getDivForBug(val) {
+                        return '<div style="border-radius:5px; background-color: rgb(0, 255, 144);">'
+                             +  '<div style="padding: 10px 10px 10px 10px; margin: 10px 10px 10px 10px;">'
+                                 + '<div class="row">'
+                                + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(111, 255, 192); border-radius:3px; margin-bottom: 5px;">'
+                                    + '<p>' + val.Name + '</p>'
+                                 + '</div>'
+                            + '</div>'
+                                + '<div class="row">'
+                                   + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(86, 251, 179); border-radius:3px;">'
+                                        + '<p>' + val.Description + '</p>'
+                                   + '</div>'
+                                    + '<div class="col-md-5">'
+                                    + '<a href="@Url.Action("ShowProject", "Bts")' + '/?name=' + val.Name + '"><input type="submit" class="btn btn-info" value="View"/></a>'
+                                    + '</div>'
+                               + ' </div>'
+                            + '</div>'
+                            + '</div>';
+                    }
 
-                     + '<div class="row">'
-                    + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(111, 255, 192); border-radius:3px; margin-bottom: 5px;">'
-                        + '<p>' + val.Name + '</p>'
-                     + '</div>'
-                + '</div>'
-                    + '<div class="row">'
-                       + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(86, 251, 179); border-radius:3px;">'
-                            + '<p>' + val.Description + '</p>'
-                       + '</div>'
-                        + '<div class="col-md-5">'
-                        + '<a href="@Url.Action("ShowProject", "Bts")' + '/?name=' + val.Name + '"><input type="submit" class="btn btn-info" value="View"/></a>'
-                        + '</div>'
-                   + ' </div>'
-                + '</div>';
-        }
+                    function getDataByCategories() {
+                        var checkedOnes = $('#ms option:selected');
 
-    function getDataByCategories()
-    {
-        var checkedOnes = $('#ms option:selected');
+                        var categoryStr = [];
 
-        var categoryStr = [];
+                        checkedOnes.each(function () {
+                            categoryStr.push($(this).val());
+                        });
 
-        checkedOnes.each(function () {
-            categoryStr.push($(this).val());
-        });
+                        categoryStr.push(lastId);
 
-        categoryStr.push(lastId);
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("GetProjectsByCategories", "Bts")",
+                            data: JSON.stringify(categoryStr),
+                            dataType: "json",
+                            async: false,
+                            contentType: "application/json; charset=utf-8",
+                            success: function (res) {
 
-        $.ajax({
-            type: "POST",
-            url: "@Url.Action("GetProjectsByCategories", "Bts")",
-            data: JSON.stringify(categoryStr),
-            dataType: "json",
-            async: false,
-        contentType: "application/json; charset=utf-8",
-        success: function (res) {
+                                if (res.length > 0) {
+                                    lastId = res[res.length - 1].Id;
 
-            if (res.length > 0)
-            {
-                lastId = res[res.length - 1].Id;
+                                    for (var i = 0; i < res.length; ++i) {
+                                        $("#projects").append(getDivForBug(res[i]));
+                                    }
 
-                for (var i = 0; i < res.length; ++i) {
-                    $("#projects").append(getDivForBug(res[i]));
-                }
-
+                                }
+                                else {
+                                    if ($("#projects").is(':empty')) {
+                                        $("#projects").append('<div class="text-center">No projects were found</div>');
+                                    }
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                alert(error);
+                            }
+                        });
+                    }
+                </script>
             }
-            else
-            {
-                if($("#projects").is(':empty'))
-                {
-                    $("#projects").append('<div class="text-center">No projects were found</div>');
-                }
-            }
-        },
-        error: function (xhr, status, error) {
-            alert(error);
-        }
-        });
-    }
-</script>
-}

@@ -119,19 +119,21 @@
         else if (itemId == "next") {
 
             var prevId = currId;
+            ++currId;
 
-            while (currId % 4 != 0) {
+            while (currId % 3 != 1) {
                 ++currId;
             }
 
-            if (currId <= numOfLists) {
+            if (currId <= numOfLists)
+            {
                 $("#tableData").empty();
                 $("#paginationData").empty();
 
                 var paginationInfo = '<ul class="pagination"><li  id="prev" onclick="managePagination(\'prev\')"><a href="#">Previous</a></li>';
 
-                if (currId + $("#itemsCount").val() - 1 > currEntries.length) {
-                    for (var i = currId; i <= currEntries.length; ++i) {
+                if (currId + 2 >= numOfLists) {
+                    for (var i = currId; i <= numOfLists; ++i) {
                         paginationInfo += '<li id="' + i + '"  onclick="managePagination(\'' + i + '\')"><a href="#">' + i + '</a></li>';
 
                         if (i == currId + 2) {
@@ -140,12 +142,8 @@
                     }
                 }
                 else {
-                    for (var i = currId; i <= currId + $("#itemsCount").val() - 1; ++i) {
+                    for (var i = currId; i <= currId + 2; ++i) {
                         paginationInfo += '<li id="' + i + '"  onclick="managePagination(\'' + i + '\')"><a href="#">' + i + '</a></li>';
-
-                        if (i == currId + 2) {
-                            break;
-                        }
                     }
                 }
 
@@ -165,6 +163,7 @@
             else {
 
             var prevId = currId;
+            --currId;
 
             while(currId % 3 != 0)
             {
