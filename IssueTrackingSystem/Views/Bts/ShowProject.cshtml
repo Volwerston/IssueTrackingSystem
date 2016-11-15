@@ -8,28 +8,26 @@
     Layout = "~/Views/Shared/_Main.cshtml";
 }
 
+<div style="margin: 10px 10px 10px 10px; padding: 10px 10px 10px 10px;">
 <div class="row">
-    <div class="col-md-4" style="background-color: rgb(110, 255, 192); border-radius: 5px;">
+    <div class="col-md-3"  style="background-color: rgb(110, 255, 192); border-radius: 5px; margin: 0px 25px 25px 50px;">
         <div class="text-center">
             <p class="text-center">@Html.DisplayFor(model => model.proj.Name)</p>
         </div>
         <div>
-            <img src="" style="float:left;" />
             <p>@Html.DisplayFor(model => model.proj.Description)
         </div>
         <div style="overflow-x:hidden; overflow-y: auto;">
             <p>@Html.DisplayFor(model => model.proj.Updates)</p>
         </div>
         <div class="row" style="padding-bottom: 5px;">
-            <div class="col-md-offset-3 col-md-3">
-                <input type="submit" class="btn btn-info" value="Add new bug" onclick="location.href='@Url.Action("AddBug", "Bts", new { @projectId = Model.proj.Id })'" />
+            <div class="col-md-offset-2 col-md-3">
+                <input type="submit" class="btn btn-info" value="Report bug" onclick="location.href='@Url.Action("AddBug", "Bts", new { @projectId = Model.proj.Id })'" />
             </div>
         </div>
     </div>
-    <div class="col-md-offset-1 col-md-7" style="background-color: rgb(141, 202, 246); border-radius: 5px;padding: 10px 10px 10px 10px;">
-
-    <div style="margin: 5px 5px 5px 5px;">
-        <div class="form-horizontal">
+    <div class="col-md-7" style="background-color: rgb(69, 163, 231); border-radius: 5px;">
+        <div class="form-horizontal" style="padding: 10px 10px 10px 10px;">
             <div class="form-group">
                     @Html.Label("Number of items:", new { @class = "control-label col-md-4" })
                 <div class="col-md-5">
@@ -55,7 +53,6 @@
 
         </div>
     </div>
-
     </div>
 </div>
 

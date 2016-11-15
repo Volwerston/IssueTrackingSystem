@@ -7,14 +7,15 @@
     <meta charset="utf-8" lang="en" />
     <meta name="viewport" content="width=device-width" />
     <title>Bug Tracking System</title>
+    <link href="https://fonts.googleapis.com/css?family=Abril+Fatface" rel="stylesheet">
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
-<body>
-    <div class="container">
-        <div class="jumbotron text-center">
-            <h3>Issue Tracking System</h3>
-        </div>
+<body style="padding: 0px;">
+    <div class="container" style="background-color: rgb(160, 205, 239); border-radius:3px; padding: 0px;">
+         <div class="jumbotron text-center" style="border-radius: 0px;">
+            <h3 style="font-family: 'Abril Fatface', cursive">Issue Tracking System</h3>
+           </div>
 
         @RenderBody()
 
