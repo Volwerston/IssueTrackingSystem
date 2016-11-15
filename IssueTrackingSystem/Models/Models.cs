@@ -67,7 +67,7 @@ namespace BTS.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage ="Subject field must be filled")]
+        [Required(ErrorMessage ="Subject field cannot be empty")]
         [MaxLength(30, ErrorMessage = "Subject field must contain at most 30 characters")]
         [MinLength(5, ErrorMessage = "Subject field must contain at least 5 characters")]
         public string Subject { get; set; }

@@ -33,18 +33,18 @@ else
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                     <div class="form-group">
-                        @Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label col-md-3" })
+                        @Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label col-md-3", id="subjectLabel" })
                         <div class="col-md-9">
-                            @Html.EditorFor(model => model.Subject, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+                            @Html.EditorFor(model => model.Subject, new { htmlAttributes = new { @class = "form-control", id="subjectEditor" } })
+                            @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger", id="subjectValidator" })
                         </div>
                     </div>
 
                     <div class="form-group">
-                        @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-3" })
+                        @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-3", id="descriptionLabel" })
                         <div class="col-md-9">
-                            @Html.TextAreaFor(model => model.Description, 10, 40, null)
-                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                            @Html.TextAreaFor(model => model.Description, 10, 40, new { id = "descriptionEditor" })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger", id = "descriptionValidator"  })
                         </div>
                     </div>
 
@@ -82,5 +82,48 @@ else
                 displayMessage($("#status").val(), $("#message").val());
             }
         })
+
+        $("#subjectEditor").focus(function () {
+            $(this).removeClass("text-danger");
+            $("#subjectLabel").removeClass("text-danger");
+            $("#subjectValidator").text("");
+        });
+
+        $("#subjectEditor").blur(function ()
+        {
+            if($("#subjectEditor").val() == "")
+            {
+                $("#subjectEditor").addClass("text-danger");
+                $("#subjectLabel").addClass("text-danger");
+                $("#subjectValidator").text("Subject field cannot be empty");
+            }
+            else if($("#subjectEditor").val().length < 5)
+            {
+                $("#subjectEditor").addClass("text-danger");
+                $("#subjectLabel").addClass("text-danger");
+                $("#subjectValidator").text("Subject field must contain at least 5 characters");
+            }
+            else if($("#subjectEditor").val().length > 30)
+            {
+                $("#subjectEditor").addClass("text-danger");
+                $("#subjectLabel").addClass("text-danger");
+                $("#subjectValidator").text("Subject field must contain at most 30 characters");
+            }
+        });
+
+        $("#descriptionEditor").focus(function () {
+            $(this).removeClass("text-danger");
+            $("#descriptionLabel").removeClass("text-danger");
+            $("#descriptionValidator").text("");
+        });
+
+        $("#descriptionEditor").blur(function () {
+            if ($("#descriptionEditor").val() == "") {
+                $("#descriptionEditor").addClass("text-danger");
+                $("#descriptionLabel").addClass("text-danger");
+                $("#descriptionValidator").text("Description field cannot be empty");
+            }
+        });
+
     </script>
 }
