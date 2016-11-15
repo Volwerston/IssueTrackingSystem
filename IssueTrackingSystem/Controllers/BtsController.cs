@@ -71,7 +71,7 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
-        public ActionResult SignUp(User u, HttpPostedFileBase ava, string confirmPassword, string birthDate)
+        public ActionResult SignUp(User u, HttpPostedFileBase userAvatar, string confirmPassword, string birthDate)
         {
             if (birthDate != "")
             {
@@ -81,13 +81,12 @@ namespace BTS.Controllers
 
             if (ModelState.IsValid)
             {
-
                 if (u.Password == confirmPassword)
                 {
-                    if (ava != null)
+                    if (userAvatar != null)
                     {
-                        u.Avatar = new byte[ava.ContentLength];
-                        ava.InputStream.Read(u.Avatar, 0, ava.ContentLength);
+                        u.Avatar = new byte[userAvatar.ContentLength];
+                        userAvatar.InputStream.Read(u.Avatar, 0, userAvatar.ContentLength);
                     }
 
                     if (db.Open())
@@ -112,6 +111,11 @@ namespace BTS.Controllers
                             TempData["status"] = "Warning";
                             TempData["message"] = "User with the same nickname or e-mail has already been registered";
                         }
+                    }
+                    else
+                    {
+                        TempData["status"] = "Error";
+                        TempData["message"] = "Internal error. Try again";
                     }
                 }
                 else
@@ -203,27 +207,38 @@ namespace BTS.Controllers
         }
 
         [SystemAuthorize(Roles = "Admin")]
-        public ActionResult ShowProject(string name)
+        public ActionResult ShowProject(string name) 
         {
+            bool projectFound = false;
+
             Project project = new Project();
+
             List<Bug> projectBugs = null;
 
             if (db.Open())
             {
-                project = db.GetProjectsByName(name)[0];
+                List<Project> chosenProjects = db.GetProjectsByName(name);
+
+                if (chosenProjects.Count > 0)
+                {
+                    projectFound = true;
+                    project = chosenProjects[0];
+                }
+
                 projectBugs = db.GetProjectBugs(project);
                 db.Close();
             }
 
-            ProjectBugs prBugs = new ProjectBugs()
+            if (projectFound)
             {
-                proj = project,
-                bugs = projectBugs
-            };
+                ViewBag.ProjectBugs = projectBugs;
 
-            ViewBag.CurrEntries = new List<Bug>();
-
-            return View(prBugs);
+                return View(project);
+            }
+            else
+            {
+                return RedirectToAction("NotFoundErrorPage");
+            }
         }
         
         public ActionResult ChangePassword()
@@ -275,7 +290,7 @@ namespace BTS.Controllers
         }
 
         [SystemAuthorize(Roles = "Admin")]
-        public ActionResult AddBug(int projectId)
+        public ActionResult ReportBug(int projectId)
         {
             TempData["projId"] = projectId;
             Bug bug = new Bug();
@@ -283,10 +298,10 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddBug(Bug b)
+        public ActionResult ReportBug(Bug b)
         {
 
-            bool bugAdded = false;
+            bool bugReported = false;
             bool attachmentsAdded = false;
             
             if (TempData["projId"] != null)
@@ -299,9 +314,9 @@ namespace BTS.Controllers
                 {
                     if (db.Open())
                     {
-                        bugAdded = db.AddBug(b);
+                        bugReported = db.ReportBug(b);
 
-                        if (bugAdded)
+                        if (bugReported)
                         {
                             int bugId = db.GetBugId(b.Subject);
                             attachmentsAdded = db.AddAttachments(b.Attachments.ToList(), bugId);
@@ -310,9 +325,11 @@ namespace BTS.Controllers
                         db.Close();
                     }
                 }
+
+                TempData["projId"] = b.ProjectId;
             }
 
-            if (bugAdded && attachmentsAdded)
+            if (bugReported && attachmentsAdded)
             {
                 TempData["status"] = "Success";
                 TempData["message"] = "Bug successfully added. Wait for admin's confirmation";

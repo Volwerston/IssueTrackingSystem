@@ -330,7 +330,7 @@ namespace BTS.Models
             return toReturn;
         }
 
-        internal bool AddBug(Bug b)
+        internal bool ReportBug(Bug b)
         {
             bool toReturn = false;
 

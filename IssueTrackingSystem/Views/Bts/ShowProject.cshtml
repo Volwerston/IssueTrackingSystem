@@ -1,4 +1,4 @@
-﻿@model BTS.Models.ProjectBugs
+﻿@model BTS.Models.Project
 @using BTS.Models
 @using System.Collections.Generic
 @using Newtonsoft.Json;
@@ -12,17 +12,17 @@
 <div class="row">
     <div class="col-md-3"  style="background-color: rgb(110, 255, 192); border-radius: 5px; margin: 0px 25px 25px 50px;">
         <div class="text-center">
-            <p class="text-center">@Html.DisplayFor(model => model.proj.Name)</p>
+            <p class="text-center">@Html.DisplayFor(model => model.Name)</p>
         </div>
         <div>
-            <p>@Html.DisplayFor(model => model.proj.Description)
+            <p>@Html.DisplayFor(model => model.Description)
         </div>
         <div style="overflow-x:hidden; overflow-y: auto;">
-            <p>@Html.DisplayFor(model => model.proj.Updates)</p>
+            <p>@Html.DisplayFor(model => model.Updates)</p>
         </div>
         <div class="row" style="padding-bottom: 5px;">
             <div class="col-md-offset-2 col-md-3">
-                <input type="submit" class="btn btn-info" value="Report bug" onclick="location.href='@Url.Action("AddBug", "Bts", new { @projectId = Model.proj.Id })'" />
+                <input type="submit" class="btn btn-info" value="Report bug" onclick="location.href='@Url.Action("ReportBug", "Bts", new { @projectId = Model.Id })'" />
             </div>
         </div>
     </div>
@@ -207,7 +207,7 @@
 
             if (allEntries.length == 0) {
 
-                var str = '@Html.Raw(JsonConvert.SerializeObject(Model.bugs.OrderBy(x => x.Id).ToList()))';
+                var str = '@Html.Raw(JsonConvert.SerializeObject(((List<Bug>)ViewBag.ProjectBugs).OrderBy(x => x.Id).ToList()))';
 
                 allEntries = JSON.parse(str);
             }

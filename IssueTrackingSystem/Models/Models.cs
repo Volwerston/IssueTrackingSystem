@@ -10,19 +10,19 @@ namespace BTS.Models
         [Required]
         public int Id { get; set; }
 
-        [Required(ErrorMessage ="Name must include at least 3 characters")]
-        [MaxLength(20)]
-        [MinLength(3)]
+        [Required(ErrorMessage = "Name must contain at least 3 characters")]
+        [MaxLength(20, ErrorMessage = "Name field must contain at most 20 characters")]
+        [MinLength(3,ErrorMessage ="Name field must contain at least 3 characters")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Surname must include at least 3 characters")]
-        [MaxLength(20)]
-        [MinLength(3)]
+        [Required(ErrorMessage = "Surname must contain at least 3 characters")]
+        [MaxLength(20, ErrorMessage = "Surname field must contain at most 20 characters")]
+        [MinLength(3, ErrorMessage = "Surname field must contain at least 3 characters")]
         public string Surname { get; set; }
 
-        [Required(ErrorMessage = "Nickname must include at least 3 characters")]
-        [MaxLength(20)]
-        [MinLength(3)]
+        [Required(ErrorMessage = "Nickname must contain at least 3 characters")]
+        [MaxLength(20, ErrorMessage = "Nickname field must contain at most 20 characters")]
+        [MinLength(3, ErrorMessage = "Nickname field must contain at least 3 characters")]
         public string Nickname { get; set; }
 
         [Required(ErrorMessage = "Date of birth must be filled")]
@@ -32,17 +32,17 @@ namespace BTS.Models
         public DateTime BirthDate { get; set; }
 
         [Required(ErrorMessage = "Email must be filled")]
-        [MaxLength(30)]
+        [MaxLength(30, ErrorMessage="Email field must contain at most 30 characters")]
         public string Email { get; set; }
         public byte[] Avatar { get; set; }
 
         [Required(ErrorMessage = "Password must contain at least 5 characters")]
-        [MaxLength(20)]
-        [MinLength(5)]
+        [MaxLength(20, ErrorMessage = "Password field must contain at most 20 characters")]
+        [MinLength(5, ErrorMessage = "Password field must contain at least 5 characters")]
         public string Password { get; set; }
 
-        [Required]
-        [MaxLength(15)]
+        [Required(ErrorMessage ="Status field must be filled")]
+        [MaxLength(15, ErrorMessage = "Status field must contain at most 15 characters")]
         [Display(Name = "Apply status")]
         public string Status { get; set; }
     }
@@ -67,18 +67,18 @@ namespace BTS.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(30)]
-        [MinLength(5)]
+        [Required(ErrorMessage ="Subject field must be filled")]
+        [MaxLength(30, ErrorMessage = "Subject field must contain at most 30 characters")]
+        [MinLength(5, ErrorMessage = "Subject field must contain at least 5 characters")]
         public string Subject { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Description field must be filled")]
         public string Description { get; set; }
         public byte[] Image { get; set; }
 
         public int ProjectId { get; set; }
 
-        [MaxLength(30)]
+        [MaxLength(30, ErrorMessage ="Status field must contain at most 30 characters")]
         public string Status { get; set; }
 
         public int? Estimate { get; set; }
@@ -86,13 +86,6 @@ namespace BTS.Models
         public string TopicStarter { get; set; }
 
         public IEnumerable<HttpPostedFileBase> Attachments { get; set; }
-    }
-
-    public class ProjectBugs
-    {
-        public Project proj { get; set; }
-
-        public List<Bug> bugs { get; set; }
     }
 
     public class ProjectUser

@@ -5,6 +5,24 @@
     Layout = "~/Views/Shared/_Start.cshtml";
 }
 
+@if (TempData["status"] != null)
+{
+    @Html.Hidden(TempData["status"].ToString(), TempData["status"].ToString(), new { id = "status" })
+}
+else
+{
+    @Html.Hidden("null", "null", new { id = "status" })
+}
+
+@if (TempData["message"] != null)
+{
+    @Html.Hidden(TempData["message"].ToString(), TempData["message"].ToString(), new { id = "message" })
+}
+else
+{
+    @Html.Hidden("null", "null", new { id = "message" })
+}
+
 @using (Html.BeginForm("SignUp", "Bts", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
@@ -15,24 +33,6 @@
 
 
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-                @if (TempData["status"] != null)
-                {
-                    @Html.Hidden(TempData["status"].ToString(), TempData["status"].ToString(), new { id = "status" })
-                }
-                else
-                {
-                    @Html.Hidden("null", "null", new { id = "status" })
-                }
-
-                @if (TempData["message"] != null)
-                {
-                @Html.Hidden(TempData["message"].ToString(), TempData["message"].ToString(), new { id = "message" })
-                }
-                else
-                {
-                    @Html.Hidden("null", "null", new { id = "message" })
-                }
 
                 <div class="form-group">
                     <div class="col-md-4">
@@ -123,7 +123,7 @@
                         @Html.LabelFor(model => model.Avatar, htmlAttributes: new { @class = "control-label" })
                         </div>
                         <div class="col-md-8">
-                            <input type="file" name="ava"/>
+                            <input type="file" name="userAvatar"/>
                         </div>
                     </div>
 
