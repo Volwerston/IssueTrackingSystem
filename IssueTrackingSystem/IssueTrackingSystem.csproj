@@ -170,6 +170,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BtsController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -242,8 +243,8 @@
     <Content Include="Views\Shared\_Main.cshtml" />
     <Content Include="Views\Bts\ShowProject.cshtml" />
     <Content Include="Views\Bts\ReportBug.cshtml" />
-    <Content Include="Views\Bts\NotFoundErrorPage.cshtml" />
-    <Content Include="Views\Bts\GeneralErrorPage.cshtml" />
+    <Content Include="Views\Error\PageNotFound.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

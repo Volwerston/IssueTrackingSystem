@@ -19,6 +19,7 @@ namespace IssueTrackingSystem
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
 
+        /*
         protected void Application_Error()
         {
             Exception ex = Server.GetLastError();
@@ -50,5 +51,6 @@ namespace IssueTrackingSystem
             IController controller = new BtsController();
             controller.Execute(new RequestContext(new HttpContextWrapper(Context), data));
         }
+        */
     }
 }

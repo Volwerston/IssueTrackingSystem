@@ -12,6 +12,7 @@ using System.Web.Security;
 
 namespace BTS.Controllers
 {
+    [HandleError]
     public class BtsController : Controller
     {
 
@@ -398,11 +399,6 @@ namespace BTS.Controllers
         }
 
         public ActionResult NotFoundErrorPage()
-        {
-            return View();
-        }
-
-        public ActionResult GeneralErrorPage()
         {
             return View();
         }

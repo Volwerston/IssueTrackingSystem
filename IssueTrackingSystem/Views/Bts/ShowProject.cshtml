@@ -108,7 +108,54 @@
             }
         });
 
-        if (itemId != "next" && itemId != "prev") {
+        if(itemId == "first")
+        {
+            if (currEntries.length != 0) {
+                $("#tableData").empty();
+                currList = 1;
+                showList(currList, $("#itemsCount").val());
+                addPagination($("#itemsCount").val());
+            }
+            else {
+                $("#" + currId).addClass("active");
+            }
+        }
+        else if(itemId == "last")
+        {
+            if (currEntries.length != 0) {
+                $("#tableData").empty();
+                $("#paginationData").empty();
+
+                var paginationInfo = '<ul class="pagination"><li  id="prev" onclick="managePagination(\'first\')"><a href="#"><<</a></li>'
+                                      + '<li  id="prev" onclick="managePagination(\'prev\')"><a href="#"><</a></li>';
+
+                if (currEntries.length < 3) {
+                    for (var i = 1; i <= currEntries.length; ++i) {
+                        paginationInfo += '<li id="' + i + '"  onclick="managePagination(\'' + i + '\')"><a href="#">' + i + '</a></li>';
+                    }
+
+                }
+                else {
+                    for (var i = currEntries.length - 2; i <= currEntries.length; ++i) {
+                        paginationInfo += '<li id="' + i + '"  onclick="managePagination(\'' + i + '\')"><a href="#">' + i + '</a></li>';
+                    }
+
+                }
+
+                paginationInfo += '<li id="next" onclick="managePagination(\'next\')"><a href="#">></a></li>' +
+                '<li id="next" onclick="managePagination(\'last\')"><a href="#">>></a></li></ul>';
+
+                $("#paginationData").append(paginationInfo);
+
+                $("#" + currEntries.length).addClass("active");
+
+                showList(currEntries.length, $("#itemsCount").val());
+            }
+            else {
+                $("#" + currId).addClass("active");
+            }
+        }
+        else if (itemId != "next" && itemId != "prev") {
             $("#" + itemId).addClass("active");
 
             $("#tableData").empty();
@@ -130,7 +177,8 @@
                 $("#tableData").empty();
                 $("#paginationData").empty();
 
-                var paginationInfo = '<ul class="pagination"><li  id="prev" onclick="managePagination(\'prev\')"><a href="#">Previous</a></li>';
+                var paginationInfo = '<ul class="pagination"><li  id="prev" onclick="managePagination(\'first\')"><a href="#"><<</a></li>'
+                + '<li  id="prev" onclick="managePagination(\'prev\')"><a href="#"><</a></li>';
 
                 if (currId + 2 >= numOfLists) {
                     for (var i = currId; i <= numOfLists; ++i) {
@@ -147,7 +195,8 @@
                     }
                 }
 
-                    paginationInfo += '<li id="next" onclick="managePagination(\'next\')"><a href="#">Next</a></li></ul>';
+                paginationInfo += '<li id="next" onclick="managePagination(\'next\')"><a href="#">></a></li>' +
+                    '<li id="next" onclick="managePagination(\'last\')"><a href="#">>></a></li></ul>';
 
                     $("#paginationData").append(paginationInfo);
 
@@ -175,14 +224,16 @@
                 $("#paginationData").empty();
                 $("#tableData").empty();
 
-                var paginationInfo = '<ul class="pagination"><li  id="prev" onclick="managePagination(\'prev\')"><a href="#">Previous</a></li>';
+                var paginationInfo = '<ul class="pagination"><li  id="prev" onclick="managePagination(\'first\')"><a href="#"><<</a></li>'
+                + '<li  id="prev" onclick="managePagination(\'prev\')"><a href="#"><</a></li>';
 
                 for(var i = currId - 2; i <= currId; ++i)
                 {
                     paginationInfo += '<li id="' + i + '"  onclick="managePagination(\'' + i + '\')"><a href="#">' + i + '</a></li>';
                 }
 
-                paginationInfo += '<li id="next" onclick="managePagination(\'next\')"><a href="#">Next</a></li></ul>';
+                paginationInfo += '<li id="next" onclick="managePagination(\'next\')"><a href="#">></a></li>' +
+                    '<li id="next" onclick="managePagination(\'last\')"><a href="#">>></a></li></ul>';
 
                 $("#paginationData").append(paginationInfo);
 
@@ -264,7 +315,8 @@
 
             $("#paginationData").empty();
 
-            var paginationInfo = '<ul class="pagination"><li  id="prev" onclick="managePagination(\'prev\')"><a href="#">Previous</a></li>';
+            var paginationInfo = '<ul class="pagination"><li  id="prev" onclick="managePagination(\'first\')"><a href="#"><<</a></li>'
+            + '<li  id="prev" onclick="managePagination(\'prev\')"><a href="#"><</a></li>';
 
             numOfLists = Math.ceil(currEntries.length / numOfItems);
 
@@ -278,7 +330,8 @@
                 }
             }
 
-            paginationInfo += '<li id="next" onclick="managePagination(\'next\')"><a href="#">Next</a></li></ul>';
+            paginationInfo += '<li id="next" onclick="managePagination(\'next\')"><a href="#">></a></li>' +
+                '<li id="next" onclick="managePagination(\'last\')"><a href="#">>></a></li></ul>';
 
             $("#paginationData").append(paginationInfo);
         }
