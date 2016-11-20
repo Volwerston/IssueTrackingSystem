@@ -5,59 +5,41 @@
     Layout = "~/Views/Shared/_Main.cshtml";
 }
 
-<div style="margin: 10px 10px 10px 10px; padding: 10px 10px 10px 10px">
-    <div class="row">
-        <div class="col-md-offset-2 col-md-8">
-            <div class="row">
-                <div class="col-md-offset-1 col-md-10">
-                    <div class="panel-group">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" href="#collapse1">Select name</a>
-                                </h4>
-                            </div>
-                            <div id="collapse1" class="panel-collapse collapse">
-                                <div class="form-horizontal" style="margin-top: 10px;">
-                                    <div class="form-group">
-                                        @Html.Label("Project Name:", new { @class = "control-label col-md-4" })
-                                        <div class="col-md-8">
-                                            <input type="text" id="projectName" class="form-control" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+<div class="row">
+    <div class="col-md-offset-2 col-md-8">
+        <div style="margin: 10px 10px 10px 10px; padding: 10px 10px 10px 10px">
+            <div class="form-horizontal" style="margin: auto;">
+                <div class="form-group">
+                    <div class="col-md-4">
+                        @Html.Editor("Project Name", new { htmlAttributes = new { id = "projectName", placeholder = "Name...", @class = "form-control" } })
                     </div>
-                </div>
-            </div>
-            <div class="row" style="margin: 10px 10px 10px 10px;">
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-md-offset-1 col-md-3">
-                                @Html.Label("Project Category:", new { @class = "control-label" })
-                            </div>
-                            <div class="col-md-6">
-                                <select id="ms" multiple="multiple">
-                                    @{
-                                        foreach (var item in Model)
-                                        {
-                                            <option value="@item.Id">@item.Title</option>
-                                        }
-                                    }
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <button type="submit" id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
-                            </div>
-                        </div>
+                    <div class="col-md-2" style="padding: 5px">
+                        @Html.Label("Category: ")
+                    </div>
+                    <div class="col-md-4" style="padding: 5px">
+                        <select id="ms" multiple="multiple">
+                            @{
+                                foreach (var item in Model)
+                                {
+                                    <option value="@item.Id" selected>@item.Title</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="submit" id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
+
+
+
+
+
 
     <div class="row">
         <div class="col-md-offset-2 col-md-8" id="projects">
@@ -68,6 +50,7 @@
 @section scripts
 {
                 <script src="~/Scripts/multiple-select.js"></script>
+
                 <script>
                     var lastId = 0;
 
@@ -77,6 +60,8 @@
                         }).multipleSelect({
                             width: '100%'
                         });
+
+                        getDataByCategories();
 
                         $(document).scroll(function ()
                         {
