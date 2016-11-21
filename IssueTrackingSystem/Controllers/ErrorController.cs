@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IssueTrackingSystem.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,6 +12,9 @@ namespace IssueTrackingSystem.Controllers
         // GET: Error
         public ActionResult PageNotFound()
         {
+            ErrorTracker tracker = new ErrorTracker();
+            tracker.LogError("404 - Page Not Found");
+
             return View();
         }
 

@@ -8,11 +8,12 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using IssueTrackingSystem.Common;
 using System.Web.Security;
 
 namespace BTS.Controllers
 {
-    [HandleError]
+    [LogError]
     public class BtsController : Controller
     {
 
@@ -277,16 +278,14 @@ namespace BTS.Controllers
                 db.Close();
             }
 
-            if (projectFound)
+            if (!projectFound)
             {
+                return RedirectToAction("PageNotFound", "Error");
+            }
+
                 ViewBag.ProjectBugs = projectBugs;
 
                 return View(project);
-            }
-            else
-            {
-                return RedirectToAction("NotFoundErrorPage");
-            }
         }
         
         public ActionResult ChangePassword()
@@ -396,25 +395,6 @@ namespace BTS.Controllers
             }
 
             return View();
-        }
-
-        public ActionResult NotFoundErrorPage()
-        {
-            return View();
-        }
-
-        // just to see that image is properly saved in db
-        public ActionResult Show()
-        {
-            List<User> users = new List<User>();
-
-            if (db.Open())
-            {
-                users = db.getUsers();
-                db.Close();
-            }
-
-            return View(users);
         }
     }
 }

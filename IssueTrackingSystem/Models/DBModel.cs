@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Web;
 using System.Web.Configuration;
+using IssueTrackingSystem.Common;
 using System.Web.Security;
 
 namespace BTS.Models
@@ -27,8 +28,10 @@ namespace BTS.Models
                 }
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
                 return false;
             }
         }
@@ -79,9 +82,12 @@ namespace BTS.Models
 
                 return "Success";
             }
-            catch
+            catch(Exception ex)
             {		
                 transaction2.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
 
                 return "Fail";
             }
@@ -118,9 +124,12 @@ namespace BTS.Models
                     return toReturn;
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 transaction1.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
                 return "Fail";
             }
         }
@@ -150,9 +159,12 @@ namespace BTS.Models
 
                     reader.Close();
                 }
-                catch
+                catch(Exception ex)
                 {
                     transaction.Rollback();
+
+                    ErrorTracker tracker = new ErrorTracker();
+                    tracker.LogError(ex.Message);
                 }
             }
 
@@ -203,16 +215,22 @@ namespace BTS.Models
                             toReturn.Add(user);
                         }
                     }
-                    catch
+                    catch(Exception ex)
                     {
                         transaction.Rollback();
+
+                        ErrorTracker tracker = new ErrorTracker();
+                        tracker.LogError(ex.Message);
                     }
                 }
 
                 return toReturn;
             }
-            catch
+            catch(Exception ex)
             {
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
+
                 return new List<User>();
             }
         }
@@ -274,9 +292,12 @@ namespace BTS.Models
                         {
                             cmd.ExecuteNonQuery();
                         }
-                        catch
+                        catch(Exception ex)
                         {
                             allSucceeded = false;
+
+                            ErrorTracker tracker = new ErrorTracker();
+                            tracker.LogError(ex.Message);
                             break;
                         }
                     }
@@ -322,9 +343,12 @@ namespace BTS.Models
 
                 transaction.Commit();
             }
-            catch
+            catch(Exception ex)
             {
                 transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
             }
 
             return toReturn;
@@ -361,9 +385,12 @@ namespace BTS.Models
 
                 transaction.Commit();
             }
-            catch
+            catch(Exception ex)
             {
                 transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
             }
 
             return toReturn;
@@ -388,9 +415,12 @@ namespace BTS.Models
                 transaction.Commit();
                 return toReturn;
             }
-            catch
+            catch(Exception ex)
             {
                 transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
                 return false;
             }
         }
@@ -409,9 +439,12 @@ namespace BTS.Models
                 cmd.ExecuteNonQuery();
                 transaction.Commit();
             }
-            catch
+            catch(Exception ex)
             {
                 transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
             }
         }
 
@@ -476,8 +509,11 @@ namespace BTS.Models
                 client.Send(message);
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
+
                 return false;
             }
         }
@@ -510,9 +546,12 @@ namespace BTS.Models
                         toReturn.Status = reader["STATUS"].ToString();
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
                     transaction.Rollback();
+
+                    ErrorTracker tracker = new ErrorTracker();
+                    tracker.LogError(ex.Message);
                 }
             }
 
@@ -553,9 +592,12 @@ namespace BTS.Models
 
                     reader.Close();
                 }
-                catch
+                catch(Exception ex)
                 {
                     transaction.Rollback();
+
+                    ErrorTracker tracker = new ErrorTracker();
+                    tracker.LogError(ex.Message);
                 }
             }
 
@@ -606,9 +648,12 @@ namespace BTS.Models
                                 toReturn.Add(project);
                          }
                 }
-                catch
+                catch(Exception ex)
                 {
                     transaction.Rollback();
+
+                    ErrorTracker tracker = new ErrorTracker();
+                    tracker.LogError(ex.Message);
                 }
             }
 
@@ -665,9 +710,12 @@ namespace BTS.Models
                     toReturn.Add(bug);
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
             }
 
             return toReturn;
@@ -704,9 +752,12 @@ namespace BTS.Models
                 transaction.Commit();
 
             }
-            catch
+            catch(Exception ex)
             {
                 transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
             }
 
             return toReturn;

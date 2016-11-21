@@ -169,6 +169,8 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Common\ErrorTracker.cs" />
+    <Compile Include="Common\LogErrorAttribute.cs" />
     <Compile Include="Controllers\BtsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Global.asax.cs">
@@ -233,7 +235,6 @@
     <Content Include="Views\Bts\Index.cshtml" />
     <Content Include="Views\Bts\LogIn.cshtml" />
     <Content Include="Views\Bts\PasswordUpdate.cshtml" />
-    <Content Include="Views\Bts\Show.cshtml" />
     <Content Include="Views\Bts\SignUp.cshtml" />
     <Content Include="Views\Bts\Main.cshtml" />
     <Content Include="Views\Web.config">
