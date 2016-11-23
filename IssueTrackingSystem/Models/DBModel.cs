@@ -356,6 +356,125 @@ namespace BTS.Models
             return toReturn;
         }
 
+        internal List<User> searchForUsers(int id,List<string> userNames, List<string> userStatuses)
+        {
+            List<User> toReturn = null;
+            string cmdString = null;
+
+            if(userNames.Count == 0 && userStatuses.Count == 0)
+            {
+                cmdString = "";
+            }
+            else if(userNames.Count == 0 && userStatuses.Count != 0)
+            {
+                cmdString = "SELECT TOP 5 * FROM Users WHERE ID>" + id + " AND(";
+
+                foreach(string status in userStatuses)
+                {
+                    cmdString += "STATUS='" + status + "' OR ";
+                }
+
+                cmdString = cmdString.Substring(0, cmdString.Length - 4);
+                cmdString += ");";
+            }
+            else if(userNames.Count != 0 && userStatuses.Count == 0)
+            {
+                cmdString = "SELECT TOP 5 * FROM Users WHERE ID>" + id + " AND(";
+
+                foreach (string name in userNames)
+                {
+                    cmdString += "(Upper(NAME)='" + name.ToUpper() + "' OR Upper(SURNAME)='" + name.ToUpper() + "' OR Upper(NICKNAME)='" + name.ToUpper() + "') OR ";
+                }
+
+                cmdString = cmdString.Substring(0, cmdString.Length - 4);
+                cmdString += ");";
+            }
+            else
+            {
+                cmdString = "SELECT TOP 5 * FROM Users WHERE ID>" + id + " AND ((";
+
+                foreach (string name in userNames)
+                {
+                    cmdString += "(Upper(NAME)='" + name.ToUpper() + "' OR Upper(SURNAME)='" + name.ToUpper() + "' OR Upper(NICKNAME)='" + name.ToUpper() + "') OR ";
+                }
+
+                cmdString = cmdString.Substring(0, cmdString.Length - 4);
+                cmdString += ") AND (";
+
+                foreach (string status in userStatuses)
+                {
+                    cmdString += "STATUS='" + status + "' OR ";
+                }
+
+                cmdString = cmdString.Substring(0, cmdString.Length - 4);
+
+                cmdString += "));";
+            }
+
+            if(cmdString != "")
+            {
+                SqlCommand cmd = new SqlCommand(cmdString, connection);
+                SqlTransaction transaction = connection.BeginTransaction("UserSearch");
+                cmd.Transaction = transaction;
+
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                    transaction.Commit();
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    toReturn = new List<User>();
+
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            User user = new User();
+
+                            user.Id = Convert.ToInt32(reader["ID"].ToString());
+                            user.Name = reader["NAME"].ToString();
+                            user.Surname = reader["SURNAME"].ToString();
+                            user.Nickname = reader["NICKNAME"].ToString();
+                            user.BirthDate = Convert.ToDateTime(reader["BIRTHDATE"].ToString());
+                            user.Password = reader["PASSWORD"].ToString();
+                            user.Status = reader["STATUS"].ToString();
+                            user.Email = reader["EMAIL"].ToString();
+
+                            if (reader["AVATAR"] != DBNull.Value)
+                            {
+                                user.Avatar = (byte[])(reader["AVATAR"]);
+                            }
+                            else
+                            {
+                                user.Avatar = null;
+                            }
+
+                            toReturn.Add(user);
+                        }
+
+                        reader.Close();
+                    }
+                    catch(Exception ex)
+                    {
+                        reader.Close();
+                        toReturn = null;
+
+                        ErrorTracker tracker = new ErrorTracker();
+                        tracker.LogError(ex.Message);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    transaction.Rollback();
+                    ErrorTracker tracker = new ErrorTracker();
+                    tracker.LogError(ex.Message);
+                }
+            }
+
+            return toReturn;
+        }
+
         internal bool EditUserEmail(int id, string email)
         {
             bool toReturn = false;

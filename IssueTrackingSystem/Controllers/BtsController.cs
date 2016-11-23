@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using IssueTrackingSystem.Common;
 using System.Web.Security;
+using System.IO;
 
 namespace BTS.Controllers
 {
@@ -344,13 +345,100 @@ namespace BTS.Controllers
         }
 
         [SystemAuthorize(Roles = "Admin")]
+        public ActionResult FindUsers()
+        {
+            if (db.Open())
+            {
+            List<string> statuses = db.getUsers().Select(x => x.Status).ToList().Distinct().ToList();
+
+            ViewBag.StatusList = statuses;
+
+            db.Close();
+
+            return View();
+            }
+            else return RedirectToAction("PageNotFound", "Error");
+        }
+
+        [HttpPost]
+        public string FindUsers(int id, string[]  names, string[] statusItems)
+        {
+            List<User> toReturn = null;
+            List<string> userStatuses = null;
+            List<string> userNames = names.Distinct().ToList();
+            User anonymous = null;
+            userNames.Remove("");
+
+            if (statusItems != null)
+            {
+                userStatuses = statusItems.ToList();
+            }
+
+            if(db.Open())
+            {
+                toReturn = db.searchForUsers(id, userNames, userStatuses);
+                anonymous = db.getUsers().Where(x => x.Nickname == "Anonymous").ToList()[0];
+            }
+
+           // List<string> filePaths = new List<string>();
+            string imgCookieString = "";
+
+            foreach (var user in toReturn)
+            {
+                if (user.Avatar != null)
+                {
+                    var base64 = Convert.ToBase64String(user.Avatar);
+                    string toAdd = string.Format("data:image/jpg;base64, {0}", base64);
+                    //filePaths.Add(toAdd);
+                    imgCookieString += toAdd;
+                    imgCookieString += ' ';
+                    user.Avatar = null;
+                }
+                else
+                {
+                    var base64 = Convert.ToBase64String(anonymous.Avatar);
+                    string toAdd = string.Format("data:image/jpg;base64, {0}", base64);
+                    //filePaths.Add(toAdd);
+                    imgCookieString += toAdd;
+                    imgCookieString += ' ';
+                }
+            }
+
+            HttpCookie imgs = new HttpCookie("Images");
+            imgs.Expires = DateTime.Now.AddHours(1d);
+            imgs.Value = imgCookieString;
+            Response.SetCookie(imgs);
+
+            string toReturnString = JsonConvert.SerializeObject(toReturn);
+            return toReturnString;
+        }
+
+        [SystemAuthorize(Roles = "Admin")]
         public ActionResult InternalAccountPage()
         {
             User user = new User();
 
-            if(db.Open())
+            if (db.Open())
             {
-            user = db.getAuthenticatedUser(Session["Username"].ToString());
+                user = db.getAuthenticatedUser(Session["Username"].ToString());
+                List<User> users = db.getUsers();
+
+                if (user.Avatar == null)
+                {
+                    User anonymous = users.Single(x => x.Name == "Anonymous");
+                    var base64 = Convert.ToBase64String(anonymous.Avatar);
+                    ViewBag.ImgPath = string.Format("data:image/jpg;base64, {0}", base64);
+                }
+                else
+                {
+                    var base64 = Convert.ToBase64String(user.Avatar);
+                    ViewBag.ImgPath = string.Format("data:image/jpg;base64, {0}", base64);
+                }
+            }
+            
+            if(user == null)
+            {
+                return RedirectToAction("PageNotFound", "Error");
             }
 
             return View(user);
@@ -360,9 +448,11 @@ namespace BTS.Controllers
         public ActionResult ExternalAccountPage(int id)
         {
             User u = null;
+            List<User> users = null;
+
             if (db.Open())
             {
-                List<User> users = db.getUsers();
+                users = db.getUsers();
                 u = users.SingleOrDefault(x => x.Id == id);
 
                 db.Close();
@@ -371,6 +461,22 @@ namespace BTS.Controllers
             if(u == null)
             {
                 return RedirectToAction("PageNotFound", "Error");
+            }
+            else if(u.Nickname == Session["Username"].ToString())
+            {
+                return RedirectToAction("InternalAccountPage");
+            }
+
+            if (u.Avatar == null)
+            {
+                User anonymous = users.Single(x => x.Name == "Anonymous");
+                var base64 = Convert.ToBase64String(anonymous.Avatar);
+                ViewBag.ImgPath = string.Format("data:image/jpg;base64, {0}", base64);
+            }
+            else
+            {
+                var base64 = Convert.ToBase64String(u.Avatar);
+                ViewBag.ImgPath = string.Format("data:image/jpg;base64, {0}", base64);
             }
 
             return View(u);

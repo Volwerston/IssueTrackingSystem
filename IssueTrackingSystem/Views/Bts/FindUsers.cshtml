@@ -1,0 +1,152 @@
+﻿@{
+    ViewBag.Title = "FindUsers";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-offset-2 col-md-8">
+        <div style="margin: 10px 10px 10px 10px; padding: 10px 10px 10px 10px">
+            <div class="form-horizontal" style="margin: auto;">
+                <div class="form-group">
+                    <div class="col-md-4">
+                        @Html.Editor("User Name", new { htmlAttributes = new { id = "userName", placeholder = "Search", @class = "form-control" } })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.Label("Category: ", new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-4">
+                        <select id="ms" multiple="multiple" class="form-control">
+                            @{ 
+                                List<string> statusList = (List<string>)ViewBag.StatusList;
+
+                                foreach (var status in statusList)
+                                {
+                                    <option selected>@status</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="submit" id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-offset-2 col-md-8" id="users">
+
+    </div>
+</div>
+
+@section scripts
+{
+    <script src="~/Scripts/multiple-select.js"></script>
+    <script>
+
+        var lastId = 0;
+
+        $(document).ready(
+            function () {
+                $('#ms').change(function () {
+                    console.log($(this).val());
+                }).multipleSelect({
+                    width: '100%'
+
+                });
+
+                searchForUsers();
+
+                $(document).scroll(function () {
+                    if ($(document).height() - ($(window).height() + $(window).scrollTop()) < 50) {
+                        searchForUsers();
+                    }
+                });
+
+                $("#search").click(function () {
+                    $("#users").empty();
+                    lastId = 0;
+                    searchForUsers();
+
+                });
+            });
+
+
+        function getDivForUser(userData) {
+            return '<div style="border-radius:5px; background-color: rgb(0, 255, 144);">'
+     + '<div style="padding: 10px 10px 10px 10px; margin: 10px 10px 10px 10px;">'
+         + '<div class="row">'
+        + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(111, 255, 192); border-radius:3px; margin-bottom: 5px;">'
+            + '<p>' + userData.Name + " " + userData.Surname + '</p>'
+         + '</div>'
+    + '</div>'
+        + '<div class="row">'
+           + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(86, 251, 179); border-radius:3px;">'
+                + '<p>' + userData.Status + '</p>'
+           + '</div>'
+            + '<div class="col-md-5">'
+            + '<a href="@Url.Action("ExternalAccountPage", "Bts")' + '/?id=' + userData.Id + '"><input type="submit" class="btn btn-info" value="Profile"/></a>'
+            + '</div>'
+       + ' </div>'
+    + '</div>'
+    + '</div>';
+        }
+
+        function searchForUsers() {
+
+            var names = $("#userName").val().split(" ");
+            var statusItems = [];
+
+            var checkedOnes = $('#ms option:selected');
+
+            checkedOnes.each(function () {
+                statusItems.push($(this).val());
+            });
+
+            var toPass = JSON.stringify({
+                id: lastId,
+                names: names,
+                statusItems: statusItems
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("FindUsers", "Bts")",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                data: toPass,
+                async: false,
+                success: function (res) {
+                    if (res != null) {
+                        if (res.length > 0) {
+                            lastId = res[res.length - 1].Id;
+
+                            for (var i = 0; i < res.length; ++i) {
+                                $("#users").append(getDivForUser(res[i]));
+                            }
+                        }
+                        else {
+                            if ($("#users").is(':empty'))
+                            {
+                                $("#users").append('<div class="text-center"><p>No users were found</p></div>');
+                            }
+                        }
+                    }
+                    else {
+                        if($("#users").is(':empty'))
+                        {
+                            $("#users").append('<div class="text-center"><p>No users were found</p></div>');
+                        }
+                    }
+                },
+                error: function (xhr, status, message) {
+                    alert(message);
+                }
+            });
+        }
+
+    </script>
+}

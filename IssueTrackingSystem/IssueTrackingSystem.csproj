@@ -209,6 +209,7 @@
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-1.12.3.js" />
+    <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Scripts\jquery.dataTables.min.js" />
     <Content Include="Scripts\jquery.growl.js" />
     <Content Include="Scripts\jquery.min.js" />
@@ -249,6 +250,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Bts\InternalAccountPage.cshtml" />
     <Content Include="Views\Bts\ExternalAccountPage.cshtml" />
+    <Content Include="Views\Bts\FindUsers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
