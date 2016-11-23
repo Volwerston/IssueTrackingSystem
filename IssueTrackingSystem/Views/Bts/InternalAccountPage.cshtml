@@ -1,0 +1,395 @@
+﻿@model BTS.Models.User
+
+@{
+    ViewBag.Title = "InternalAccountPage";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+@{
+    string userName = Model.Name + " " + Model.Surname;
+
+    string userStatus = Model.Status;
+
+    string imgPath;
+
+    if (Model.Avatar != null)
+    {
+        var base64 = Convert.ToBase64String(Model.Avatar);
+        imgPath = string.Format("data:image/jpg;base64, {0}", base64);
+    }
+    else
+    {
+        imgPath = "~/Common/No_avatar.png";
+    }
+
+    string userBirthData = Model.BirthDate.Day + "." + Model.BirthDate.Month + "." + Model.BirthDate.Year;
+}
+
+<div class="row" style="margin: 10px 10px 10px 10px;">
+    <div class="col-md-offset-2 col-md-8" style="background-color: wheat;border-radius: 5px;">
+        <div class="row text-center" style="color: coral">
+            <h3>@userName</h3>
+            <h4>@userStatus</h4>
+            <br />
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <img class="img-responsive img-rounded" id="ava" src="@imgPath" style="margin-bottom: 10px;" />
+                <div class="row">
+                    <div class="col-md-offset-4">
+                <button type="button" class="btn btn-info col-md-6" data-toggle="modal" data-target="#editAvatar" style="margin-bottom:5px;"><span class="glyphicon glyphicon-edit"></span></button>
+            </div>
+                    </div>
+                </div>
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-4">
+                        <b>@Html.DisplayNameFor(model => model.Nickname)</b>
+                        </div>
+                    <div class="col-md-4">
+                        @Html.DisplayFor(model => model.Nickname)
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <div class="row">
+                    <div class="col-md-4">
+                        <b>@Html.DisplayNameFor(model => model.Email)</b>
+</div>
+                    <div class="col-md-4">
+                        <p id="emailData">@Model.Email</p>
+                    </div>
+                <div class="col-md-offset-2 col-md-2">
+                    <button class="btn btn-info" data-toggle="modal" data-target="#editEmail"><span class="glyphicon glyphicon-edit"></span></button>
+                </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-md-4">
+                        <b>@Html.DisplayNameFor(model => model.BirthDate)</b>
+</div>
+                    <div class="col-md-4">
+                        <p id="birthdateData">@userBirthData</p>
+                    </div>
+                    <div class="col-md-offset-2 col-md-2">
+                        <button class="btn btn-info" data-toggle="modal" data-target="#editBirthdate"><span class="glyphicon glyphicon-edit"></span></button>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="row">
+                    <div class="col-md-offset-4 col-md-4">
+                        <button class="btn btn-info btn-block" style="margin-bottom: 5px">Notificatons</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editEmail" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:darkgrey; color: white; border-top-left-radius: 5px;border-top-right-radius: 5px;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Edit</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal" style="display: table; margin: auto;">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Email, new { @class = "control-label col-xs-4", id = "emailLabel" })
+                        <div class="col-xs-7">
+                            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", id = "emailEditor" } })
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger", id = "emailValidator" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="background-color:darkgrey; color: white; border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;">
+                <button type="button" data-dismiss="modal" class="btn btn-info" id="emailSubmitButton">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="editBirthdate" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:darkgrey; color: white; border-top-left-radius: 5px;border-top-right-radius: 5px;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Edit</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal" style="display: table; margin: auto;">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BirthDate, new { @class = "control-label col-xs-4", id = "birthdateLabel" })
+                        <div class="col-xs-7">
+                            <input name="birthDate" class="datePicker form-control" id="birthdateEditor" />
+                            @Html.ValidationMessageFor(model => model.BirthDate, "", new { @class = "text-danger", id = "birthdateValidator" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="background-color:darkgrey; color: white; border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;">
+                <button type="button" data-dismiss="modal" class="btn btn-info" id="birthdateSubmitButton" disabled>Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="editAvatar" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:darkgrey; color: white; border-top-left-radius: 5px;border-top-right-radius: 5px;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Edit</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal" style="display: table; margin: auto;">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Avatar, htmlAttributes: new { @class = "control-label col-xs-4" })
+                        <div class="col-xs-7">
+                            <input type="file" name="userAvatar" id="userAvatar" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="background-color:darkgrey; color: white; border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;">
+                <button type="button" data-dismiss="modal" class="btn btn-info" id="avatarSubmitButton" disabled>Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts
+{
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+    <script>
+
+        var photo;
+        var emailValid = true; // email is valid by default
+        var birthDateValid = false;
+        var avatarValid = false;
+
+        function handleFileSelect(evt) {
+            var files = evt.target.files; // FileList object
+            photo = files[0];
+
+            if(photo.size == 0)
+            {
+                $("#avatarSubmitButton").prop("disabled", true);
+            }
+            else
+            {
+                $("#avatarSubmitButton").removeProp("disabled");
+            }
+        }
+
+        
+
+        document.getElementById('userAvatar').addEventListener('change', handleFileSelect, false);
+
+
+        $(":file").filestyle({ buttonText: "Find file" });
+
+        $(".datePicker").datepicker({
+            format: "dd.mm.yyyy",
+            language: "en",
+            startDate: "01.01.1900",
+            endDate: "@DateTime.Today.Date"
+        });
+
+        $(document).ready(function ()
+        {
+            $('#editPopup').appendTo("body");
+
+            $("#birthdateEditor").blur(function () {
+
+                birthDateValid = false;
+
+                if (!($("#birthdateSubmitButton").prop("disabled"))) {
+                    $("#birthdateSubmitButton").prop("disabled", true);
+                }
+
+                if ($(this).val() != "") {
+                    var regex = /(0[1-9]|[12][0-9]|3[01])[\.-](0[1-9]|1[012])[ \.-](19|20|)\d\d/;
+
+                    var testDate = regex.test($("#birthdateEditor").val());
+
+
+                    if (testDate) {
+                        $(this).removeClass("text-danger");
+                        $("#birthdateLabel").removeClass("text-danger");
+                        $("#birthdateValidator").text("");
+                        birthDateValid = true;
+
+                        if (birthDateValid) {
+                            $("#birthdateSubmitButton").removeProp("disabled");
+                        }
+                    }
+                }
+                else {
+                    if ($(this).val() == "") {
+                        $(this).addClass("text-danger");
+                        $("#birthdateLabel").addClass("text-danger");
+                        $("#birthdateValidator").text("Birthdate field cannot be empty");
+                    }
+                }
+            });
+
+            $("#emailEditor").keyup(function () {
+
+                if (!($("#emailSubmitButton").prop("disabled"))) {
+                    $("#emailSubmitButton").prop("disabled", true);
+                }
+
+                emailValid = false;
+
+                if ($(this).val() == "") {
+                    $(this).addClass("text-danger");
+                    $("#emailLabel").addClass("text-danger");
+                    $("#emailValidator").text("Email field cannot be empty");
+                }
+                else {
+                    if ($(this).val().length > 30) {
+                        $(this).addClass("text-danger");
+                        $("#emailLabel").addClass("text-danger");
+                        $("#emailValidator").text("Email must contain at most 30 characters");
+                    }
+                    else {
+                        var regex = /^(([^<>()[\]\\.,;:\s@@\"]+(\.[^<>()[\]\\.,;:\s@@\"]+)*)|(\".+\"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                        var testMail = regex.test($("#emailEditor").val());
+
+                        if (!testMail) {
+                            $(this).addClass("text-danger");
+                            $("#emailLabel").addClass("text-danger");
+                            $("#emailValidator").text("Email is invalid");
+                        }
+                        else {
+                            emailValid = true;
+
+                            $(this).removeClass("text-danger");
+                            $("#emailLabel").removeClass("text-danger");
+                            $("#emailValidator").text("");
+
+                            if (emailValid) {
+                                $("#emailSubmitButton").removeProp("disabled");
+                            }
+                        }
+                    }
+                }
+            });
+
+            $("#emailSubmitButton").click(function ()
+            {
+
+                var userInput = $("#emailEditor").val();
+
+                var f = JSON.stringify({
+                    id : "@Model.Id",
+                    email : userInput
+                    });
+
+                $.ajax({
+                    type: "POST",
+                    url : "@Url.Action("EditEmail", "Bts")",
+                    dataType: "json",
+                    data: f,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(res)
+                    {
+                        if(res)
+                        {
+                            $("#emailData").empty();
+                            $("#emailData").text(userInput);
+
+                            displayMessage("Success", "Email has been successfully edited");
+                        }
+                        else
+                        {
+                            displayMessage("Error", "Data was not delivered");
+                        }
+                    },
+                    error: function(xhr, status, message)
+                    {
+                        displayMessage("Error", message);
+                    }
+                });
+            });
+
+            $("#birthdateSubmitButton").click(function ()
+            {
+                var userInput = $("#birthdateEditor").val();
+
+                var f = JSON.stringify({
+                    id : "@Model.Id",
+                    birthdate: userInput
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url : "@Url.Action("EditBirthDate", "Bts")",
+                    dataType: "json",
+                data: f,
+                contentType: "application/json; charset=utf-8",
+                success: function(res)
+                {
+                    if(res)
+                    {
+                        $("#birthdateData").empty();
+                        $("#birthdateData").text(userInput);
+
+                        displayMessage("Success", "Date of birth has been successfully edited");
+                    }
+                    else
+                    {
+                        displayMessage("Error", "Data was not delivered");
+                    }
+                },
+                error: function(xhr, status, message)
+                {
+                    displayMessage("Error", message);
+                }
+            });
+        });
+
+            $("#avatarSubmitButton").click(function ()
+            {
+                var formData = new FormData();
+                formData.append("avatar", photo);
+                formData.append("id", "@Model.Id");
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("EditAvatar", "Bts")",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (res)
+                    {
+                        if (res != null) {
+                            $("#ava").attr("src", res);
+                            displayMessage("Success", "Avatar has been successfully edited");
+                        }
+                        else {
+                            displayMessage("Error", "Data was not delivered");
+                        }
+                    },
+                    error: function (xhr, status, message) {
+                        displayMessage("Error", message);
+                    }
+
+                });
+
+            });
+        });
+    </script>
+}

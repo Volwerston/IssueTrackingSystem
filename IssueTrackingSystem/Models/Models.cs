@@ -33,6 +33,7 @@ namespace BTS.Models
 
         [Required(ErrorMessage = "Email must be filled")]
         [MaxLength(30, ErrorMessage="Email field must contain at most 30 characters")]
+        //[RegularExpression("/^(([^<>()[\\]\\.,;:\\s@\"]+(\\.[^<>()[\\]\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$/", ErrorMessage ="Email is invalid")]
         public string Email { get; set; }
         public byte[] Avatar { get; set; }
 

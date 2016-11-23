@@ -12,6 +12,25 @@
     white-space: normal;
 }
 
+
+
+@media screen and (min-width: 768px) {
+    .modal-dialog {
+        left: 50%;
+        right: auto;
+        width: 624px;
+    }
+}
+
+.modal-dialog{
+position: absolute;
+left: 50%;
+margin-left: -312px;
+height: 500px;
+top: 50%;
+margin-top: -250px;
+} 
+
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,

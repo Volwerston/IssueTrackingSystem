@@ -1,13 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace IssueTrackingSystem.Models
+namespace IssueTrackingSystem.Common
 {
     public class SystemAuthorizeAttribute : AuthorizeAttribute
     {
-
         private bool hasRole(string userRole, string suitableRoles)
         {
             string[] rolesArr = suitableRoles.Split(',');
@@ -17,19 +18,19 @@ namespace IssueTrackingSystem.Models
         {
             bool accessAllowed = false;
 
-            if(HttpContext.Current.Session["Username"] != null)
+            if (HttpContext.Current.Session["Username"] != null)
             {
-                if(hasRole(HttpContext.Current.Session["Status"].ToString(), Roles))
+                if (hasRole(HttpContext.Current.Session["Status"].ToString(), Roles))
                 {
                     accessAllowed = true;
                 }
             }
-            
-            if(!accessAllowed)
+
+            if (!accessAllowed)
             {
                 filterContext.Result = new RedirectToRouteResult(
                     new RouteValueDictionary(
-                        new { controller = "Bts", action = "Index"}
+                        new { controller = "Bts", action = "Index" }
                         )
                     );
             }

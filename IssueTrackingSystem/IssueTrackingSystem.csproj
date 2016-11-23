@@ -171,6 +171,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Common\ErrorTracker.cs" />
     <Compile Include="Common\LogErrorAttribute.cs" />
+    <Compile Include="Common\SystemAuthorizeAttribute.cs" />
     <Compile Include="Controllers\BtsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Global.asax.cs">
@@ -178,10 +179,10 @@
     </Compile>
     <Compile Include="Models\DBModel.cs" />
     <Compile Include="Models\Models.cs" />
-    <Compile Include="Models\SystemAuthorizeAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Common\No_avatar.png" />
     <Content Include="Content\bootstrap-datepicker.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -246,6 +247,8 @@
     <Content Include="Views\Bts\ReportBug.cshtml" />
     <Content Include="Views\Error\PageNotFound.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Bts\InternalAccountPage.cshtml" />
+    <Content Include="Views\Bts\ExternalAccountPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

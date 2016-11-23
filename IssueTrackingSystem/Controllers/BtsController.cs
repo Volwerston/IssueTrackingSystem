@@ -1,5 +1,4 @@
 ﻿using BTS.Models;
-using IssueTrackingSystem.Models;
 using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 using System;
@@ -344,7 +343,98 @@ namespace BTS.Controllers
             return View(bug);
         }
 
-        [ValidateInput(false)]
+        [SystemAuthorize(Roles = "Admin")]
+        public ActionResult InternalAccountPage()
+        {
+            User user = new User();
+
+            if(db.Open())
+            {
+            user = db.getAuthenticatedUser(Session["Username"].ToString());
+            }
+
+            return View(user);
+        }
+
+        [SystemAuthorize(Roles = "Admin")]
+        public ActionResult ExternalAccountPage(int id)
+        {
+            User u = null;
+            if (db.Open())
+            {
+                List<User> users = db.getUsers();
+                u = users.SingleOrDefault(x => x.Id == id);
+
+                db.Close();
+            }
+
+            if(u == null)
+            {
+                return RedirectToAction("PageNotFound", "Error");
+            }
+
+            return View(u);
+        }
+
+        [HttpPost]
+        public string EditEmail(int id,string email)
+        {
+            bool toReturn = false;
+
+            if(db.Open())
+            {
+                toReturn = db.EditUserEmail(id, email);
+
+                db.Close();
+            }
+
+            return JsonConvert.SerializeObject(toReturn);
+        }
+
+        [HttpPost]
+        public string EditBirthDate(int id, string birthdate)
+        {
+            bool toReturn = false;
+
+            if (db.Open())
+            {
+                toReturn = db.EditUserBirthDate(id, birthdate);
+
+                db.Close();
+            }
+
+            return JsonConvert.SerializeObject(toReturn);
+        }
+
+        [HttpPost]
+        public string EditAvatar(int id, HttpPostedFileBase avatar)
+        {
+            User u = new User();
+            bool success = false;
+            byte[] toPost = new byte[avatar.ContentLength];
+
+            if (db.Open())
+            {
+                avatar.InputStream.Read(toPost, 0, avatar.ContentLength);
+
+                success = db.EditUserAvatar(id, toPost);
+
+                db.Close();
+            }
+
+            string toReturn = null;
+
+            if (success)
+            {
+                var base64 = Convert.ToBase64String(toPost);
+                toReturn = string.Format("data:image/jpg;base64, {0}", base64);
+            }
+            
+
+            return toReturn;
+        }
+
+    [ValidateInput(false)]
         [HttpPost]
         public ActionResult ReportBug(Bug b)
         {

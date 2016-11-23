@@ -31,7 +31,7 @@ namespace WebApplication7
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/bootstrap.min.css",
-                      "~/Content/site.css",
+                      "~/Content/Site.css",
                       "~/Content/multiple-select.css",
                       "~/Content/dataTables.bootstrap.min.css",
                       "~/Content/jquery.growl.css",

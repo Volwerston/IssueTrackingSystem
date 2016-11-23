@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Configuration;
 using IssueTrackingSystem.Common;
 using System.Web.Security;
+using System.Globalization;
 
 namespace BTS.Models
 {
@@ -181,7 +182,7 @@ namespace BTS.Models
 
                 using (SqlCommand cmd = new SqlCommand(cmdString, connection))
                 {
-                    SqlTransaction transaction = connection.BeginTransaction("GetUsers");
+                    SqlTransaction transaction = connection.BeginTransaction("ExtractUsers");
                     cmd.Transaction = transaction;
 
                     try
@@ -195,6 +196,7 @@ namespace BTS.Models
                         {
                             User user = new User();
 
+                            user.Id = Convert.ToInt32(reader["ID"].ToString());
                             user.Name = reader["NAME"].ToString();
                             user.Surname = reader["SURNAME"].ToString();
                             user.Nickname = reader["NICKNAME"].ToString();
@@ -344,6 +346,58 @@ namespace BTS.Models
                 transaction.Commit();
             }
             catch(Exception ex)
+            {
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
+            }
+
+            return toReturn;
+        }
+
+        internal bool EditUserEmail(int id, string email)
+        {
+            bool toReturn = false;
+
+            string cmdString = "UPDATE Users SET EMAIL='" + email + "' WHERE ID=" + id + ";";
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("EditEmail");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+                toReturn = true;
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
+            }
+
+            return toReturn;
+        }
+
+        internal bool EditUserBirthDate(int id, string birthdate)
+        {
+            bool toReturn = false;
+
+            string cmdString = "UPDATE Users SET BIRTHDATE=CONVERT(smalldatetime, '" + birthdate + "', 104) WHERE ID=" + id + ";";
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("EditBirthDate");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+                toReturn = true;
+            }
+            catch (Exception ex)
             {
                 transaction.Rollback();
 
@@ -525,7 +579,7 @@ namespace BTS.Models
 
             string encryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "SHA1");
 
-            string cmdString = "SELECT * FROM Users WHERE NICKNAME='" + nickname + 
+            string cmdString = "SELECT * FROM Users WHERE NICKNAME='" + nickname +
                 "' AND PASSWORD='" + encryptedPassword + "';";
 
             using (SqlCommand cmd = new SqlCommand(cmdString, connection))
@@ -540,19 +594,106 @@ namespace BTS.Models
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
-                    if(reader.Read())
+                    if (reader.Read())
                     {
                         toReturn.Id = Convert.ToInt32(reader["ID"].ToString());
                         toReturn.Status = reader["STATUS"].ToString();
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     transaction.Rollback();
 
                     ErrorTracker tracker = new ErrorTracker();
                     tracker.LogError(ex.Message);
                 }
+            }
+
+            return toReturn;
+        }
+
+        internal User getAuthenticatedUser(string nickname)
+        {
+            User toReturn = new User();
+            toReturn.Id = -1;
+
+            string cmdString = "SELECT * FROM Users WHERE NICKNAME='" + nickname + "';";
+
+            using (SqlCommand cmd = new SqlCommand(cmdString, connection))
+            {
+                SqlTransaction transaction = connection.BeginTransaction("FindUser");
+                cmd.Transaction = transaction;
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                reader.Close();
+
+                try
+                {
+                    cmd.ExecuteNonQuery();
+
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        toReturn.Id = Convert.ToInt32(reader["ID"].ToString());
+                        toReturn.Name = reader["NAME"].ToString();
+                        toReturn.Surname = reader["SURNAME"].ToString();
+                        toReturn.Nickname = reader["NICKNAME"].ToString();
+                        toReturn.Email = reader["EMAIL"].ToString();
+                        toReturn.BirthDate = Convert.ToDateTime(reader["BIRTHDATE"].ToString());
+                        toReturn.Status = reader["STATUS"].ToString();
+                        toReturn.Avatar = (byte[])reader["AVATAR"];
+                    }
+
+                    reader.Close();
+
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    reader.Close();
+                    transaction.Rollback();
+
+                    ErrorTracker tracker = new ErrorTracker();
+                    tracker.LogError(ex.Message);
+                }
+            }
+
+            return toReturn;
+        }
+
+        public bool EditUserAvatar(int id,byte[] avatar)
+        {
+            bool toReturn = false;
+
+            string cmdString = "UPDATE Users SET AVATAR=@Avatar WHERE ID=" + id + ";";
+
+            SqlParameter param = new SqlParameter("@Avatar", SqlDbType.Binary);
+
+            if (avatar != null)
+            {
+                param.Value = avatar;
+            }
+            else
+            {
+                param.Value = DBNull.Value;
+            }
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            cmd.Parameters.Add(param);
+            SqlTransaction transaction = connection.BeginTransaction("EditAvatar");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+
+                toReturn = true;
+            }
+            catch
+            {
+                transaction.Rollback();
             }
 
             return toReturn;
