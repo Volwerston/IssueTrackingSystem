@@ -361,11 +361,11 @@ namespace BTS.Models
             List<User> toReturn = null;
             string cmdString = null;
 
-            if(userNames.Count == 0 && userStatuses.Count == 0)
+            if(userNames.Count == 0 && userStatuses == null)
             {
                 cmdString = "";
             }
-            else if(userNames.Count == 0 && userStatuses.Count != 0)
+            else if(userNames.Count == 0 && userStatuses != null )
             {
                 cmdString = "SELECT TOP 5 * FROM Users WHERE ID>" + id + " AND(";
 
@@ -377,7 +377,7 @@ namespace BTS.Models
                 cmdString = cmdString.Substring(0, cmdString.Length - 4);
                 cmdString += ");";
             }
-            else if(userNames.Count != 0 && userStatuses.Count == 0)
+            else if(userNames.Count != 0 && userStatuses == null)
             {
                 cmdString = "SELECT TOP 5 * FROM Users WHERE ID>" + id + " AND(";
 

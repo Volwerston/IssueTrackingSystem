@@ -380,34 +380,31 @@ namespace BTS.Controllers
                 anonymous = db.getUsers().Where(x => x.Nickname == "Anonymous").ToList()[0];
             }
 
-           // List<string> filePaths = new List<string>();
-            string imgCookieString = "";
-
-            foreach (var user in toReturn)
+            if (toReturn != null)
             {
-                if (user.Avatar != null)
+                int size = toReturn.Count();
+
+                for (int i = 0; i < size; ++i)
                 {
-                    var base64 = Convert.ToBase64String(user.Avatar);
-                    string toAdd = string.Format("data:image/jpg;base64, {0}", base64);
-                    //filePaths.Add(toAdd);
-                    imgCookieString += toAdd;
-                    imgCookieString += ' ';
-                    user.Avatar = null;
-                }
-                else
-                {
-                    var base64 = Convert.ToBase64String(anonymous.Avatar);
-                    string toAdd = string.Format("data:image/jpg;base64, {0}", base64);
-                    //filePaths.Add(toAdd);
-                    imgCookieString += toAdd;
-                    imgCookieString += ' ';
+                    if (toReturn[i].Avatar != null)
+                    {
+                        User u = new User();
+                        var base64 = Convert.ToBase64String(toReturn[i].Avatar);
+                        string toAdd = string.Format("data:image/jpg;base64, {0}", base64);
+                        u.Surname = toAdd;
+                        toReturn.Add(u);
+                        toReturn[i].Avatar = null;
+                    }
+                    else
+                    {
+                        User u = new User();
+                        var base64 = Convert.ToBase64String(anonymous.Avatar);
+                        string toAdd = string.Format("data:image/jpg;base64, {0}", base64);
+                        u.Surname = toAdd;
+                        toReturn.Add(u);
+                    }
                 }
             }
-
-            HttpCookie imgs = new HttpCookie("Images");
-            imgs.Expires = DateTime.Now.AddHours(1d);
-            imgs.Value = imgCookieString;
-            Response.SetCookie(imgs);
 
             string toReturnString = JsonConvert.SerializeObject(toReturn);
             return toReturnString;
