@@ -140,7 +140,8 @@
 
         // restore class and title from select element
         this.$parent = $(sprintf(
-            '<div class="ms-parent" %s/>',
+            '<div class="ms-parent %s" %s/>',
+            $el.attr('class') || '',
             sprintf('title="%s"', $el.attr('title'))));
 
         // add placeholder to choice button
