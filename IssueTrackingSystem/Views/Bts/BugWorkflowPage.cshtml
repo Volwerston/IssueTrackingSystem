@@ -1,0 +1,68 @@
+﻿@model BTS.Models.Bug
+@using BTS.Models;
+
+@{
+    ViewBag.Title = "BugWorkflowPage";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-8 col-xs-8 col-sm-8 col-md-8" style="background-color:  rgb(166, 228, 239); border-radius: 5px;">
+        <br />
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("BugDescriptionPage", "Bts", new { projName = (string) ViewBag.ProjectName, id = Model.Id })">Description</a></li>
+            <li class="breadcrumb-item active">Workflow</li>
+            <li class="breadcrumb-item"><a href="@Url.Action("BugSolutionPage", "Bts", new { projName = (string)ViewBag.ProjectName, id = Model.Id })">Solution</a></li>
+        </ol>
+        <br />
+
+        <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10">
+
+    @if ((List<Message>)ViewBag.Messages != null)
+            {
+                foreach (Message message in (List<Message>)ViewBag.Messages)
+                {
+            <div class="row">
+                <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="background-color: rgb(155, 210, 226); border-radius: 5px;">
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-3 col-xs-3 col-sm-3 col-md-3">
+                            <p>@message.SenderNick</p>
+                        </div>
+                        <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-5 col-xs-5 col-sm-5 col-md-5">
+                            <p>@message.AddingTime.</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="co-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10 text-center">
+                            <p>@message.MessageText</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    <br />
+    <hr />
+
+    @if (Session["Username"].ToString() == Model.TopicStarter || Convert.ToInt32(Session["Id"].ToString()) == Model.DeveloperId ||
+                            Convert.ToInt32(Session["Id"].ToString()) == Model.PmId)
+    {
+        <div class="row">
+            <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="background-color: rgb(155, 210, 226); border-radius: 5px;">
+                <div class="row">
+                    <div class="col-lg-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="margin-bottom: 5px; margin-top: 5px;">
+                        @Html.TextArea("messageText", new { cols=30, rows=10, @class="form-control"})
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-offset-4 col-sm-offset-4 col-md-offset-4">
+                       <button class="btn btn-default col-lg-4 col-xs-4 col-sm-4 col-md-4" type="submit" id="addMessage"  style="margin-bottom: 5px;">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+                <br />
+            </div>
+        </div>
+    </div>

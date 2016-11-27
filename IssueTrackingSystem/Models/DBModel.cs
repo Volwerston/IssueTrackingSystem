@@ -472,6 +472,11 @@ namespace BTS.Models
                 }
             }
 
+            if(toReturn != null && toReturn.Count() == 0)
+            {
+                toReturn = null;
+            }
+
             return toReturn;
         }
 
@@ -871,7 +876,7 @@ namespace BTS.Models
 
             if (categories != null)
             {
-                string cmdString = "SELECT DISTINCT TOP 2 A.ID, A.NAME, A.UPDATES, A.DESCRIPTION" +
+                string cmdString = "SELECT DISTINCT TOP 5 A.ID, A.NAME, A.UPDATES, A.DESCRIPTION" +
                                     " FROM Projects A inner join ProjectCategory B on A.ID = B.PROJECT_ID" +
                                     " WHERE A.ID > " + categories[categories.Length - 1] + " AND ( ";
 
@@ -940,34 +945,49 @@ namespace BTS.Models
 
                 SqlDataReader rdr = cmd.ExecuteReader();
 
-                while(rdr.Read())
+                try
                 {
-                    Bug bug = new Bug();
-
-                    bug.Id = Convert.ToInt32(rdr["ID"].ToString());
-                    bug.Subject = rdr["SUBJECT"].ToString();
-                    bug.Description = rdr["DESCRIPTION"].ToString();
-                    bug.Status = rdr["STATUS"].ToString();
-
-                    if(rdr["ESTIMATE"] != DBNull.Value)
+                    while (rdr.Read())
                     {
-                        bug.Estimate = Convert.ToInt32(rdr["ESTIMATE"].ToString());
-                    }
-                    else
-                    {
-                        bug.Estimate = null;
-                    }
+                        Bug bug = new Bug();
 
-                    if(rdr["PHOTO"] != DBNull.Value)
-                    {
-                        bug.Image = (byte[])rdr["PHOTO"];
-                    }
-                    else
-                    {
-                        bug.Image = null;
-                    }
+                        bug.Id = Convert.ToInt32(rdr["ID"].ToString());
+                        bug.Subject = rdr["SUBJECT"].ToString();
+                        bug.Description = rdr["DESCRIPTION"].ToString();
+                        bug.Status = rdr["STATUS"].ToString();
 
-                    toReturn.Add(bug);
+                        if (rdr["DEVELOPER_ID"] != DBNull.Value)
+                        {
+                            bug.DeveloperId = Convert.ToInt32(rdr["DEVELOPER_ID"].ToString());
+                        }
+
+                        if (rdr["PM_ID"] != DBNull.Value)
+                        {
+                            bug.PmId = Convert.ToInt32(rdr["PM_ID"].ToString());
+                        }
+
+                        if (rdr["ESTIMATE"] != DBNull.Value)
+                        {
+                            bug.Estimate = Convert.ToInt32(rdr["ESTIMATE"].ToString());
+                        }
+
+
+                        if (rdr["PHOTO"] != DBNull.Value)
+                        {
+                            bug.Image = (byte[])rdr["PHOTO"];
+                        }
+
+                        toReturn.Add(bug);
+                    }
+                    rdr.Close();
+                }
+                catch(Exception ex)
+                {
+                    toReturn = null;
+                    rdr.Close();
+
+                    ErrorTracker tracker = new ErrorTracker();
+                    tracker.LogError(ex.ToString());
                 }
             }
             catch(Exception ex)
@@ -978,6 +998,10 @@ namespace BTS.Models
                 tracker.LogError(ex.Message);
             }
 
+            if(toReturn.Count() == 0)
+            {
+                toReturn = null;
+            }
             return toReturn;
         }
 
@@ -1018,6 +1042,66 @@ namespace BTS.Models
 
                 ErrorTracker tracker = new ErrorTracker();
                 tracker.LogError(ex.Message);
+            }
+
+            return toReturn;
+        }
+
+        internal List<Message> GetMessageLog(int bugId)
+        {
+            List<Message> toReturn = null;
+
+            string cmdString = "SELECT * FROM Messages WHERE BUG_ID=" + bugId + ";";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("ExtractMessages");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                toReturn = new List<Message>();
+
+                try
+                {
+                    while (rdr.Read())
+                    {
+                        Message toAdd = new Message();
+
+                        toAdd.Id = Convert.ToInt32(rdr["ID"].ToString());
+                        toAdd.MessageText = rdr["MESSAGE"].ToString();
+                        toAdd.SenderNick = rdr["SENDER_NICKNAME"].ToString();
+                        toAdd.AddingTime = Convert.ToDateTime(rdr["ADD_TIME"].ToString());
+                        toAdd.BugId = Convert.ToInt32(rdr["BUG_ID"].ToString());
+
+                        toReturn.Add(toAdd);
+                    }
+
+                    rdr.Close();
+                }
+                catch(Exception ex)
+                {
+                    toReturn = null;
+                    ErrorTracker tracker = new ErrorTracker();
+                    rdr.Close();
+                    tracker.LogError(ex.ToString());
+                }
+
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+
+            if(toReturn.Count == 0)
+            {
+                toReturn = null;
             }
 
             return toReturn;

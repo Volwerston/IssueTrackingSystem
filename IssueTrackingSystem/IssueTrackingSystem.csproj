@@ -251,6 +251,9 @@
     <Content Include="Views\Bts\InternalAccountPage.cshtml" />
     <Content Include="Views\Bts\ExternalAccountPage.cshtml" />
     <Content Include="Views\Bts\FindUsers.cshtml" />
+    <Content Include="Views\Bts\BugDescriptionPage.cshtml" />
+    <Content Include="Views\Bts\BugSolutionPage.cshtml" />
+    <Content Include="Views\Bts\BugWorkflowPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

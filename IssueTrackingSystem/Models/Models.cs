@@ -87,6 +87,10 @@ namespace BTS.Models
         public string TopicStarter { get; set; }
 
         public IEnumerable<HttpPostedFileBase> Attachments { get; set; }
+
+        public int DeveloperId { get; set; }
+
+        public int PmId { get; set; }
     }
 
     public class ProjectUser
@@ -101,6 +105,16 @@ namespace BTS.Models
         [MaxLength(15)]
         public string Status { get; set; }
     }
+
+    public class Message
+    {
+        public int Id { get; set; }
+        public string MessageText { get; set; }
+        public DateTime AddingTime { get; set;}
+        public string SenderNick { get; set; }
+        public int BugId { get; set; }
+    }
+
 
     public class Notification
     {

@@ -1,0 +1,68 @@
+﻿@model BTS.Models.Bug
+
+@{
+    ViewBag.Title = "Bug Solution Page";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-8 col-xs-8 col-sm-8 col-md-8" style="background-color:  rgb(166, 228, 239); border-radius: 5px;">
+        <br />
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("BugDescriptionPage", "Bts", new { projName = (string) ViewBag.ProjectName, id = Model.Id })">Description</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("BugWorkflowPage", "Bts", new { projName = (string)ViewBag.ProjectName, id = Model.Id })">Workflow</a></li>
+            <li class="breadcrumb-item active">Solution</li>
+        </ol>
+        <br />
+
+        @if(Model.Status != "Closed")
+        {
+            <div class="row">
+                <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-8 col-sm-8 col-md-8 col-lg-8 text-center">
+                    <p>No solution found yet</p>
+                </div>
+            </div>
+            <br />
+        }
+        else
+        {
+            // to fill in later :)
+        }
+
+        @if (Session["Status"].ToString() == "Admin")
+        {
+            <div class="row">
+                <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-8 col-sm-8 col-md-8 col-lg-8 text-center">
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addSolutionForm">Document solution</button>
+                </div>
+            </div>
+            <br/>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="addSolutionForm" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:darkgrey; color: white; border-top-left-radius: 5px;border-top-right-radius: 5px;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Solution</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal" style="display: table; margin: auto;">
+                    <div class="form-group">
+                        @Html.Label("Solution:", new { @class = "cotrol-label col-xs-2 col-md-2 col-sm-2 col-lg-2" })
+                        <div class="col-sm-offset-1 col-md-offset-1 col-lg-offset-1  col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                            @Html.TextArea("solutionData", new { rows = 10, cols = 30, @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="background-color:darkgrey; color: white; border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;">
+                <button type="button" data-dismiss="modal" class="btn btn-info" id="emailSubmitButton">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>

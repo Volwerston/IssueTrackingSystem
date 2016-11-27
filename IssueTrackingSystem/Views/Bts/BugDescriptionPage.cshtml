@@ -1,0 +1,50 @@
+﻿@model BTS.Models.Bug
+
+@{
+    ViewBag.Title = "Bug Description";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-8 col-xs-8 col-sm-8 col-md-8" style="background-color: rgb(166, 228, 239); border-radius: 5px;">
+        <br />
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">Description</li>
+            <li class="breadcrumb-item"><a href="@Url.Action("BugWorkflowPage", "Bts", new { projName = (string) ViewBag.ProjectName, id = Model.Id })">Workflow</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("BugSolutionPage", "Bts", new { projName = (string) ViewBag.ProjectName, id = Model.Id })">Solution</a></li>
+        </ol>
+        <dl class="dl-horizontal">
+            <dt style="margin-bottom: 10px;">ID: </dt>
+            <dd>@Html.DisplayFor(model => model.Id)</dd>
+            <dt style="margin-bottom: 10px;">Subject: </dt>
+            <dd>@Html.DisplayFor(model => model.Subject)</dd>
+            <dt style="margin-bottom: 10px;">Started by: </dt>
+            @if (Model.TopicStarter != null)
+            {
+            <dd>@Html.DisplayFor(model => model.TopicStarter)</dd>
+            }
+            else
+            {
+                <dd>Unknown</dd>
+            }
+        </dl>
+        <div class="row text-center" style="margin-bottom: 10px;">
+            <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-8 col-sm-8 col-md-8 col-lg-8" style="background-color: rgb(155, 210, 226); border-radius: 5px;">
+                <p>@Html.DisplayFor(model => model.Description)</p>
+            </div>
+        </div>
+
+        <dl class="dl-horizontal">
+            <dt style="margin-bottom: 10px;">Project Manager: </dt>
+            <dd><a href="@Url.Action("InternalAccountPage", "Bts")">Unknown</a></dd>
+            <dt style="margin-bottom: 10px;">Developer: </dt>
+            <dd><a href="@Url.Action("InternalAccountPage", "Bts")">Unknown   </a>
+            @if(Session["Status"].ToString() == "Admin")
+            {
+                <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span></button>
+            }
+            </dd>
+        </dl>
+        <br/>
+    </div>
+</div>

@@ -6,6 +6,7 @@
     display: inline-block;
     position: relative;
     vertical-align: middle;
+    border: none;
 }
 
 .ms-choice {
@@ -15,7 +16,7 @@
     padding: 0;
     overflow: hidden;
     cursor: pointer;
-    border: 1px solid #aaa;
+    border: 0px solid white;
     text-align: left;
     white-space: nowrap;
     line-height: 26px;
@@ -28,9 +29,9 @@
 }
 
 .ms-choice.disabled {
-    background-color: #f4f4f4;
+    background-color: white;
     background-image: none;
-    border: 1px solid #ddd;
+    border: 0px solid white;
     cursor: default;
 }
 

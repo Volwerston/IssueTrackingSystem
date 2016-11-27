@@ -73,6 +73,10 @@
         showList(currList, $("#itemsCount").val());
         addPagination($("#itemsCount").val());
 
+        $(".clickable-row").click(function () {
+            window.document.location = $(this).data("href");
+        });
+
 
         $("#itemsCount").change(function () {
 
@@ -285,13 +289,13 @@
 
             if (numOfItems * numOfList > currEntries.length) {
                 for (var i = numOfItems * (numOfList - 1) ; i < currEntries.length; ++i) {
-                    toAppend += '<tr><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
+                    toAppend += '<tr class="clickable-row" data-href="@Url.Action("BugDescriptionPage","Bts", new { projName = Model.Name })&id=' + currEntries[i].Id + '"><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
                                 + currEntries[i].Status + '</td></tr>';
                 }
             }
             else {
                 for (var i = numOfItems * (numOfList - 1) ; i < numOfItems * numOfList; ++i) {
-                    toAppend += '<tr><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
+                    toAppend += '<tr class="clickable-row" data-href="@Url.Action("BugDescriptionPage","Bts", new { projName = Model.Name })&id=' + currEntries[i].Id + '"><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
                                 + currEntries[i].Status + '</td></tr>';
                 }
             }

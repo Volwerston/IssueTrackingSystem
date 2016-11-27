@@ -64,6 +64,7 @@ namespace BTS.Controllers
                 {
                     Session["Username"] = Login;
                     Session["Status"] = u.Status;
+                    Session["Id"] = u.Id;
 
                     if(rememberMe)
                     {
@@ -101,6 +102,7 @@ namespace BTS.Controllers
         {
             Session.Remove("Username");
             Session.Remove("Status");
+            Session.Remove("Id");
 
             HttpCookie nick = new HttpCookie("username");
             nick.Expires = DateTime.Now.AddDays(-1d);
@@ -366,6 +368,7 @@ namespace BTS.Controllers
             List<User> toReturn = null;
             List<string> userStatuses = null;
             List<string> userNames = names.Distinct().ToList();
+            List<string> imgPaths = null;
             User anonymous = null;
             userNames.Remove("");
 
@@ -384,15 +387,15 @@ namespace BTS.Controllers
             {
                 int size = toReturn.Count();
 
+                imgPaths = new List<string>();
+
                 for (int i = 0; i < size; ++i)
                 {
                     if (toReturn[i].Avatar != null)
                     {
-                        User u = new User();
                         var base64 = Convert.ToBase64String(toReturn[i].Avatar);
                         string toAdd = string.Format("data:image/jpg;base64, {0}", base64);
-                        u.Surname = toAdd;
-                        toReturn.Add(u);
+                        imgPaths.Add(toAdd);
                         toReturn[i].Avatar = null;
                     }
                     else
@@ -400,13 +403,24 @@ namespace BTS.Controllers
                         User u = new User();
                         var base64 = Convert.ToBase64String(anonymous.Avatar);
                         string toAdd = string.Format("data:image/jpg;base64, {0}", base64);
-                        u.Surname = toAdd;
-                        toReturn.Add(u);
+                        imgPaths.Add(toAdd);
                     }
                 }
             }
 
             string toReturnString = JsonConvert.SerializeObject(toReturn);
+
+            if (toReturn != null)
+            {
+                toReturnString = toReturnString.Substring(0, toReturnString.Count() - 1);
+                toReturnString += ",";
+
+                string toReturnStringImgs = JsonConvert.SerializeObject(imgPaths);
+                toReturnStringImgs = toReturnStringImgs.Substring(1);
+
+                toReturnString += toReturnStringImgs;
+            }
+
             return toReturnString;
         }
 
@@ -588,6 +602,86 @@ namespace BTS.Controllers
             }
 
             return View();
+        }
+
+        [SystemAuthorize(Roles = "Admin")]
+        public ActionResult BugDescriptionPage(string projName, int id)
+        {
+            ViewBag.ProjectName = projName;
+
+            if (db.Open())
+            {
+                Project proj = db.GetProjectsByName(projName)[0];
+
+                Bug bug = null;
+
+                if (proj != null)
+                {
+                    bug = db.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
+                }
+
+                if (bug != null)
+                {
+                    return View(bug);
+                }
+            }
+
+            return RedirectToAction("PageNotFound", "Error");
+        }
+
+        [SystemAuthorize(Roles = "Admin")]
+        public ActionResult BugWorkflowPage(string projName, int id)
+        {
+            ViewBag.ProjectName = projName;
+
+            if (db.Open())
+            {
+                Project proj = db.GetProjectsByName(projName)[0];
+
+                Bug bug = null;
+
+                if (proj != null)
+                {
+                    bug = db.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
+                }
+
+                if (bug != null)
+                {
+                    List<Message> messages = db.GetMessageLog(id);
+                    ViewBag.Messages = messages;
+
+                    return View(bug);
+                }
+            }
+
+            return RedirectToAction("PageNotFound", "Error");
+        }
+
+
+        [SystemAuthorize(Roles="Admin")]
+        public ActionResult BugSolutionPage(int id, string projName)
+        {
+
+            ViewBag.ProjectName = projName;
+
+            if (db.Open())
+            {
+                Project proj = db.GetProjectsByName(projName)[0];
+
+                Bug bug = null;
+
+                if (proj != null)
+                {
+                    bug = db.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
+                }
+
+                if (bug != null)
+                {
+                    return View(bug);
+                }
+            }
+
+            return RedirectToAction("PageNotFound", "Error");
         }
     }
 }
