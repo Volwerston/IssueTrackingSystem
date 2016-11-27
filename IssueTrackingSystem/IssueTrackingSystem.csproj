@@ -254,6 +254,7 @@
     <Content Include="Views\Bts\BugDescriptionPage.cshtml" />
     <Content Include="Views\Bts\BugSolutionPage.cshtml" />
     <Content Include="Views\Bts\BugWorkflowPage.cshtml" />
+    <Content Include="Views\Bts\InviteDevelopers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

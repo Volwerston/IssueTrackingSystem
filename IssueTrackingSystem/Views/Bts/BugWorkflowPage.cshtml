@@ -10,7 +10,7 @@
     <div class="col-lg-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-8 col-xs-8 col-sm-8 col-md-8" style="background-color:  rgb(166, 228, 239); border-radius: 5px;">
         <br />
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="@Url.Action("BugDescriptionPage", "Bts", new { projName = (string) ViewBag.ProjectName, id = Model.Id })">Description</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("BugDescriptionPage", "Bts", new { projName = (string)ViewBag.ProjectName, id = Model.Id })">Description</a></li>
             <li class="breadcrumb-item active">Workflow</li>
             <li class="breadcrumb-item"><a href="@Url.Action("BugSolutionPage", "Bts", new { projName = (string)ViewBag.ProjectName, id = Model.Id })">Solution</a></li>
         </ol>
@@ -19,9 +19,9 @@
         <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10">
 
     @if ((List<Message>)ViewBag.Messages != null)
-            {
-                foreach (Message message in (List<Message>)ViewBag.Messages)
-                {
+    {
+        foreach (Message message in (List<Message>)ViewBag.Messages)
+        {
             <div class="row">
                 <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="background-color: rgb(155, 210, 226); border-radius: 5px;">
                     <div class="row" style="margin-bottom: 5px;">
@@ -32,11 +32,20 @@
                             <p>@message.AddingTime.</p>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" style="margin-bottom: 5px;">
                         <div class="co-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10 text-center">
                             <p>@message.MessageText</p>
                         </div>
                     </div>
+
+                    @if (Session["Username"].ToString() == Model.TopicStarter)
+                    {
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                            <button type="button" data-toggle="modal" data-target="#markAsRight" class="btn btn-default">Mark as correct</button>
+                        </div>
+                    </div>
+                    }
                 </div>
             </div>
         }
@@ -45,13 +54,13 @@
     <hr />
 
     @if (Session["Username"].ToString() == Model.TopicStarter || Convert.ToInt32(Session["Id"].ToString()) == Model.DeveloperId ||
-                            Convert.ToInt32(Session["Id"].ToString()) == Model.PmId)
+                        Convert.ToInt32(Session["Id"].ToString()) == Model.PmId)
     {
         <div class="row">
             <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="background-color: rgb(155, 210, 226); border-radius: 5px;">
                 <div class="row">
                     <div class="col-lg-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="margin-bottom: 5px; margin-top: 5px;">
-                        @Html.TextArea("messageText", new { cols=30, rows=10, @class="form-control"})
+                        @Html.TextArea("messageText", new { cols = 30, rows = 10, @class = "form-control" })
                     </div>
                 </div>
                 <div class="row">
@@ -66,3 +75,42 @@
             </div>
         </div>
     </div>
+
+<div class="modal fade" id="markAsRight" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:darkgrey; color: white; border-top-left-radius: 5px;border-top-right-radius: 5px;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Mark as correct</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal" style="display: table; margin: auto; min-width: 75%;">
+                    <div class="form-group">
+                        @Html.Label("Estimate answer:", new { @class = "control-label col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-5 col-sm-5 col-md-5 col-lg-5" })
+                        <div class="col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                            @Html.DropDownList("Mark", new List<SelectListItem> { new SelectListItem { Text="1",  Value="1" },
+                                                                                new SelectListItem { Text = "2", Value = "2" },
+                                                                                new SelectListItem { Text = "3", Value = "3" },
+                                                                                new SelectListItem { Text = "4", Value = "4" },
+                                                                                new SelectListItem { Text = "5", Value = "5" },
+                                                                                new SelectListItem { Text = "6", Value = "6" },
+                                                                                new SelectListItem { Text = "7", Value = "7" },
+                                                                                new SelectListItem { Text = "8", Value = "8" },
+                                                                                new SelectListItem { Text = "9", Value = "9" },
+                                                                                new SelectListItem { Text = "10", Value = "10" } }, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2  col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                            @Html.TextArea("finalComment", new { rows = 10, cols = 30, @class = "form-control", placeholder="Final comment..." })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="background-color:darkgrey; color: white; border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;">
+                <button type="button" data-dismiss="modal" class="btn btn-info" id="correctSubmitButton">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

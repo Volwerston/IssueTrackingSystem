@@ -66,10 +66,10 @@ namespace BTS.Controllers
                     Session["Status"] = u.Status;
                     Session["Id"] = u.Id;
 
-                    if(rememberMe)
+                    if (rememberMe)
                     {
                         HttpCookie nick = new HttpCookie("username");
-                        nick.Expires = DateTime.Now.AddDays(1d); 
+                        nick.Expires = DateTime.Now.AddDays(1d);
                         nick.Value = Login;
                         Response.SetCookie(nick);
 
@@ -258,7 +258,7 @@ namespace BTS.Controllers
         }
 
         [SystemAuthorize(Roles = "Admin")]
-        public ActionResult ShowProject(string name) 
+        public ActionResult ShowProject(string name)
         {
             bool projectFound = false;
 
@@ -276,6 +276,25 @@ namespace BTS.Controllers
                     project = chosenProjects[0];
                 }
 
+                if (project != null)
+                {
+                    List<User> developers = db.GetDevelopersOfProject(name);
+                    List<SelectListItem> developerList = null;
+
+                    if (developers != null)
+                    {
+                        developerList = new List<SelectListItem>();
+
+                        foreach (User dev in developers)
+                        {
+                            SelectListItem item = new SelectListItem() { Text = dev.Name + " " + dev.Surname, Value = dev.Nickname };
+                            developerList.Add(item);
+                        }
+                    }
+
+                    ViewBag.Developers = developerList;
+                }
+
                 projectBugs = db.GetProjectBugs(project);
                 db.Close();
             }
@@ -285,11 +304,11 @@ namespace BTS.Controllers
                 return RedirectToAction("PageNotFound", "Error");
             }
 
-                ViewBag.ProjectBugs = projectBugs;
+            ViewBag.ProjectBugs = projectBugs;
 
-                return View(project);
+            return View(project);
         }
-        
+
         public ActionResult ChangePassword()
         {
             if (db.Open())
@@ -303,6 +322,125 @@ namespace BTS.Controllers
                 db.Close();
             }
             return View();
+        }
+
+        [HttpPost]
+        public string FindDevelopersForProject(int id, string[] names, string projectName)
+        {
+            List<User> toReturn = new List<User>();
+            List<string> imgPaths = null;
+            User anonymous = null;
+            List<string> userNames = names.Distinct().ToList();
+            userNames.Remove("");
+
+            if (db.Open())
+            {
+                anonymous = db.getUsers().Where(x => x.Nickname == "Anonymous").ToList()[0];
+                List<User> currDevelopers = db.GetDevelopersOfProject(projectName);
+
+                while (toReturn.Count() < 5)
+                {
+                    List<User> buf = null;
+
+                    if (toReturn.Count() == 0)
+                    {
+                        buf = db.searchForUsers(id, userNames, new List<string> { "Developer" });
+                    }
+                    else
+                    {
+                        buf = db.searchForUsers(toReturn.Last().Id, userNames, new List<string> { "Developer" });
+                    }
+
+                    if(buf == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        foreach(User newDeveloper in buf)
+                        {
+                            bool elFound = false;
+
+                            foreach(User existingDeveloper in currDevelopers)
+                            {
+                                if(existingDeveloper.Id == newDeveloper.Id)
+                                {
+                                    elFound = true;
+                                    break;
+                                }
+                            }
+
+                            if(!elFound)
+                            {
+                                toReturn.Add(newDeveloper);
+
+                                if(toReturn.Count() == 5)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (toReturn != null)
+            {
+                int size = toReturn.Count();
+
+                imgPaths = new List<string>();
+
+                for (int i = 0; i < size; ++i)
+                {
+                    if (toReturn[i].Avatar != null)
+                    {
+                        var base64 = Convert.ToBase64String(toReturn[i].Avatar);
+                        string toAdd = string.Format("data:image/jpg;base64, {0}", base64);
+                        imgPaths.Add(toAdd);
+                        toReturn[i].Avatar = null;
+                    }
+                    else
+                    {
+                        User u = new User();
+                        var base64 = Convert.ToBase64String(anonymous.Avatar);
+                        string toAdd = string.Format("data:image/jpg;base64, {0}", base64);
+                        imgPaths.Add(toAdd);
+                    }
+                }
+            }
+
+            if(toReturn.Count() == 0)
+            {
+                toReturn = null;
+            }
+
+            string toReturnString = JsonConvert.SerializeObject(toReturn);
+
+            if (toReturn != null)
+            {
+                toReturnString = toReturnString.Substring(0, toReturnString.Count() - 1);
+                toReturnString += ",";
+
+                string toReturnStringImgs = JsonConvert.SerializeObject(imgPaths);
+                toReturnStringImgs = toReturnStringImgs.Substring(1);
+
+                toReturnString += toReturnStringImgs;
+            }
+
+            return toReturnString;
+        }
+
+        [SystemAuthorize(Roles = "Admin")]
+        public ActionResult InviteDevelopers(string projectName)
+        {
+            if (projectName != null)
+            {
+                ViewBag.ProjectName = projectName;
+
+                return View();
+            }
+
+            return RedirectToAction("PageNotFound", "Error");
         }
 
         [HttpPost]
@@ -563,7 +701,7 @@ namespace BTS.Controllers
             { 
             b.ProjectId = Convert.ToInt32(TempData["projId"].ToString());
             b.Status = "Unconfirmed";
-            b.TopicStarter = User.Identity.Name;
+            b.TopicStarter = Session["Username"].ToString();
 
                 if (ModelState.IsValid)
                 {
@@ -622,6 +760,22 @@ namespace BTS.Controllers
 
                 if (bug != null)
                 {
+                    List<User> developers = db.GetDevelopersOfProject(projName);
+                    List<SelectListItem> developerList = null;
+
+                    if (developers != null)
+                    {
+                        developerList = new List<SelectListItem>();
+
+                        foreach (User dev in developers)
+                        {
+                            SelectListItem item = new SelectListItem() { Text = dev.Name + " " + dev.Surname, Value = dev.Nickname };
+                            developerList.Add(item);
+                        }
+                    }
+
+                    ViewBag.Developers = developerList;
+
                     return View(bug);
                 }
             }

@@ -192,29 +192,43 @@ namespace BTS.Models
 
                         SqlDataReader reader = cmd.ExecuteReader();
 
-                        while (reader.Read())
+                        try
                         {
-                            User user = new User();
-
-                            user.Id = Convert.ToInt32(reader["ID"].ToString());
-                            user.Name = reader["NAME"].ToString();
-                            user.Surname = reader["SURNAME"].ToString();
-                            user.Nickname = reader["NICKNAME"].ToString();
-                            user.BirthDate = Convert.ToDateTime(reader["BIRTHDATE"].ToString());
-                            user.Password = reader["PASSWORD"].ToString();
-                            user.Status = reader["STATUS"].ToString();
-                            user.Email = reader["EMAIL"].ToString();
-
-                            if (reader["AVATAR"] != DBNull.Value)
+                            while (reader.Read())
                             {
-                                user.Avatar = (byte[])(reader["AVATAR"]);
-                            }
-                            else
-                            {
-                                user.Avatar = null;
+                                User user = new User();
+
+                                user.Id = Convert.ToInt32(reader["ID"].ToString());
+                                user.Name = reader["NAME"].ToString();
+                                user.Surname = reader["SURNAME"].ToString();
+                                user.Nickname = reader["NICKNAME"].ToString();
+                                user.BirthDate = Convert.ToDateTime(reader["BIRTHDATE"].ToString());
+                                user.Password = reader["PASSWORD"].ToString();
+                                user.Status = reader["STATUS"].ToString();
+                                user.Email = reader["EMAIL"].ToString();
+
+                                if (reader["AVATAR"] != DBNull.Value)
+                                {
+                                    user.Avatar = (byte[])(reader["AVATAR"]);
+                                }
+                                else
+                                {
+                                    user.Avatar = null;
+                                }
+
+                                toReturn.Add(user);
                             }
 
-                            toReturn.Add(user);
+                            reader.Close();
+                        }
+                        catch(Exception ex)
+                        {
+                            reader.Close();
+
+                            toReturn = new List<User>();
+
+                            ErrorTracker tracker = new ErrorTracker();
+                            tracker.LogError(ex.Message);
                         }
                     }
                     catch(Exception ex)
@@ -736,6 +750,68 @@ namespace BTS.Models
             return toReturn;
         }
 
+        
+
+        public List<User> GetDevelopersOfProject(string projName)
+        {
+            List<User> toReturn = null;
+            string cmdString = "SELECT A.ID, A.NAME, A.SURNAME, A.NICKNAME, A.STATUS "
+                + "FROM Users A inner join ProjectDeveloper B ON A.ID = B.DEV_ID "
+                + "WHERE B.PROJ_NAME='" + projName + "';";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("ExtractProjectDevelopers");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                toReturn = new List<User>();
+
+                try
+                {
+                    while (rdr.Read())
+                    {
+                        User u = new User();
+
+                        u.Id = Convert.ToInt32(rdr["ID"].ToString());
+                        u.Name = rdr["NAME"].ToString();
+                        u.Surname = rdr["SURNAME"].ToString();
+                        u.Status = rdr["STATUS"].ToString();
+
+                        toReturn.Add(u);
+                    }
+
+                    rdr.Close();
+                }
+                catch (Exception ex)
+                {
+                    rdr.Close();
+                    toReturn = null;
+
+                    ErrorTracker tracker = new ErrorTracker();
+                    tracker.LogError(ex.ToString());
+                }
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+
+            if(toReturn != null && toReturn.Count() == 0)
+            {
+                toReturn = null;
+            }
+
+            return toReturn;
+        }
+
         internal User getAuthenticatedUser(string nickname)
         {
             User toReturn = new User();
@@ -955,6 +1031,7 @@ namespace BTS.Models
                         bug.Subject = rdr["SUBJECT"].ToString();
                         bug.Description = rdr["DESCRIPTION"].ToString();
                         bug.Status = rdr["STATUS"].ToString();
+                        bug.TopicStarter = rdr["TOPIC_STARTER"].ToString();
 
                         if (rdr["DEVELOPER_ID"] != DBNull.Value)
                         {
@@ -998,7 +1075,7 @@ namespace BTS.Models
                 tracker.LogError(ex.Message);
             }
 
-            if(toReturn.Count() == 0)
+            if(toReturn != null && toReturn.Count() == 0)
             {
                 toReturn = null;
             }
@@ -1099,7 +1176,7 @@ namespace BTS.Models
                 tracker.LogError(ex.ToString());
             }
 
-            if(toReturn.Count == 0)
+            if(toReturn != null && toReturn.Count == 0)
             {
                 toReturn = null;
             }
