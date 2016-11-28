@@ -12,8 +12,6 @@
     white-space: normal;
 }
 
-
-
 @media screen and (min-width: 768px) {
     .modal-dialog {
         left: 50%;

@@ -91,6 +91,8 @@ namespace BTS.Models
         public int DeveloperId { get; set; }
 
         public int PmId { get; set; }
+
+        public string Solution { get; set; }
     }
 
     public class ProjectUser
@@ -113,6 +115,7 @@ namespace BTS.Models
         public DateTime AddingTime { get; set;}
         public string SenderNick { get; set; }
         public int BugId { get; set; }
+        public bool Correct { get; set; }
     }
 
 

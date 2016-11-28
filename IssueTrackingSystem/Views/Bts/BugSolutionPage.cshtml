@@ -15,18 +15,23 @@
         </ol>
         <br />
 
-        @if(Model.Status != "Closed")
+        @if(Model.Status == "Closed") // CORRECT!
         {
             <div class="row">
                 <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-8 col-sm-8 col-md-8 col-lg-8 text-center">
-                    <p>No solution found yet</p>
+                    <p id="solutionData">No solution found yet</p>
                 </div>
             </div>
             <br />
         }
         else
         {
-            // to fill in later :)
+            <div class="row">
+                <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-8 col-sm-8 col-md-8 col-lg-8 text-center">
+                    <p id="solutionData">@Model.Solution</p>
+                </div>
+            </div>
+            <br />
         }
 
         @if (Session["Status"].ToString() == "Admin")
@@ -59,10 +64,62 @@
                 </div>
             </div>
             <div class="modal-footer" style="background-color:darkgrey; color: white; border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;">
-                <button type="button" data-dismiss="modal" class="btn btn-info" id="emailSubmitButton">Submit</button>
+                <button type="button" data-dismiss="modal" class="btn btn-info" id="solutionSubmitButton" disabled>Submit</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
 
     </div>
 </div>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+
+            $("textarea[name='solutionData']").keyup(function () {
+                if ($(this).val() == "") {
+                    if (!($("#solutionSubmitButton").prop("disabled"))) {
+                        $("#solutionSubmitButton").prop("disabled", true);
+                    }
+                }
+                else {
+                    $("#solutionSubmitButton").removeProp("disabled");
+                }
+            });
+
+            $("#solutionSubmitButton").click(function () {
+
+                var toPass = JSON.stringify({
+                    bugId: "@Model.Id",
+                    solution: $("textarea[name='solutionData']").val()
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("BugSolution", "Bts")",
+                    dataType: "json",
+                    data: toPass,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(res)
+                    {
+                        if(res)
+                        {
+                            displayMessage("Success", "Solution is added");
+
+                            $("#solutionData").empty();
+                            $("#solutionData").text($("textarea[name='solutionData']").val());
+                        }
+                        else {
+                            displayMessage("Error", "Changes were not applied");
+                        }
+                    },
+                    error: function(xhr, status, message)
+                    {
+                        displayMessage("Error", message);
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_Main.cshtml";
 }
 
-<div class="row">
+<div class="row" id="messageContainer">
     <div class="col-lg-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-8 col-xs-8 col-sm-8 col-md-8" style="background-color:  rgb(166, 228, 239); border-radius: 5px;">
         <br />
         <ol class="breadcrumb">
@@ -22,8 +22,8 @@
     {
         foreach (Message message in (List<Message>)ViewBag.Messages)
         {
-            <div class="row">
-                <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="background-color: rgb(155, 210, 226); border-radius: 5px;">
+            <div class="row" style="margin-bottom: 15px;">
+                <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10"  id="@message.Id" style="background-color: rgb(155, 210, 226); border-radius: 5px;">
                     <div class="row" style="margin-bottom: 5px;">
                         <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-3 col-xs-3 col-sm-3 col-md-3">
                             <p>@message.SenderNick</p>
@@ -32,17 +32,17 @@
                             <p>@message.AddingTime.</p>
                         </div>
                     </div>
-                    <div class="row" style="margin-bottom: 5px;">
+                    <div class="row" style="margin-bottom: 5px;word-wrap:break-word">
                         <div class="co-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10 text-center">
                             <p>@message.MessageText</p>
                         </div>
                     </div>
 
-                    @if (Session["Username"].ToString() == Model.TopicStarter)
+                    @if (Session["Username"].ToString() == Model.TopicStarter && Model.Status != "Closed")
                     {
                     <div class="row" style="margin-bottom: 5px;">
                         <div class="col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                            <button type="button" data-toggle="modal" data-target="#markAsRight" class="btn btn-default">Mark as correct</button>
+                            <button type="button" onclick='setSelected("@message.Id")' data-toggle="modal" data-target="#markAsRight" class="btn btn-default">Mark as correct</button>
                         </div>
                     </div>
                     }
@@ -53,24 +53,27 @@
     <br />
     <hr />
 
-    @if (Session["Username"].ToString() == Model.TopicStarter || Convert.ToInt32(Session["Id"].ToString()) == Model.DeveloperId ||
-                        Convert.ToInt32(Session["Id"].ToString()) == Model.PmId)
+    @if ((Session["Username"].ToString() == Model.TopicStarter || Convert.ToInt32(Session["Id"].ToString()) == Model.DeveloperId ||
+                        Convert.ToInt32(Session["Id"].ToString()) == Model.PmId) && Model.Status != "Closed")
     {
-        <div class="row">
+
+        using (Html.BeginForm()){
+        <div class="row" id="formData">
             <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="background-color: rgb(155, 210, 226); border-radius: 5px;">
                 <div class="row">
                     <div class="col-lg-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="margin-bottom: 5px; margin-top: 5px;">
-                        @Html.TextArea("messageText", new { cols = 30, rows = 10, @class = "form-control" })
+                        @Html.TextArea("messageToAdd", new { cols = 30, rows = 10, @class = "form-control" })
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-offset-4 col-sm-offset-4 col-md-offset-4">
-                       <button class="btn btn-default col-lg-4 col-xs-4 col-sm-4 col-md-4" type="submit" id="addMessage"  style="margin-bottom: 5px;">Send</button>
+                       <button class="btn btn-default col-lg-4 col-xs-4 col-sm-4 col-md-4" type="submit" id="addMessage" style="margin-bottom: 5px;">Send</button>
                     </div>
                 </div>
             </div>
         </div>
-    }
+            }
+        }
                 <br />
             </div>
         </div>
@@ -114,3 +117,79 @@
         </div>
     </div>
 </div>
+
+@section scripts
+{
+
+    <script>
+        var selectedItemId = 0;
+
+        function setSelected(selId)
+        {
+            selectedItemId = selId;
+        }
+
+        $(document).ready(function () {
+
+            var correctItemId = "@ViewBag.CorrectItem";
+
+            if (correctItemId != null && correctItemId > 0)
+            {
+                $("#" + correctItemId).css("background-color", "rgb(86, 251, 179)");
+            }
+
+            $("textarea[name='finalComment']").keyup(function () {
+                if ($(this).val() == "") {
+                    if (!($("#correctSubmitButton").prop("disabled"))) {
+                        $("#correctSubmitButton").prop("disabled", true);
+                    }
+                }
+                else {
+                    $("#correctSubmitButton").removeProp("disabled");
+                }
+            });
+
+            $("#correctSubmitButton").click(function () {
+                var toPass = JSON.stringify({
+                    selectedItemId: selectedItemId,
+                    estimate: $("select[name='Mark'] option:selected").val(),
+                    finalComment: $("textarea[name='finalComment']").val(),
+                    bugId : "@Model.Id"
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("MarkRightAnswer", "Bts")",
+                    dataType: "json",
+                    data: toPass,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(res)
+                    {
+                        if(res)
+                        {
+                            displayMessage("Success", "Write answer is successfully marked");
+
+                            var buttons = $("#messageContainer").find("button");
+
+                            buttons.each(function () {
+                                $(this).hide();
+                            });
+
+                            $("#formData").hide();
+
+                            $("#" + selectedItemId).css("background-color", "rgb(86, 251, 179)");
+                        }
+                        else
+                        {
+                            displayMessage("Error", "Changes were not applied");
+                        }
+                    },
+                    error: function(xhr, status, message)
+                    {
+                        displayMessage("Error", message);
+                    }
+                });
+            });
+        });
+    </script>
+}

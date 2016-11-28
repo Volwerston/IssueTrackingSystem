@@ -847,6 +847,59 @@ namespace BTS.Models
             return toReturn;
         }
 
+        internal void AddMessageToWorkflow(int bugId, string messageToAdd, string nickName)
+        {
+            string cmdString = "INSERT INTO Messages (MESSAGE, ADD_TIME, SENDER_NICKNAME, BUG_ID, CORRECT) VALUES('" + messageToAdd + "',"
+                + "CONVERT(smalldatetime, GETDATE(), 104), '" + nickName + "', " + bugId + ", 0);";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("MessageAddTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+        }
+
+        internal bool MarkRightIssueAnswer(int bugId, int selectedItemId, int estimate)
+        {
+            bool toReturn = false;
+
+            string cmdString = "UPDATE Messages SET CORRECT=1 WHERE ID=" + selectedItemId +
+                "; UPDATE Bugs SET ESTIMATE=" + estimate + ", STATUS='Closed' WHERE ID=" + bugId + ";";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("RightAnswerTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+                toReturn = true;
+            }
+            catch(Exception ex)
+            {
+                toReturn = false;
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+
+
+            return toReturn;
+        }
+
         public List<User> GetDevelopersOfProject(string projName)
         {
             List<User> toReturn = null;
@@ -903,6 +956,34 @@ namespace BTS.Models
             if(toReturn != null && toReturn.Count() == 0)
             {
                 toReturn = null;
+            }
+
+            return toReturn;
+        }
+
+        internal bool AddSolutionOfBug(int bugId, string solution)
+        {
+            bool toReturn = false;
+
+            string cmdString = "UPDATE Bugs SET Solution='" + solution + "' WHERE ID=" + bugId + ";";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("SolutionAddTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+                toReturn = true;
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+                toReturn = false;
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
             }
 
             return toReturn;
@@ -1144,6 +1225,11 @@ namespace BTS.Models
                             bug.Estimate = Convert.ToInt32(rdr["ESTIMATE"].ToString());
                         }
 
+                        if(rdr["SOLUTION"] != DBNull.Value)
+                        {
+                            bug.Solution = rdr["SOLUTION"].ToString();
+                        }
+
 
                         if (rdr["PHOTO"] != DBNull.Value)
                         {
@@ -1250,6 +1336,7 @@ namespace BTS.Models
                         toAdd.SenderNick = rdr["SENDER_NICKNAME"].ToString();
                         toAdd.AddingTime = Convert.ToDateTime(rdr["ADD_TIME"].ToString());
                         toAdd.BugId = Convert.ToInt32(rdr["BUG_ID"].ToString());
+                        toAdd.Correct = Convert.ToBoolean(rdr["CORRECT"].ToString());
 
                         toReturn.Add(toAdd);
                     }

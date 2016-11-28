@@ -304,7 +304,14 @@ namespace BTS.Controllers
                 return RedirectToAction("PageNotFound", "Error");
             }
 
-            ViewBag.ProjectBugs = projectBugs;
+            if (projectBugs != null)
+            {
+                ViewBag.ProjectBugs = projectBugs;
+            }
+            else
+            {
+                ViewBag.ProjectBugs = new List<Bug>();
+            }
 
             return View(project);
         }
@@ -876,6 +883,26 @@ namespace BTS.Controllers
                 if (bug != null)
                 {
                     List<Message> messages = db.GetMessageLog(id);
+
+                    int correct = -1;
+
+                    foreach(Message message in messages)
+                    {
+                        if(message.Correct)
+                        {
+                            correct = message.Id;
+                        }
+                    }
+
+                    if(correct != -1)
+                    {
+                        ViewBag.CorrectItem = correct;
+                    }
+                    else
+                    {
+                        ViewBag.CorectItem = 0;
+                    }
+
                     ViewBag.Messages = messages;
 
                     return View(bug);
@@ -885,6 +912,54 @@ namespace BTS.Controllers
             return RedirectToAction("PageNotFound", "Error");
         }
 
+        [HttpPost]
+        public ActionResult BugWorkflowPage(int id, string messageToAdd, string projName)
+        {
+            ViewBag.ProjectName = projName;
+
+            if (db.Open())
+            {
+                db.AddMessageToWorkflow(id, messageToAdd, Session["Username"].ToString());
+
+                Project proj = db.GetProjectsByName(projName)[0];
+
+                Bug bug = null;
+
+                if (proj != null)
+                {
+                    bug = db.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
+                }
+
+                if (bug != null)
+                {
+                    List<Message> messages = db.GetMessageLog(id);
+                    ViewBag.Messages = messages;
+                }
+
+                db.Close();
+
+                return View(bug);
+            }
+
+            return RedirectToAction("PageNotFound", "Bts");
+        }
+
+        [HttpPost]
+        public string MarkRightAnswer(int selectedItemId, int bugId, int estimate, string finalComment)
+        {
+            bool toReturn = false;
+
+            if(db.Open())
+            {
+                db.AddMessageToWorkflow(bugId, finalComment, Session["Username"].ToString());
+
+                toReturn = db.MarkRightIssueAnswer(bugId, selectedItemId, estimate);
+
+                db.Close();
+            }
+
+            return JsonConvert.SerializeObject(toReturn);
+        }
 
         [SystemAuthorize(Roles="Admin")]
         public ActionResult BugSolutionPage(int id, string projName)
@@ -910,6 +985,19 @@ namespace BTS.Controllers
             }
 
             return RedirectToAction("PageNotFound", "Error");
+        }
+
+        [ValidateInput(false)]
+        public string BugSolution(int bugId, string solution)
+        {
+            bool toReturn = true;
+
+            if(db.Open())
+            {
+                toReturn = db.AddSolutionOfBug(bugId, solution);
+                db.Close();
+            }
+            return JsonConvert.SerializeObject(toReturn);
         }
     }
 }
