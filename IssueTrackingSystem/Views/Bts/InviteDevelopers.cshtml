@@ -55,7 +55,7 @@
 
 
         function getDivForDeveloper(userData, source) {
-            return '<div class="row">'
+            return '<div class="row" id="developer' + userData.Id + '">'
                 + '<div class="col-md-offset-3 col-md-6 col-sm-offset-3 col-sm-6 col-xs-6 col-xs-offset-3">'
                           + '<a href="@Url.Action("ExternalAccountPage", "Bts")' + '/?id=' + userData.Id + '">'
                  + '<div class="row" style="margin: 10px 10px 10px 10px; padding: 10px 10px 10px 10px; background-color: rgb(16, 219, 131); border-radius: 5px;">'
@@ -71,7 +71,7 @@
        + '</div>'
                 + '</a>'
      + '<div class="row text-center" style="margin-bottom: 5px; border-radius: 5px;">'
-        + '<button type="button" class="btn btn-info btn-block"">Invite</button>'
+        + '<button type="button" class="btn btn-info btn-block" onclick="inviteDev(' + userData.Id + ')">Invite</button>'
        + '</div>'
   + '</div>'
    + '</div>'
@@ -105,21 +105,50 @@
                             }
                         }
                         else {
-                            if ($("#developers").is(':empty'))
-                            {
+                            if ($("#developers").is(':empty')) {
                                 $("#developers").append('<div class="text-center"><p>No developers were found</p></div>');
                             }
                         }
                     }
                     else {
-                        if ($("#developers").is(':empty'))
-                        {
+                        if ($("#developers").is(':empty')) {
                             $("#developers").append('<div class="text-center"><p>No developers were found</p></div>');
                         }
-                    }
+                        }
                 },
                 error: function (xhr, status, message) {
                     alert(message);
+                }
+            });
+        }
+
+        function inviteDev(devId)
+        {
+            var toPass = JSON.stringify({
+                projectName: "@ViewBag.ProjectName.ToString()",
+                devId : devId
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("InviteDevelopers", "Bts")",
+                dataType: "json",
+                data: toPass,
+                contentType: "application/json; charset=utf-8",
+                success: function(res)
+                {
+                    if (res)
+                    {
+                        displayMessage("Success", "Developer is invited to the project");
+                        $("#developer" + devId).hide();
+                    }
+                    else {
+                        displayMessage("Error", "Changes were not applied");
+                    }
+                },
+                error: function(xhr, status, message)
+                {
+                    displayMessage("Error", message);
                 }
             });
         }

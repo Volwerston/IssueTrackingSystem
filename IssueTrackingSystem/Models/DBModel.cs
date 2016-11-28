@@ -174,8 +174,6 @@ namespace BTS.Models
 
         internal List<User> getUsers()
         {
-            try
-            {
                 List<User> toReturn = new List<User>();
 
                 string cmdString = "SELECT * FROM Users;";
@@ -242,14 +240,6 @@ namespace BTS.Models
 
                 return toReturn;
             }
-            catch(Exception ex)
-            {
-                ErrorTracker tracker = new ErrorTracker();
-                tracker.LogError(ex.Message);
-
-                return new List<User>();
-            }
-        }
 
         internal bool isEmailSent(string email)
         {
@@ -494,6 +484,78 @@ namespace BTS.Models
             return toReturn;
         }
 
+        internal bool RemoveDevsFromProject(string projName, List<int> toErase)
+        {
+            bool toReturn = false;
+
+            string cmdString = "DELETE FROM ProjectDeveloper WHERE";
+
+            foreach(int eraseId in toErase)
+            {
+                cmdString += " DEV_ID=" + eraseId + " OR";
+            }
+
+            cmdString = cmdString.Substring(0, cmdString.Length - 3);
+            cmdString += ";";
+
+            cmdString += " UPDATE Bugs SET DEVELOPER_ID=0 WHERE ";
+
+            foreach (int eraseId in toErase)
+            {
+                cmdString += " DEVELOPER_ID=" + eraseId + " OR";
+            }
+
+            cmdString = cmdString.Substring(0, cmdString.Length - 3);
+            cmdString += ";";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("EraseDevsTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+                toReturn = true;
+            }
+            catch(Exception ex)
+            {
+                toReturn = false;
+                transaction.Rollback();
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+
+            return toReturn;
+        }
+
+        internal bool InviteDeveloperToProject(string projectName, int devId)
+        {
+            bool toReturn = false;
+
+            string cmdString = "INSERT INTO ProjectDeveloper(PROJ_NAME, DEV_ID, Approved) VALUES('" + projectName + "', " + devId + ", 0);";
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("InsertDevTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+                toReturn = true;
+            }
+            catch(Exception ex)
+            {
+                toReturn = false;
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+
+            return toReturn;
+        }
+
         internal bool EditUserEmail(int id, string email)
         {
             bool toReturn = false;
@@ -722,7 +784,7 @@ namespace BTS.Models
 
             using (SqlCommand cmd = new SqlCommand(cmdString, connection))
             {
-                SqlTransaction transaction = connection.BeginTransaction("FindUser");
+                SqlTransaction transaction = connection.BeginTransaction("FindUserTransaction");
                 cmd.Transaction = transaction;
 
                 try
@@ -732,11 +794,22 @@ namespace BTS.Models
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
-                    if (reader.Read())
+                    try
                     {
-                        toReturn.Id = Convert.ToInt32(reader["ID"].ToString());
-                        toReturn.Status = reader["STATUS"].ToString();
+                        if (reader.Read())
+                        {
+                            toReturn.Id = Convert.ToInt32(reader["ID"].ToString());
+                            toReturn.Status = reader["STATUS"].ToString();
+                        }
+                        reader.Close();
                     }
+                    catch(Exception ex)
+                    {
+                        reader.Close();
+                        ErrorTracker tracker = new ErrorTracker();
+                        tracker.LogError(ex.ToString());
+                    }
+
                 }
                 catch (Exception ex)
                 {
@@ -750,7 +823,29 @@ namespace BTS.Models
             return toReturn;
         }
 
-        
+        internal bool SetDevIdForBug(int bugId, int id)
+        {
+            bool toReturn = false;
+
+            string cmdString = "UPDATE Bugs SET DEVELOPER_ID=" + id + " WHERE ID=" + bugId + ";";
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("AlterDevId");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+                toReturn = true;
+            }
+            catch
+            {
+                toReturn = false;
+                transaction.Rollback();
+            }
+
+            return toReturn;
+        }
 
         public List<User> GetDevelopersOfProject(string projName)
         {
@@ -781,6 +876,7 @@ namespace BTS.Models
                         u.Id = Convert.ToInt32(rdr["ID"].ToString());
                         u.Name = rdr["NAME"].ToString();
                         u.Surname = rdr["SURNAME"].ToString();
+                        u.Nickname = rdr["NICKNAME"].ToString();
                         u.Status = rdr["STATUS"].ToString();
 
                         toReturn.Add(u);
@@ -1089,7 +1185,7 @@ namespace BTS.Models
             string cmdString = "SELECT * FROM Categories;";
             SqlCommand cmd = new SqlCommand(cmdString, connection);
 
-            SqlTransaction transaction = connection.BeginTransaction("Categories");
+            SqlTransaction transaction = connection.BeginTransaction("CategoriesTrasaction");
             cmd.Transaction = transaction;
 
             try

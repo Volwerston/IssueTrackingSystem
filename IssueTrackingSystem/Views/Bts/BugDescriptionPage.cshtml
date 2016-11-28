@@ -1,8 +1,26 @@
 ﻿@model BTS.Models.Bug
 
+@using BTS.Models;
+
 @{
     ViewBag.Title = "Bug Description";
     Layout = "~/Views/Shared/_Main.cshtml";
+
+    string developerName = "Unknown";
+
+    if ((User)ViewBag.DeveloperInDuty != null)
+    {
+        User u = (User)ViewBag.DeveloperInDuty;
+        developerName = u.Name + " " + u.Surname;
+    }
+
+    string pmName = "Unknown";
+
+    if ((User)ViewBag.ProjectManager != null)
+    {
+        User u = (User)ViewBag.ProjectManager;
+        pmName = u.Name + " " + u.Surname;
+    }
 }
 
 <div class="row">
@@ -36,9 +54,9 @@
 
         <dl class="dl-horizontal">
             <dt style="margin-bottom: 10px;">Project Manager: </dt>
-            <dd><a href="@Url.Action("InternalAccountPage", "Bts")">Unknown</a></dd>
+            <dd>@pmName</dd>
             <dt style="margin-bottom: 10px;">Developer: </dt>
-            <dd><a href="@Url.Action("InternalAccountPage", "Bts")">Unknown   </a>
+            <dd id="developerData">@developerName
             @if(Session["Status"].ToString() == "Admin")
             {
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#changeDev"><span class="glyphicon glyphicon-edit"></span></button>
@@ -60,7 +78,11 @@
                 <div class="form-group">
                     @Html.Label("Project developers:", new { @class = "control-label col-xs-5 col-sm-5 col-md-5 col-lg-5" })
                     <div class="col-sm-offset-1 col-md-offset-1 col-lg-offset-1">
+
+                        @if ((List<SelectListItem>)ViewBag.Developers != null)
+                        {
                         @Html.DropDownList("Developers", (List<SelectListItem>)ViewBag.Developers, new { @class = "form-control col-xs-5 xol-sm-5 col-md-5 col-lg-5" })
+                        }
                     </div>
                 </div>
             </div>
@@ -71,3 +93,45 @@
         </div>
     </div>
 </div>
+
+@section scripts
+{
+    <script>
+    $(document).ready(function() {
+
+    $("#developerSubmitButton").click(function(){
+    
+        var f = JSON.stringify({
+            bugId: "@Model.Id",
+            projectName: "@ViewBag.ProjectName.ToString()",
+            devNickname : $("select[name='Developers']").val()
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("ChangeDeveloper", "Bts")",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            data: f,
+            success: function(res)
+            {
+                if (res) {
+                    displayMessage("Success", "In-duty developer changed");
+                    alert($("select[name='Developers']").val());
+                    $("#developerData").text($("select[name='Developers']").val() + "    ");
+                    $("#developerData").append('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#changeDev"><span class="glyphicon glyphicon-edit"></span></button>');
+                }
+                else {
+                    displayMessage("Error", "Change was not applied");
+                }
+            },
+            error: function(xhr, status, errorMessage)
+            {
+                displayMessage("Error", errorMessage);
+            }
+        });
+    });
+
+    });
+</script> 
+}

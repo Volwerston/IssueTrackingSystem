@@ -287,7 +287,7 @@ namespace BTS.Controllers
 
                         foreach (User dev in developers)
                         {
-                            SelectListItem item = new SelectListItem() { Text = dev.Name + " " + dev.Surname, Value = dev.Nickname };
+                            SelectListItem item = new SelectListItem() { Text = dev.Name + " " + dev.Surname, Value = dev.Id.ToString() };
                             developerList.Add(item);
                         }
                     }
@@ -340,15 +340,14 @@ namespace BTS.Controllers
 
                 while (toReturn.Count() < 5)
                 {
+                    int prevCount = toReturn.Count();
                     List<User> buf = null;
 
-                    if (toReturn.Count() == 0)
+                    buf = db.searchForUsers(id, userNames, new List<string> { "Developer" });
+
+                    if(buf != null)
                     {
-                        buf = db.searchForUsers(id, userNames, new List<string> { "Developer" });
-                    }
-                    else
-                    {
-                        buf = db.searchForUsers(toReturn.Last().Id, userNames, new List<string> { "Developer" });
+                        id = buf.Last().Id;
                     }
 
                     if(buf == null)
@@ -444,6 +443,21 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
+        public string InviteDevelopers(int devId, string projectName)
+        {
+            bool toReturn = false;
+
+            if (db.Open())
+            {
+                toReturn = db.InviteDeveloperToProject(projectName, devId);
+
+                db.Close();
+            }
+   
+            return JsonConvert.SerializeObject(toReturn);
+        }
+
+        [HttpPost]
         public ActionResult ChangePassword(string password, string confirmPassword)
         {
             if (password == confirmPassword)
@@ -498,6 +512,23 @@ namespace BTS.Controllers
             return View();
             }
             else return RedirectToAction("PageNotFound", "Error");
+        }
+
+        [HttpPost]
+        public string RemoveDevelopersFromProject(string projName, int[] toErase)
+        {
+            bool toReturn = false;
+
+            if (toErase != null)
+            {
+                if (db.Open())
+                {
+                    toReturn = db.RemoveDevsFromProject(projName, toErase.ToList());
+                    db.Close();
+                }
+            }
+
+            return JsonConvert.SerializeObject(toReturn);
         }
 
         [HttpPost]
@@ -776,11 +807,54 @@ namespace BTS.Controllers
 
                     ViewBag.Developers = developerList;
 
+                    if (bug.DeveloperId != 0)
+                    {
+                        ViewBag.DeveloperInDuty = db.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
+                    }
+                    else
+                    {
+                        ViewBag.DeveloperInDuty = null;
+                    }
+
+                    if (bug.PmId != 0)
+                    {
+                        ViewBag.ProjectManager = db.getUsers().Where(x => x.Id == bug.PmId).ToList().SingleOrDefault();
+                    }
+                    else
+                    {
+                        ViewBag.ProjectManager = null;
+                    }
+
+                    db.Close();
+
                     return View(bug);
                 }
+
             }
 
             return RedirectToAction("PageNotFound", "Error");
+        }
+
+        [HttpPost]
+        public string ChangeDeveloper(int bugId, string projectName, string devNickname)
+        {
+            string[] parameters = devNickname.Split(' ');
+
+            bool toReturn = false;
+
+            if(db.Open())
+            {
+                User u = db.getUsers().Where(x => x.Name == parameters[0] && x.Surname == parameters[1]).ToList().SingleOrDefault();
+
+                if(u != null)
+                {
+                    toReturn = db.SetDevIdForBug(bugId, u.Id);
+                }
+
+                db.Close();
+            }
+
+            return JsonConvert.SerializeObject(toReturn);
         }
 
         [SystemAuthorize(Roles = "Admin")]
