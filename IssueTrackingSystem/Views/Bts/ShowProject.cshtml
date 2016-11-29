@@ -8,6 +8,48 @@
     Layout = "~/Views/Shared/_Main.cshtml";
 
     List<SelectListItem> items = (List<SelectListItem>)ViewBag.Developers;
+
+    List<User> invitedDevelopers = (List<User>)ViewBag.InvitedDevs;
+
+    List<User> approvedDevs = (List<User>)ViewBag.ApprovedDevelopers;
+
+    int pmId = (int)ViewBag.Pm;
+
+    bool isInvited = false;
+
+    bool canAddBug = true;
+
+    if (approvedDevs != null)
+    {
+        foreach (User u in approvedDevs)
+        {
+            if (u.Id == Convert.ToInt32(Session["Id"].ToString()))
+            {
+                canAddBug = false;
+                break;
+            }
+        }
+    }
+
+    if(canAddBug)
+    {
+        if(pmId == Convert.ToInt32(Session["Id"].ToString()))
+        {
+            canAddBug = false;
+        }
+    }
+
+    if (invitedDevelopers != null)
+    {
+        foreach (User u in invitedDevelopers)
+        {
+            if (u.Id == Convert.ToInt32(Session["Id"].ToString()))
+            {
+                isInvited = true;
+                break;
+            }
+        }
+    }
 }
 
 <div style="margin: 10px 10px 10px 10px; padding: 10px 10px 10px 10px;">
@@ -22,9 +64,20 @@
         <div style="overflow-x:hidden; overflow-y: auto;">
             <p>@Html.DisplayFor(model => model.Updates)</p>
         </div>
+
+        @if (canAddBug)
+        {
         <div class="row" style="padding-bottom: 5px; margin-left: 2px; margin-right: 2px;">
          <input type="submit" class="col-xs-2 col-sm-2 col-md-2 col-lg-2 btn btn-info btn-block" value="Report bug" onclick="location.href='@Url.Action("ReportBug", "Bts", new { @projectId = Model.Id })'" />
         </div>
+        }
+
+        @if (isInvited)
+        {
+            <div class="row" style="padding-bottom: 5px; margin-left: 2px; margin-right: 2px;">
+                <input type="submit" class="col-xs-2 col-sm-2 col-md-2 col-lg-2 btn btn-info btn-block" value="Join project" onclick="location.href='@Url.Action("JoinProject", "Bts", new { id = Convert.ToInt32(Session["Id"].ToString()), projectName = Model.Name })'" />
+            </div>
+        }
 
         @if (Session["Status"].ToString() == "Admin")
         {
@@ -132,11 +185,6 @@
         currList = 1;
         showList(currList, $("#itemsCount").val());
         addPagination($("#itemsCount").val());
-
-        $(".clickable-row").click(function () {
-            window.document.location = $(this).data("href");
-        });
-
 
         $("#itemsCount").change(function () {
 
@@ -383,6 +431,22 @@
             }
         }
 
+    function moveToBug(id)
+    {
+        window.document.location = '@Url.Action("BugDescriptionPage","Bts", new { projName = Model.Name })&id=' + id;
+    }
+
+    function setWhite(id)
+    {
+        $("#trow" + id).css("cursor", "pointer");
+        $("#trow" + id).css("background-color", "white");
+    }
+
+    function setNormal(id)
+    {
+        $("#trow" + id).css("background-color", "rgb(69, 163, 231)")
+    }
+
         function showList(numOfList, numOfItems) {
             var toAppend = '<table class="table"><thead><tr><th>' +
                 '<button onclick="changeSortOrder(\'byId\')" class="btn btn-default">Id <span class="glyphicon glyphicon-arrow-down" id="byId"></span></button></th><th>' +
@@ -391,18 +455,18 @@
 
             if (numOfItems * numOfList > currEntries.length) {
                 for (var i = numOfItems * (numOfList - 1) ; i < currEntries.length; ++i) {
-                    toAppend += '<tr class="clickable-row" data-href="@Url.Action("BugDescriptionPage","Bts", new { projName = Model.Name })&id=' + currEntries[i].Id + '"><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
+                    toAppend += '<tr class="tableEntry" id="trow' + currEntries[i].Id + '" onmouseenter="setWhite(' + currEntries[i].Id + ')" onmouseleave="setNormal(' + currEntries[i].Id + ')" onclick="moveToBug(' + currEntries[i].Id + ')"><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
                                 + currEntries[i].Status + '</td></tr>';
                 }
             }
             else {
                 for (var i = numOfItems * (numOfList - 1) ; i < numOfItems * numOfList; ++i) {
-                    toAppend += '<tr class="clickable-row" data-href="@Url.Action("BugDescriptionPage","Bts", new { projName = Model.Name })&id=' + currEntries[i].Id + '"><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
+                    toAppend += '<tr class="tableEntry" id="trow' + currEntries[i].Id + '" onmouseenter="setWhite(' + currEntries[i].Id + ')" onmouseleave="setNormal(' + currEntries[i].Id + ')" onclick="moveToBug(' + currEntries[i].Id + ')"><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
                                 + currEntries[i].Status + '</td></tr>';
                 }
             }
 
-            
+
             toAppend += '</tbody></table>';
 
             if (currEntries.length == 0) {

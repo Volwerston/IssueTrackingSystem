@@ -40,6 +40,8 @@ namespace BTS.Controllers
                         {
                             Session["Username"] = Request.Cookies["username"].Value;
                             Session["Status"] = u.Status;
+                            Session["Confirmed"] = u.Confirmed.ToString();
+                            Session["Id"] = u.Id;
 
                             return RedirectToAction("Main");
                         }
@@ -51,7 +53,7 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
-        public string ConfirmUser(int userId)
+        public ActionResult ConfirmUser(int userId)
         {
             bool toReturn = false;
 
@@ -61,7 +63,7 @@ namespace BTS.Controllers
                 db.Close();
             }
 
-            return JsonConvert.SerializeObject(toReturn);
+            return RedirectToAction("ExternalAccountPage", "Bts", new { id = userId });
         }
 
         public ActionResult LogIn(string Login, string Password, bool rememberMe)
@@ -77,6 +79,7 @@ namespace BTS.Controllers
                     Session["Username"] = Login;
                     Session["Status"] = u.Status;
                     Session["Id"] = u.Id;
+                    Session["Confirmed"] = u.Confirmed.ToString();
 
                     if (rememberMe)
                     {
@@ -109,12 +112,13 @@ namespace BTS.Controllers
             }
         }
 
-        [SystemAuthorize(Roles = "Admin")]
+        [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult SignOut()
         {
             Session.Remove("Username");
             Session.Remove("Status");
             Session.Remove("Id");
+            Session.Remove("Confirmed");
 
             HttpCookie nick = new HttpCookie("username");
             nick.Expires = DateTime.Now.AddDays(-1d);
@@ -234,7 +238,7 @@ namespace BTS.Controllers
             return View();
         }
 
-        [SystemAuthorize(Roles = "Admin")]
+        [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult Main()
         {
             List<Category> categories = new List<Category>();
@@ -278,7 +282,7 @@ namespace BTS.Controllers
             return returnString;
         }
 
-        [SystemAuthorize(Roles = "Admin")]
+        [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult ShowProject(string name)
         {
             bool projectFound = false;
@@ -299,8 +303,13 @@ namespace BTS.Controllers
 
                 if (project != null)
                 {
-                    List<User> developers = db.GetDevelopersOfProject(name);
+                    List<User> invitedDevs = null;
+                    List<User> developers = db.GetDevelopersOfProject(name, out invitedDevs);
                     List<SelectListItem> developerList = null;
+
+                    ViewBag.InvitedDevs = invitedDevs;
+                    ViewBag.ApprovedDevelopers = developers;
+                    
 
                     if (developers != null)
                     {
@@ -328,6 +337,8 @@ namespace BTS.Controllers
             if (projectBugs != null)
             {
                 ViewBag.ProjectBugs = projectBugs;
+
+                ViewBag.Pm = projectBugs[0].PmId;
             }
             else
             {
@@ -335,6 +346,16 @@ namespace BTS.Controllers
             }
 
             return View(project);
+        }
+
+        public ActionResult JoinProject(int id, string projectName)
+        {
+            if(db.Open())
+            {
+                db.ApproveDeveloperForProject(projectName, id);
+            }
+
+            return RedirectToAction("ShowProject", "Bts", new { name = projectName });
         }
 
         public ActionResult ChangePassword()
@@ -364,7 +385,14 @@ namespace BTS.Controllers
             if (db.Open())
             {
                 anonymous = db.getUsers().Where(x => x.Nickname == "Anonymous").ToList()[0];
-                List<User> currDevelopers = db.GetDevelopersOfProject(projectName);
+
+                List<User> invitedDevs = null;
+                List<User> currDevelopers = db.GetDevelopersOfProject(projectName, out invitedDevs);
+
+                if(invitedDevs.Count() > 0)
+                {
+                    currDevelopers.AddRange(invitedDevs);
+                }
 
                 while (toReturn.Count() < 5)
                 {
@@ -376,6 +404,8 @@ namespace BTS.Controllers
                     if(buf != null)
                     {
                         id = buf.Last().Id;
+
+                        buf = buf.Where(x => x.Confirmed).ToList();
                     }
 
                     if(buf == null)
@@ -457,7 +487,7 @@ namespace BTS.Controllers
             return toReturnString;
         }
 
-        [SystemAuthorize(Roles = "Admin")]
+        [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult InviteDevelopers(string projectName)
         {
             if (projectName != null)
@@ -547,7 +577,7 @@ namespace BTS.Controllers
             return View();
         }
 
-        [SystemAuthorize(Roles = "Admin")]
+        [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult ReportBug(int projectId)
         {
             TempData["projId"] = projectId;
@@ -555,7 +585,7 @@ namespace BTS.Controllers
             return View(bug);
         }
 
-        [SystemAuthorize(Roles = "Admin")]
+        [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult FindUsers()
         {
             if (db.Open())
@@ -650,7 +680,7 @@ namespace BTS.Controllers
             return toReturnString;
         }
 
-        [SystemAuthorize(Roles = "Admin")]
+        [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult InternalAccountPage()
         {
             User user = new User();
@@ -681,7 +711,7 @@ namespace BTS.Controllers
             return View(user);
         }
 
-        [SystemAuthorize(Roles = "Admin")]
+        [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult ExternalAccountPage(int id)
         {
             User u = null;
@@ -830,7 +860,7 @@ namespace BTS.Controllers
             return View();
         }
 
-        [SystemAuthorize(Roles = "Admin")]
+        [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult BugDescriptionPage(string projName, int id)
         {
             ViewBag.ProjectName = projName;
@@ -848,7 +878,8 @@ namespace BTS.Controllers
 
                 if (bug != null)
                 {
-                    List<User> developers = db.GetDevelopersOfProject(projName);
+                    List<User> invitedDevs = null;
+                    List<User> developers = db.GetDevelopersOfProject(projName, out invitedDevs);
                     List<SelectListItem> developerList = null;
 
                     if (developers != null)
@@ -930,7 +961,7 @@ namespace BTS.Controllers
             return JsonConvert.SerializeObject(toReturn);
         }
 
-        [SystemAuthorize(Roles = "Admin")]
+        [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult BugWorkflowPage(string projName, int id)
         {
             ViewBag.ProjectName = projName;
@@ -1053,7 +1084,7 @@ namespace BTS.Controllers
             return JsonConvert.SerializeObject(toReturn);
         }
 
-        [SystemAuthorize(Roles="Admin")]
+        [SystemAuthorize(Roles= "Admin,Tester,Developer,Project Manager")]
         public ActionResult BugSolutionPage(int id, string projName)
         {
 

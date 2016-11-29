@@ -55,9 +55,9 @@ namespace BTS.Models
 
             string passw = FormsAuthentication.HashPasswordForStoringInConfigFile(u.Password, "SHA1");
 
-            string insertCmdString = "INSERT INTO Users(NAME, SURNAME, NICKNAME, BIRTHDATE, EMAIL, AVATAR, PASSWORD, STATUS) "
+            string insertCmdString = "INSERT INTO Users(NAME, SURNAME, NICKNAME, BIRTHDATE, EMAIL, AVATAR, PASSWORD, STATUS, Confirmed) "
                         + " VALUES('" + u.Name + "', '" + u.Surname + "', '" + u.Nickname + "', CONVERT(smalldatetime,'" + u.BirthDate.ToString().Substring(0, 10) + "',104), '"
-                        + u.Email + "',@Avatar,'" + passw + "', '" + u.Status + "');";
+                        + u.Email + "',@Avatar,'" + passw + "', '" + u.Status + "', 0);";
 
             SqlParameter param = new SqlParameter("@Avatar", SqlDbType.Binary);
 
@@ -233,6 +233,12 @@ namespace BTS.Models
                                 user.Status = reader["STATUS"].ToString();
                                 user.Email = reader["EMAIL"].ToString();
 
+                            if (reader["Confirmed"] != DBNull.Value)
+                            {
+                                user.Confirmed = Convert.ToBoolean(reader["Confirmed"].ToString());
+                            }
+                            else user.Confirmed = false;
+
                                 if (reader["AVATAR"] != DBNull.Value)
                                 {
                                     user.Avatar = (byte[])(reader["AVATAR"]);
@@ -354,6 +360,26 @@ namespace BTS.Models
             }
         }
 
+        internal void ApproveDeveloperForProject(string projectName, int userId)
+        {
+            string cmdString = "UPDATE ProjectDeveloper SET Approved=1 WHERE PROJ_NAME='" + projectName + "' AND DEV_ID=" + userId + ";";
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("DevApproveTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+        }
+
         internal int GetBugId(string subject)
         {
             int toReturn = -1;
@@ -472,6 +498,12 @@ namespace BTS.Models
                             user.Password = reader["PASSWORD"].ToString();
                             user.Status = reader["STATUS"].ToString();
                             user.Email = reader["EMAIL"].ToString();
+
+                            if (reader["Confirmed"] != DBNull.Value)
+                            {
+                                user.Confirmed = Convert.ToBoolean(reader["Confirmed"].ToString());
+                            }
+                            else user.Confirmed = false;
 
                             if (reader["AVATAR"] != DBNull.Value)
                             {
@@ -888,6 +920,12 @@ namespace BTS.Models
                         {
                             toReturn.Id = Convert.ToInt32(reader["ID"].ToString());
                             toReturn.Status = reader["STATUS"].ToString();
+
+                            if (reader["Confirmed"] != DBNull.Value)
+                            {
+                                toReturn.Confirmed = Convert.ToBoolean(reader["Confirmed"].ToString());
+                            }
+                            else toReturn.Confirmed = false;
                         }
                         reader.Close();
                     }
@@ -1011,10 +1049,12 @@ namespace BTS.Models
             return toReturn;
         }
 
-        public List<User> GetDevelopersOfProject(string projName)
+        public List<User> GetDevelopersOfProject(string projName, out List<User> invitedDevelopers)
         {
             List<User> toReturn = null;
-            string cmdString = "SELECT A.ID, A.NAME, A.SURNAME, A.NICKNAME, A.STATUS "
+            invitedDevelopers = new List<User>();
+
+            string cmdString = "SELECT A.ID, A.NAME, A.SURNAME, A.NICKNAME, A.STATUS, A.Confirmed, B.Approved "
                 + "FROM Users A inner join ProjectDeveloper B ON A.ID = B.DEV_ID "
                 + "WHERE B.PROJ_NAME='" + projName + "';";
 
@@ -1043,7 +1083,33 @@ namespace BTS.Models
                         u.Nickname = rdr["NICKNAME"].ToString();
                         u.Status = rdr["STATUS"].ToString();
 
-                        toReturn.Add(u);
+                        if (rdr["Confirmed"] != DBNull.Value)
+                        {
+                            u.Confirmed = Convert.ToBoolean(rdr["Confirmed"].ToString());
+                        }
+                        else
+                        {
+                            u.Confirmed = false;
+                        }
+
+                        if (u.Confirmed)
+                        {
+                            if (rdr["Approved"] != DBNull.Value)
+                            {
+                                if (Convert.ToBoolean(rdr["Approved"].ToString()))
+                                {
+                                    toReturn.Add(u);
+                                }
+                                else
+                                {
+                                    invitedDevelopers.Add(u);
+                                }
+                            }
+                            else
+                            {
+                                invitedDevelopers.Add(u);
+                            }
+                        }
                     }
 
                     rdr.Close();
@@ -1131,6 +1197,12 @@ namespace BTS.Models
                         toReturn.BirthDate = Convert.ToDateTime(reader["BIRTHDATE"].ToString());
                         toReturn.Status = reader["STATUS"].ToString();
                         toReturn.Avatar = (byte[])reader["AVATAR"];
+
+                        if (reader["Confirmed"] != DBNull.Value)
+                        {
+                            toReturn.Confirmed = Convert.ToBoolean(reader["Confirmed"].ToString());
+                        }
+                        else toReturn.Confirmed = false;
                     }
 
                     reader.Close();

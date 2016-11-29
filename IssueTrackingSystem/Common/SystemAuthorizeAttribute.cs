@@ -20,9 +20,16 @@ namespace IssueTrackingSystem.Common
 
             if (HttpContext.Current.Session["Username"] != null)
             {
-                if (hasRole(HttpContext.Current.Session["Status"].ToString(), Roles))
+                if (hasRole(HttpContext.Current.Session["Status"].ToString(), Roles) && Convert.ToBoolean(HttpContext.Current.Session["Confirmed"].ToString()))
                 {
                     accessAllowed = true;
+                }
+                else
+                {
+                    HttpContext.Current.Session.Remove("Username");
+                    HttpContext.Current.Session.Remove("Status");
+                    HttpContext.Current.Session.Remove("Id");
+                    HttpContext.Current.Session.Remove("Confirmed");
                 }
             }
 

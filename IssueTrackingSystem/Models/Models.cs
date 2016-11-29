@@ -46,6 +46,8 @@ namespace BTS.Models
         [MaxLength(15, ErrorMessage = "Status field must contain at most 15 characters")]
         [Display(Name = "Apply status")]
         public string Status { get; set; }
+
+        public bool Confirmed { get; set; }
     }
 
     public class Project
