@@ -27,37 +27,37 @@
                 <img class="img-responsive img-rounded" id="ava" src="@imgPath" style="margin-bottom: 10px;" />
                 <div class="row">
                     <div class="col-md-offset-4">
-                <button type="button" class="btn btn-info col-md-6" data-toggle="modal" data-target="#editAvatar" style="margin-bottom:5px;"><span class="glyphicon glyphicon-edit"></span></button>
-            </div>
+                        <button type="button" class="btn btn-info col-md-6" data-toggle="modal" data-target="#editAvatar" style="margin-bottom:5px;"><span class="glyphicon glyphicon-edit"></span></button>
                     </div>
                 </div>
+            </div>
             <div class="col-md-8">
                 <div class="row">
                     <div class="col-md-4">
                         <b>@Html.DisplayNameFor(model => model.Nickname)</b>
-                        </div>
+                    </div>
                     <div class="col-md-4">
                         @Html.DisplayFor(model => model.Nickname)
                     </div>
                 </div>
-                <br/>
-                <br/>
+                <br />
+                <br />
                 <div class="row">
                     <div class="col-md-4">
                         <b>@Html.DisplayNameFor(model => model.Email)</b>
-</div>
+                    </div>
                     <div class="col-md-4">
                         <p id="emailData">@Model.Email</p>
                     </div>
-                <div class="col-md-offset-2 col-md-2">
-                    <button class="btn btn-info" data-toggle="modal" data-target="#editEmail"><span class="glyphicon glyphicon-edit"></span></button>
+                    <div class="col-md-offset-2 col-md-2">
+                        <button class="btn btn-info" data-toggle="modal" data-target="#editEmail"><span class="glyphicon glyphicon-edit"></span></button>
+                    </div>
                 </div>
-                </div>
-                <br/>
+                <br />
                 <div class="row">
                     <div class="col-md-4">
                         <b>@Html.DisplayNameFor(model => model.BirthDate)</b>
-</div>
+                    </div>
                     <div class="col-md-4">
                         <p id="birthdateData">@userBirthData</p>
                     </div>
@@ -69,10 +69,11 @@
                 <br />
                 <div class="row">
                     <div class="col-md-offset-4 col-md-4">
-                        <button class="btn btn-info btn-block" style="margin-bottom: 5px">Notificatons</button>
+                        <button class="btn btn-info btn-block" style="margin-bottom: 5px" id="showNotifications">Notificatons</button>
                     </div>
                 </div>
-
+                <div class="row" id="notificationsTable">
+                </div>
             </div>
         </div>
     </div>
@@ -172,17 +173,15 @@
             var files = evt.target.files; // FileList object
             photo = files[0];
 
-            if(photo.size == 0)
-            {
+            if (photo.size == 0) {
                 $("#avatarSubmitButton").prop("disabled", true);
             }
-            else
-            {
+            else {
                 $("#avatarSubmitButton").removeProp("disabled");
             }
         }
 
-        
+
 
         document.getElementById('userAvatar').addEventListener('change', handleFileSelect, false);
 
@@ -196,8 +195,7 @@
             endDate: "@DateTime.Today.Date"
         });
 
-        $(document).ready(function ()
-        {
+        $(document).ready(function () {
             $('#editPopup').appendTo("body");
 
             $("#birthdateEditor").blur(function () {
@@ -278,81 +276,102 @@
                 }
             });
 
-            $("#emailSubmitButton").click(function ()
-            {
+            $("#showNotifications").click(function () {
+
+                $("#notificationsTable").empty();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("GetUserNotifications", "Bts")",
+                        dataType: "json",
+                        data: JSON.stringify({ receiver: "@Model.Nickname"}),
+                        contentType: "application/json; charset=utf-8",
+                        success: function(res)
+                        {
+                            if(res != null)
+                            {
+                                for(var i = 0; i < res.length; ++i)
+                                {
+                                    var date = res[i].SendDate.split("T");
+
+                                    $("#notificationsTable").append(getDivForNotification(res[i], date));
+                                }
+                            }
+                            else {
+                                $("#notificationsTable").append('<div class="text-center"><p>No notifications were found</p></div>');
+                            }
+                        },
+                        error: function(xhr, status, message)
+                        {
+                            displayMessage("Error", message);
+                        }
+                    });
+            });
+
+            $("#emailSubmitButton").click(function () {
 
                 var userInput = $("#emailEditor").val();
 
                 var f = JSON.stringify({
-                    id : "@Model.Id",
-                    email : userInput
-                    });
+                    id: "@Model.Id",
+                    email: userInput
+                });
 
                 $.ajax({
                     type: "POST",
-                    url : "@Url.Action("EditEmail", "Bts")",
+                    url: "@Url.Action("EditEmail", "Bts")",
                     dataType: "json",
                     data: f,
                     contentType: "application/json; charset=utf-8",
-                    success: function(res)
-                    {
-                        if(res)
-                        {
+                    success: function (res) {
+                        if (res) {
                             $("#emailData").empty();
                             $("#emailData").text(userInput);
 
                             displayMessage("Success", "Email has been successfully edited");
                         }
-                        else
-                        {
+                        else {
                             displayMessage("Error", "Data was not delivered");
                         }
                     },
-                    error: function(xhr, status, message)
-                    {
+                    error: function (xhr, status, message) {
                         displayMessage("Error", message);
                     }
                 });
             });
 
-            $("#birthdateSubmitButton").click(function ()
-            {
+            $("#birthdateSubmitButton").click(function () {
                 var userInput = $("#birthdateEditor").val();
 
                 var f = JSON.stringify({
-                    id : "@Model.Id",
+                    id: "@Model.Id",
                     birthdate: userInput
                 });
 
                 $.ajax({
                     type: "POST",
-                    url : "@Url.Action("EditBirthDate", "Bts")",
+                    url: "@Url.Action("EditBirthDate", "Bts")",
                     dataType: "json",
-                data: f,
-                contentType: "application/json; charset=utf-8",
-                success: function(res)
-                {
-                    if(res)
-                    {
-                        $("#birthdateData").empty();
-                        $("#birthdateData").text(userInput);
+                    data: f,
+                    contentType: "application/json; charset=utf-8",
+                    success: function (res) {
+                        if (res) {
+                            $("#birthdateData").empty();
+                            $("#birthdateData").text(userInput);
 
-                        displayMessage("Success", "Date of birth has been successfully edited");
+                            displayMessage("Success", "Date of birth has been successfully edited");
+                        }
+                        else {
+                            displayMessage("Error", "Data was not delivered");
+                        }
+                    },
+                    error: function (xhr, status, message) {
+                        displayMessage("Error", message);
                     }
-                    else
-                    {
-                        displayMessage("Error", "Data was not delivered");
-                    }
-                },
-                error: function(xhr, status, message)
-                {
-                    displayMessage("Error", message);
-                }
+                });
             });
-        });
 
-            $("#avatarSubmitButton").click(function ()
-            {
+            $("#avatarSubmitButton").click(function () {
                 var formData = new FormData();
                 formData.append("avatar", photo);
                 formData.append("id", "@Model.Id");
@@ -363,8 +382,7 @@
                     data: formData,
                     contentType: false,
                     processData: false,
-                    success: function (res)
-                    {
+                    success: function (res) {
                         if (res != null) {
                             $("#ava").attr("src", res);
                             displayMessage("Success", "Avatar has been successfully edited");
@@ -381,5 +399,26 @@
 
             });
         });
+
+        function getDivForNotification(data, sendDate)
+        {
+            return '<div class="row" style="margin-bottom: 15px;">'
+         + '<div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="background-color: rgb(155, 210, 226); border-radius: 5px;">'
+          + '<div class="row" style="margin-bottom: 5px;">'
+              + '<div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-3 col-xs-3 col-sm-3 col-md-3">'
+                    + '<p>' + data.Sender + '</p>'
+               + '</div>'
+               + '<div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-7 col-xs-7 col-sm-7 col-md-7">'
+                + '<p>' + sendDate[0] + " " + sendDate[1] + '</p>'
+                + '</div>'
+             + '</div>'
+             + '<div class="row" style="margin-bottom: 5px;word-wrap:break-word">'
+              + '<div class="co-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10 text-center">'
+                 + '<p>' + data.Message + '</p>'
+                + '</div>'
+            + '</div>'
+         + '</div>'
+     + '</div>';
+        }
     </script>
 }

@@ -53,8 +53,7 @@
     <br />
     <hr />
 
-    @if ((Session["Username"].ToString() == Model.TopicStarter || Convert.ToInt32(Session["Id"].ToString()) == Model.DeveloperId ||
-                        Convert.ToInt32(Session["Id"].ToString()) == Model.PmId) && Model.Status != "Closed")
+    @if ((Session["Username"].ToString() == Model.TopicStarter || Convert.ToInt32(Session["Id"].ToString()) == Model.DeveloperId) && Model.Status != "Closed")
     {
 
         using (Html.BeginForm()){
@@ -154,7 +153,8 @@
                     selectedItemId: selectedItemId,
                     estimate: $("select[name='Mark'] option:selected").val(),
                     finalComment: $("textarea[name='finalComment']").val(),
-                    bugId : "@Model.Id"
+                    bugId: "@Model.Id",
+                    projectName: "@ViewBag.ProjectName.ToString()"
                 });
 
                 $.ajax({

@@ -131,6 +131,8 @@ namespace BTS.Models
 
         [Required]
         public string Message { get; set; }
+
+        public DateTime SendDate { get; set; }
     }
 
     public class Attachment

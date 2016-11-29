@@ -11,7 +11,7 @@
     if ((User)ViewBag.DeveloperInDuty != null)
     {
         User u = (User)ViewBag.DeveloperInDuty;
-        developerName = u.Name + " " + u.Surname;
+        developerName = u.Nickname;
     }
 
     string pmName = "Unknown";
@@ -117,8 +117,10 @@
             {
                 if (res) {
                     displayMessage("Success", "In-duty developer changed");
-                    alert($("select[name='Developers']").val());
-                    $("#developerData").text($("select[name='Developers']").val() + "    ");
+                    
+                    $("#developerData").empty();
+
+                    $("#developerData").append($("select[name='Developers']").val() + "    ");
                     $("#developerData").append('<button type="button" class="btn btn-default" data-toggle="modal" data-target="#changeDev"><span class="glyphicon glyphicon-edit"></span></button>');
                 }
                 else {

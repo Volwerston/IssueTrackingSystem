@@ -50,7 +50,19 @@ namespace BTS.Controllers
             }
         }
 
+        [HttpPost]
+        public string ConfirmUser(int userId)
+        {
+            bool toReturn = false;
 
+            if(db.Open())
+            {
+                toReturn = db.ConfirmUser(userId);
+                db.Close();
+            }
+
+            return JsonConvert.SerializeObject(toReturn);
+        }
 
         public ActionResult LogIn(string Login, string Password, bool rememberMe)
         {
@@ -145,12 +157,19 @@ namespace BTS.Controllers
 
                         string addResult = db.AddAccount(u);
 
-                        db.Close();
-
                         if (addResult == "Success")
                         {
                             TempData["status"] = "Success";
                             TempData["message"] = "Account has been successfully registered";
+
+                            string text = "Please confirm the personality of new user with nickname " + u.Nickname;
+
+                            List<User> admins = db.getUsers().Where(x => x.Status == "Admin").ToList();
+
+                            foreach (var admin in admins)
+                            {
+                                db.WriteMessage(admin.Nickname, u.Nickname, text);
+                            }
                         }
                         else if (addResult == "Fail")
                         {
@@ -162,6 +181,8 @@ namespace BTS.Controllers
                             TempData["status"] = "Warning";
                             TempData["message"] = "User with the same nickname or e-mail has already been registered";
                         }
+
+                        db.Close();
                     }
                     else
                     {
@@ -450,6 +471,22 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
+        public string GetUserNotifications(string receiver)
+        {
+            List<Notification> toReturn = null;
+
+            if(db.Open())
+            {
+                toReturn = db.GetNotificationsOfUser(receiver);
+
+                db.Close();
+            }
+
+
+            return JsonConvert.SerializeObject(toReturn);
+        }
+
+        [HttpPost]
         public string InviteDevelopers(int devId, string projectName)
         {
             bool toReturn = false;
@@ -457,6 +494,19 @@ namespace BTS.Controllers
             if (db.Open())
             {
                 toReturn = db.InviteDeveloperToProject(projectName, devId);
+
+                if(toReturn)
+                {
+                    Project proj = db.GetProjectsByName(projectName).ToList().SingleOrDefault();
+
+                    User dev = db.getUsers().Where(x => x.Id == devId).ToList().SingleOrDefault();
+
+                    User admin = db.getUsers().Where(x => x.Status == "Admin").ToList()[0];
+
+                    string text = "You were invited to the " + projectName + " project. Please go to the project page to accept invitation";
+
+                    db.WriteMessage(dev.Nickname, admin.Nickname, text);
+                }
 
                 db.Close();
             }
@@ -807,7 +857,7 @@ namespace BTS.Controllers
 
                         foreach (User dev in developers)
                         {
-                            SelectListItem item = new SelectListItem() { Text = dev.Name + " " + dev.Surname, Value = dev.Nickname };
+                            SelectListItem item = new SelectListItem() { Text = dev.Nickname, Value = dev.Nickname };
                             developerList.Add(item);
                         }
                     }
@@ -845,15 +895,31 @@ namespace BTS.Controllers
         [HttpPost]
         public string ChangeDeveloper(int bugId, string projectName, string devNickname)
         {
-            string[] parameters = devNickname.Split(' ');
 
             bool toReturn = false;
 
             if(db.Open())
             {
-                User u = db.getUsers().Where(x => x.Name == parameters[0] && x.Surname == parameters[1]).ToList().SingleOrDefault();
+                User u = db.getUsers().Where(x => x.Nickname == devNickname).ToList().SingleOrDefault();
 
-                if(u != null)
+                Project proj = db.GetProjectsByName(projectName).SingleOrDefault();
+
+                Bug toChange = db.GetProjectBugs(proj).Where(x => x.Id == bugId).ToList().SingleOrDefault();
+
+                User prevDeveloper = db.getUsers().Where(x => x.Id == toChange.DeveloperId).ToList().SingleOrDefault();
+                User pm = db.getUsers().Where(x => x.Id == toChange.PmId).ToList().SingleOrDefault();
+
+                if (prevDeveloper.Name != devNickname)
+                {
+                    string text1 = "Project manager made " + devNickname + " responsible for bug #" + bugId
+                        + " in project " + projectName + " instead of you. Do not despair and move on!";
+                    db.WriteMessage(prevDeveloper.Nickname, pm.Nickname, text1);
+
+                    string text2 = "You were made responsible for bug #" + bugId + " in project " + projectName + ". Have a luck!";
+                    db.WriteMessage(devNickname, pm.Nickname, text2);
+                }
+
+                if (u != null)
                 {
                     toReturn = db.SetDevIdForBug(bugId, u.Id);
                 }
@@ -886,11 +952,14 @@ namespace BTS.Controllers
 
                     int correct = -1;
 
-                    foreach(Message message in messages)
+                    if (messages != null)
                     {
-                        if(message.Correct)
+                        foreach (Message message in messages)
                         {
-                            correct = message.Id;
+                            if (message.Correct)
+                            {
+                                correct = message.Id;
+                            }
                         }
                     }
 
@@ -921,17 +990,28 @@ namespace BTS.Controllers
             {
                 db.AddMessageToWorkflow(id, messageToAdd, Session["Username"].ToString());
 
-                Project proj = db.GetProjectsByName(projName)[0];
+                Project proj = db.GetProjectsByName(projName).ToList().SingleOrDefault();
 
                 Bug bug = null;
 
                 if (proj != null)
                 {
-                    bug = db.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
+                    bug = db.GetProjectBugs(proj).Where(x => x.Id == id).ToList().SingleOrDefault();
                 }
-
+                
                 if (bug != null)
                 {
+                    User developer = db.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
+
+                    if (Session["Username"].ToString() == bug.TopicStarter)
+                    {
+                        db.WriteMessage(developer.Nickname, bug.TopicStarter, bug.TopicStarter + " added new message to discussion of bug #" + id);
+                    }
+                    else
+                    {
+                        db.WriteMessage(bug.TopicStarter, developer.Nickname, developer.Nickname + " added new message to discussion of bug #" + id);
+                    }
+
                     List<Message> messages = db.GetMessageLog(id);
                     ViewBag.Messages = messages;
                 }
@@ -945,7 +1025,7 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
-        public string MarkRightAnswer(int selectedItemId, int bugId, int estimate, string finalComment)
+        public string MarkRightAnswer(int selectedItemId, int bugId, int estimate, string finalComment, string projectName)
         {
             bool toReturn = false;
 
@@ -954,6 +1034,18 @@ namespace BTS.Controllers
                 db.AddMessageToWorkflow(bugId, finalComment, Session["Username"].ToString());
 
                 toReturn = db.MarkRightIssueAnswer(bugId, selectedItemId, estimate);
+
+                if(toReturn)
+                {
+                    Project proj = db.GetProjectsByName(projectName).ToList().SingleOrDefault();
+                    Bug bug = db.GetProjectBugs(proj).Where(x => x.Id == bugId).ToList().SingleOrDefault();
+
+                    User bugDeveloper = db.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
+                    User pm = db.getUsers().Where(x => x.Id == bug.PmId).ToList().SingleOrDefault();
+
+                    db.WriteMessage(bugDeveloper.Nickname, bug.TopicStarter, bug.TopicStarter + " closed discussion of bug #" + bugId + " in project " + projectName);
+                    db.WriteMessage(pm.Nickname, bug.TopicStarter, bug.TopicStarter + " closed discussion of bug #" + bugId + " in project " + projectName);
+                }
 
                 db.Close();
             }
@@ -988,13 +1080,25 @@ namespace BTS.Controllers
         }
 
         [ValidateInput(false)]
-        public string BugSolution(int bugId, string solution)
+        public string BugSolution(int bugId, string solution, string projectName)
         {
             bool toReturn = true;
 
             if(db.Open())
             {
                 toReturn = db.AddSolutionOfBug(bugId, solution);
+
+                if(toReturn)
+                {
+                    Project proj = db.GetProjectsByName(projectName).ToList().FirstOrDefault();
+
+                    Bug bug = db.GetProjectBugs(proj).Where(x => x.Id == bugId).ToList().FirstOrDefault();
+
+                    User pm = db.getUsers().Where(x => x.Id == bug.PmId).ToList().SingleOrDefault();
+
+                    db.WriteMessage(bug.TopicStarter, pm.Nickname, pm.Nickname + " documented solution of bug #" + bugId + " in project " + projectName);
+                }
+
                 db.Close();
             }
             return JsonConvert.SerializeObject(toReturn);

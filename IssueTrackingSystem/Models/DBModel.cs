@@ -94,6 +94,34 @@ namespace BTS.Models
             }
         }
 
+        internal bool ConfirmUser(int userId)
+        {
+            bool toReturn = false;
+
+            string cmdString = "UPDATE Users SET Confirmed=1 WHERE ID=" + userId + ";";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("UserConfirmTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+                toReturn = true;
+            }
+            catch(Exception ex)
+            {
+                toReturn = false;
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+
+            return toReturn;
+        }
+
         internal string AddAccount(User u)
         {
             string checkCmdString = "SELECT * FROM Users WHERE NICKNAME = '" + u.Nickname
@@ -484,6 +512,66 @@ namespace BTS.Models
             return toReturn;
         }
 
+        internal List<Notification> GetNotificationsOfUser(string receiver)
+        {
+            List<Notification> toReturn = null;
+
+            string cmdString = "SELECT * FROM Notifications WHERE RECEIVER='" + receiver + "';";
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("UserNotificationsTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                rdr.Close();
+
+                try
+                {
+                    rdr = cmd.ExecuteReader();
+
+                    toReturn = new List<Notification>();
+
+                    while (rdr.Read())
+                    {
+                        Notification n = new Notification();
+
+                        n.Sender = rdr["SENDER"].ToString();
+                        n.Receiver = rdr["RECEIVER"].ToString();
+                        n.SendDate = Convert.ToDateTime(rdr["SEND_TIME"].ToString());
+                        n.Message = rdr["MESSAGE"].ToString();
+
+                        toReturn.Add(n);
+                    }
+
+                    rdr.Close();
+                }
+                catch(Exception ex)
+                {
+                    rdr.Close();
+                    toReturn = null;
+
+                    ErrorTracker tracker = new ErrorTracker();
+                    tracker.LogError(ex.ToString());
+                }
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+
+            if(toReturn != null && toReturn.Count() == 0)
+            {
+                toReturn = null;
+            }
+
+            return toReturn;
+        }
+
         internal bool RemoveDevsFromProject(string projName, List<int> toErase)
         {
             bool toReturn = false;
@@ -821,6 +909,29 @@ namespace BTS.Models
             }
 
             return toReturn;
+        }
+
+        internal void WriteMessage(string To, string From, string message)
+        {
+            string cmdString = "INSERT INTO Notifications(RECEIVER, SENDER, MESSAGE, SEND_TIME) VALUES('" + To + "', '" + From + "','"
+             + message + "', CONVERT(smalldatetime, GETDATE(), 104));";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("NotificationAddTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
         }
 
         internal bool SetDevIdForBug(int bugId, int id)
