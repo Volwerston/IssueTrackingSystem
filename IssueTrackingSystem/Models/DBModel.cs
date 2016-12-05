@@ -129,18 +129,17 @@ namespace BTS.Models
 
             SqlCommand checkCmd = new SqlCommand(checkCmdString, connection);
             SqlTransaction transaction1 = connection.BeginTransaction("SampleTransaction");
+            SqlDataReader reader = null;
 
             checkCmd.Transaction = transaction1;
 
             try
             {
-                checkCmd.ExecuteNonQuery();
-                transaction1.Commit();
+                reader = checkCmd.ExecuteReader();
 
-                SqlDataReader reader = checkCmd.ExecuteReader();
-                reader.Read();
                 bool isOk = !(reader.HasRows);
                 reader.Close();
+                transaction1.Commit();
 
                 if (!isOk)
                 {
@@ -155,6 +154,7 @@ namespace BTS.Models
             }
             catch(Exception ex)
             {
+                reader.Close();
                 transaction1.Rollback();
 
                 ErrorTracker tracker = new ErrorTracker();
@@ -171,25 +171,24 @@ namespace BTS.Models
             using (SqlCommand cmd = new SqlCommand(cmdString, connection))
             {
                 SqlTransaction transaction = connection.BeginTransaction("PasswordRequest");
-
+                SqlDataReader reader = null;
                 cmd.Transaction = transaction;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
+                    reader = cmd.ExecuteReader();
 
-                    SqlDataReader reader = cmd.ExecuteReader();
-
-                    if (reader.Read())
-                    {
-                        toReturn = reader["NICKNAME"].ToString();
-                    }
-
-                    reader.Close();
+                        if (reader.Read())
+                        {
+                            toReturn = reader["NICKNAME"].ToString();
+                        }
+                    
+                        reader.Close();
+                        transaction.Commit();
                 }
                 catch(Exception ex)
                 {
+                    reader.Close();
                     transaction.Rollback();
 
                     ErrorTracker tracker = new ErrorTracker();
@@ -210,16 +209,13 @@ namespace BTS.Models
                 {
                     SqlTransaction transaction = connection.BeginTransaction("ExtractUsers");
                     cmd.Transaction = transaction;
+                SqlDataReader reader = null;
 
                     try
                     {
-                        cmd.ExecuteNonQuery();
-                        transaction.Commit();
 
-                        SqlDataReader reader = cmd.ExecuteReader();
+                    reader = cmd.ExecuteReader();
 
-                        try
-                        {
                             while (reader.Read())
                             {
                                 User user = new User();
@@ -251,20 +247,13 @@ namespace BTS.Models
                                 toReturn.Add(user);
                             }
 
-                            reader.Close();
-                        }
-                        catch(Exception ex)
-                        {
-                            reader.Close();
+                        reader.Close();
+                    transaction.Commit();
 
-                            toReturn = new List<User>();
-
-                            ErrorTracker tracker = new ErrorTracker();
-                            tracker.LogError(ex.Message);
-                        }
                     }
                     catch(Exception ex)
                     {
+                     reader.Close();
                         transaction.Rollback();
 
                         ErrorTracker tracker = new ErrorTracker();
@@ -288,14 +277,32 @@ namespace BTS.Models
 
             cmd.Parameters.Add(paramUsername);
 
-            SqlDataReader rdr = cmd.ExecuteReader();
+            SqlTransaction transaction = connection.BeginTransaction("PasswordResetTransaction");
+            cmd.Transaction = transaction;
+            SqlDataReader rdr = null;
 
-            while (rdr.Read())
+            try
+            {
+                rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
                 {
                     if (Convert.ToBoolean(rdr["ReturnCode"]))
                     {
                         toReturn = SendPasswordResetLetter(rdr["Email"].ToString(), nickname, rdr["UniqueId"].ToString());
                     }
+                }
+
+                rdr.Close();
+                transaction.Commit();
+            }
+            catch(Exception ex)
+            {
+                rdr.Close();
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
             }
 
             return toReturn;
@@ -422,23 +429,23 @@ namespace BTS.Models
             SqlCommand cmd = new SqlCommand(cmdString, connection);
             SqlTransaction transaction = connection.BeginTransaction("GetBugId");
             cmd.Transaction = transaction;
+            SqlDataReader rdr = null;
 
             try
             {
-                cmd.ExecuteNonQuery();
+                rdr = cmd.ExecuteReader();
 
-                SqlDataReader rdr = cmd.ExecuteReader();
-
-                if(rdr.Read())
+                if (rdr.Read())
                 {
                     toReturn = Convert.ToInt32(rdr["ID"].ToString());
                 }
                 rdr.Close();
-
                 transaction.Commit();
+
             }
             catch(Exception ex)
             {
+                rdr.Close();
                 transaction.Rollback();
 
                 ErrorTracker tracker = new ErrorTracker();
@@ -508,18 +515,14 @@ namespace BTS.Models
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
                 SqlTransaction transaction = connection.BeginTransaction("UserSearch");
                 cmd.Transaction = transaction;
+                SqlDataReader reader = null;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    reader = cmd.ExecuteReader();
 
                     toReturn = new List<User>();
 
-                    try
-                    {
                         while (reader.Read())
                         {
                             User user = new User();
@@ -552,18 +555,11 @@ namespace BTS.Models
                         }
 
                         reader.Close();
-                    }
-                    catch(Exception ex)
-                    {
-                        reader.Close();
-                        toReturn = null;
-
-                        ErrorTracker tracker = new ErrorTracker();
-                        tracker.LogError(ex.Message);
-                    }
+                        transaction.Commit();
                 }
                 catch(Exception ex)
                 {
+                    reader.Close();
                     transaction.Rollback();
                     ErrorTracker tracker = new ErrorTracker();
                     tracker.LogError(ex.Message);
@@ -586,17 +582,11 @@ namespace BTS.Models
             SqlCommand cmd = new SqlCommand(cmdString, connection);
             SqlTransaction transaction = connection.BeginTransaction("UserNotificationsTransaction");
             cmd.Transaction = transaction;
+            SqlDataReader rdr = null;
 
             try
             {
-                cmd.ExecuteNonQuery();
-                transaction.Commit();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                rdr.Close();
-
-                try
-                {
-                    rdr = cmd.ExecuteReader();
+                rdr = cmd.ExecuteReader();
 
                     toReturn = new List<Notification>();
 
@@ -613,18 +603,12 @@ namespace BTS.Models
                     }
 
                     rdr.Close();
-                }
-                catch(Exception ex)
-                {
-                    rdr.Close();
-                    toReturn = null;
-
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
-                }
+                    transaction.Commit();
+                
             }
             catch(Exception ex)
             {
+                rdr.Close();
                 transaction.Rollback();
                 ErrorTracker tracker = new ErrorTracker();
                 tracker.LogError(ex.ToString());
@@ -930,6 +914,7 @@ namespace BTS.Models
         {
             User toReturn = new User();
             toReturn.Id = -1;
+            SqlDataReader reader = null;
 
             string encryptedPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "SHA1");
 
@@ -943,13 +928,8 @@ namespace BTS.Models
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
+                    reader = cmd.ExecuteReader();
 
-                    SqlDataReader reader = cmd.ExecuteReader();
-
-                    try
-                    {
                         if (reader.Read())
                         {
                             toReturn.Id = Convert.ToInt32(reader["ID"].ToString());
@@ -961,18 +941,14 @@ namespace BTS.Models
                             }
                             else toReturn.Confirmed = false;
                         }
+
                         reader.Close();
-                    }
-                    catch(Exception ex)
-                    {
-                        reader.Close();
-                        ErrorTracker tracker = new ErrorTracker();
-                        tracker.LogError(ex.ToString());
-                    }
+                        transaction.Commit();
 
                 }
                 catch (Exception ex)
                 {
+                    reader.Close();
                     transaction.Rollback();
 
                     ErrorTracker tracker = new ErrorTracker();
@@ -1095,18 +1071,14 @@ namespace BTS.Models
             SqlCommand cmd = new SqlCommand(cmdString, connection);
             SqlTransaction transaction = connection.BeginTransaction("ExtractProjectDevelopers");
             cmd.Transaction = transaction;
+            SqlDataReader rdr = null;
 
             try
             {
-                cmd.ExecuteNonQuery();
-                transaction.Commit();
-
-                SqlDataReader rdr = cmd.ExecuteReader();
+                rdr = cmd.ExecuteReader();
 
                 toReturn = new List<User>();
 
-                try
-                {
                     while (rdr.Read())
                     {
                         User u = new User();
@@ -1146,19 +1118,12 @@ namespace BTS.Models
                         }
                     }
 
-                    rdr.Close();
-                }
-                catch (Exception ex)
-                {
-                    rdr.Close();
-                    toReturn = null;
-
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
-                }
-            }
+            rdr.Close();
+            transaction.Commit();
+        }
             catch(Exception ex)
             {
+                rdr.Close();
                 transaction.Rollback();
                 ErrorTracker tracker = new ErrorTracker();
                 tracker.LogError(ex.ToString());
@@ -1212,13 +1177,10 @@ namespace BTS.Models
                 SqlTransaction transaction = connection.BeginTransaction("FindUser");
                 cmd.Transaction = transaction;
 
-                SqlDataReader reader = cmd.ExecuteReader();
-                reader.Close();
+                SqlDataReader reader = null;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-
                     reader = cmd.ExecuteReader();
 
                     if (reader.Read())
@@ -1240,7 +1202,6 @@ namespace BTS.Models
                     }
 
                     reader.Close();
-
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -1305,12 +1266,11 @@ namespace BTS.Models
 
                 SqlTransaction transaction = connection.BeginTransaction("FindByTitle");
                 cmd.Transaction = transaction;
+                SqlDataReader reader = null;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    reader = cmd.ExecuteReader();
 
                     while (reader.Read())
                     {
@@ -1324,15 +1284,17 @@ namespace BTS.Models
                         {
                             project.Logo = (byte[])reader["LOGO"];
                         }
-                        
 
                         toReturn.Add(project);
                     }
 
                     reader.Close();
+                    transaction.Commit();
+
                 }
                 catch(Exception ex)
                 {
+                    reader.Close();
                     transaction.Rollback();
 
                     ErrorTracker tracker = new ErrorTracker();
@@ -1368,29 +1330,28 @@ namespace BTS.Models
                 cmd.Transaction = transaction;
 
                 try
-                {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-
+                { 
                     SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                     DataTable table = new DataTable();
                     adapter.Fill(table);
 
-                    foreach (DataRow row in table.Rows)
+                        foreach (DataRow row in table.Rows)
                         {
-                                Project project = new Project();
-                                project.Id = Convert.ToInt32(row["ID"].ToString());
-                                project.Description = row["DESCRIPTION"].ToString();
-                                project.Name = row["NAME"].ToString();
-                                project.PmId = int.Parse(row["PmId"].ToString());
+                            Project project = new Project();
+                            project.Id = Convert.ToInt32(row["ID"].ToString());
+                            project.Description = row["DESCRIPTION"].ToString();
+                            project.Name = row["NAME"].ToString();
+                            project.PmId = int.Parse(row["PmId"].ToString());
 
-                                if (row["LOGO"] != DBNull.Value)
-                                {
-                                    project.Logo = (byte[])row["LOGO"];
-                                }
+                            if (row["LOGO"] != DBNull.Value)
+                            {
+                                project.Logo = (byte[])row["LOGO"];
+                            }
 
-                        toReturn.Add(project);
-                         }
+                            toReturn.Add(project);
+                        }
+
+                    transaction.Commit();
                 }
                 catch(Exception ex)
                 {
@@ -1419,15 +1380,13 @@ namespace BTS.Models
 
             cmd.Transaction = transaction;
 
+            SqlDataReader rdr = null;
+
             try
             {
-                cmd.ExecuteNonQuery();
-                transaction.Commit();
+               rdr = cmd.ExecuteReader();
 
-                SqlDataReader rdr = cmd.ExecuteReader();
 
-                try
-                {
                     while (rdr.Read())
                     {
                         Bug bug = new Bug();
@@ -1461,19 +1420,13 @@ namespace BTS.Models
 
                         toReturn.Add(bug);
                     }
-                    rdr.Close();
-                }
-                catch(Exception ex)
-                {
-                    toReturn = null;
-                    rdr.Close();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
-                }
+                    rdr.Close();
+                transaction.Commit();
             }
             catch(Exception ex)
             {
+                rdr.Close();
                 transaction.Rollback();
 
                 ErrorTracker tracker = new ErrorTracker();
@@ -1493,33 +1446,30 @@ namespace BTS.Models
 
             string cmdString = "SELECT * FROM Categories;";
             SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlDataReader rdr = null;
 
             SqlTransaction transaction = connection.BeginTransaction("CategoriesTrasaction");
             cmd.Transaction = transaction;
 
             try
             {
-                cmd.ExecuteNonQuery();
-                SqlDataReader rdr = cmd.ExecuteReader();
-
-                if (rdr.HasRows)
-                {
-                    while(rdr.Read())
+                rdr = cmd.ExecuteReader();
+                
+                    while (rdr.Read())
                     {
                         Category category = new Category();
                         category.Title = rdr["TITLE"].ToString();
                         category.Id = Convert.ToInt32(rdr["ID"].ToString());
                         toReturn.Add(category);
                     }
-                }
 
-                rdr.Close();
-
-                transaction.Commit();
+                    rdr.Close();
+                    transaction.Commit();
 
             }
             catch(Exception ex)
             {
+                rdr.Close();
                 transaction.Rollback();
 
                 ErrorTracker tracker = new ErrorTracker();
@@ -1538,18 +1488,14 @@ namespace BTS.Models
             SqlCommand cmd = new SqlCommand(cmdString, connection);
             SqlTransaction transaction = connection.BeginTransaction("ExtractMessages");
             cmd.Transaction = transaction;
+            SqlDataReader rdr = null;
 
             try
             {
-                cmd.ExecuteNonQuery();
-                transaction.Commit();
-
-                SqlDataReader rdr = cmd.ExecuteReader();
+                rdr = cmd.ExecuteReader();
 
                 toReturn = new List<Message>();
 
-                try
-                {
                     while (rdr.Read())
                     {
                         Message toAdd = new Message();
@@ -1564,19 +1510,13 @@ namespace BTS.Models
                         toReturn.Add(toAdd);
                     }
 
-                    rdr.Close();
-                }
-                catch(Exception ex)
-                {
-                    toReturn = null;
-                    ErrorTracker tracker = new ErrorTracker();
-                    rdr.Close();
-                    tracker.LogError(ex.ToString());
-                }
+                rdr.Close();
+                transaction.Commit();
 
             }
             catch(Exception ex)
             {
+                rdr.Close();
                 transaction.Rollback();
                 ErrorTracker tracker = new ErrorTracker();
                 tracker.LogError(ex.ToString());
