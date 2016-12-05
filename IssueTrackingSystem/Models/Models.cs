@@ -55,15 +55,16 @@ namespace BTS.Models
         [Required]
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(20)]
-        [MinLength(3)]
+        [Required(ErrorMessage ="Field Name must be filled")]
+        [MaxLength(20, ErrorMessage ="Field Name must contain at most 20 characters")]
+        [MinLength(3, ErrorMessage = "Field Name must contain at least 3 characters")]
         public string Name { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Field Description must be filled")]
         public string Description { get; set; }
         public byte[] Logo { get; set; }
-        public string Updates { get; set; }
+
+        public int PmId { get; set; }
     }
 
     public class Bug

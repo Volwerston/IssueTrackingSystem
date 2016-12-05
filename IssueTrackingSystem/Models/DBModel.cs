@@ -301,6 +301,40 @@ namespace BTS.Models
             return toReturn;
         }
 
+        internal bool AddProject(Project proj)
+        {
+            bool toReturn = false;
+
+            string cmdString = "INSERT INTO Projects (NAME, DESCRIPTION, LOGO, PmId) VALUES(@Name, @Descr, @Logo, @PmId);";
+
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            SqlTransaction transaction = connection.BeginTransaction("ProjectAddTransaction");
+            cmd.Transaction = transaction;
+
+            cmd.Parameters.AddWithValue("@Name", proj.Name);
+            cmd.Parameters.AddWithValue("@Descr", proj.Description);
+            cmd.Parameters.AddWithValue("@Logo", proj.Logo);
+            cmd.Parameters.AddWithValue("@PmId", proj.PmId);
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+                toReturn = true;
+            }
+            catch(Exception ex)
+            {
+                toReturn = false;
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+
+            return toReturn;
+        }
+
         internal bool AddAttachments(List<HttpPostedFileBase> attachments, int id)
         {
             if (id != -1)
@@ -1284,9 +1318,13 @@ namespace BTS.Models
                         project.Id = Convert.ToInt32(reader["ID"].ToString());
                         project.Description = reader["DESCRIPTION"].ToString();
                         project.Name = reader["NAME"].ToString();
-                        project.Updates = reader["UPDATES"].ToString();
+                        project.PmId = int.Parse(reader["PmId"].ToString());
 
-                        project.Logo = null; // correct it later
+                        if(reader["LOGO"] != DBNull.Value)
+                        {
+                            project.Logo = (byte[])reader["LOGO"];
+                        }
+                        
 
                         toReturn.Add(project);
                     }
@@ -1312,7 +1350,7 @@ namespace BTS.Models
 
             if (categories != null)
             {
-                string cmdString = "SELECT DISTINCT TOP 5 A.ID, A.NAME, A.UPDATES, A.DESCRIPTION" +
+                string cmdString = "SELECT TOP 5 A.ID, A.NAME, A.DESCRIPTION, A.PmId, A.LOGO" +
                                     " FROM Projects A inner join ProjectCategory B on A.ID = B.PROJECT_ID" +
                                     " WHERE A.ID > " + categories[categories.Length - 1] + " AND ( ";
 
@@ -1344,9 +1382,14 @@ namespace BTS.Models
                                 project.Id = Convert.ToInt32(row["ID"].ToString());
                                 project.Description = row["DESCRIPTION"].ToString();
                                 project.Name = row["NAME"].ToString();
-                                project.Updates = row["UPDATES"].ToString();
+                                project.PmId = int.Parse(row["PmId"].ToString());
 
-                                toReturn.Add(project);
+                                if (row["LOGO"] != DBNull.Value)
+                                {
+                                    project.Logo = (byte[])row["LOGO"];
+                                }
+
+                        toReturn.Add(project);
                          }
                 }
                 catch(Exception ex)
@@ -1357,6 +1400,8 @@ namespace BTS.Models
                     tracker.LogError(ex.Message);
                 }
             }
+
+            toReturn = toReturn.GroupBy(x => x.Id).Select(group => group.First()).ToList();
 
             return toReturn;
         }
@@ -1408,16 +1453,11 @@ namespace BTS.Models
                             bug.Estimate = Convert.ToInt32(rdr["ESTIMATE"].ToString());
                         }
 
-                        if(rdr["SOLUTION"] != DBNull.Value)
+                        if(rdr["Solution"] != DBNull.Value)
                         {
-                            bug.Solution = rdr["SOLUTION"].ToString();
+                            bug.Solution = rdr["Solution"].ToString();
                         }
 
-
-                        if (rdr["PHOTO"] != DBNull.Value)
-                        {
-                            bug.Image = (byte[])rdr["PHOTO"];
-                        }
 
                         toReturn.Add(bug);
                     }

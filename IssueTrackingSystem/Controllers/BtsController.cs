@@ -282,6 +282,38 @@ namespace BTS.Controllers
             return returnString;
         }
 
+        [SystemAuthorize(Roles="Project Manager,Admin")]
+        public ActionResult AddProject()
+        {
+            Project proj = new Project();
+            return View(proj);
+        }
+
+        [HttpPost]
+        public ActionResult AddProject(Project proj, HttpPostedFileBase aLogo)
+        {
+            if(ModelState.IsValid)
+            {
+                proj.PmId = int.Parse(Session["Id"].ToString());
+
+                byte[] img = new byte[aLogo.ContentLength];
+                aLogo.InputStream.Read(img, 0, aLogo.ContentLength);
+
+                proj.Logo = img;
+
+                if(db.Open())
+                {
+                    bool success = db.AddProject(proj);
+
+                    db.Close();
+                }
+
+                return RedirectToAction("InternalAccountPage", "Bts");
+            }
+
+            return View();
+        }
+
         [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult ShowProject(string name)
         {
@@ -337,13 +369,13 @@ namespace BTS.Controllers
             if (projectBugs != null)
             {
                 ViewBag.ProjectBugs = projectBugs;
-
-                ViewBag.Pm = projectBugs[0].PmId;
             }
             else
             {
                 ViewBag.ProjectBugs = new List<Bug>();
             }
+
+            ViewBag.Pm = project.PmId;
 
             return View(project);
         }
@@ -391,6 +423,11 @@ namespace BTS.Controllers
 
                 if(invitedDevs.Count() > 0)
                 {
+                    if(currDevelopers == null)
+                    {
+                        currDevelopers = new List<User>();
+                    }
+
                     currDevelopers.AddRange(invitedDevs);
                 }
 
@@ -418,12 +455,15 @@ namespace BTS.Controllers
                         {
                             bool elFound = false;
 
-                            foreach(User existingDeveloper in currDevelopers)
+                            if (currDevelopers != null)
                             {
-                                if(existingDeveloper.Id == newDeveloper.Id)
+                                foreach (User existingDeveloper in currDevelopers)
                                 {
-                                    elFound = true;
-                                    break;
+                                    if (existingDeveloper.Id == newDeveloper.Id)
+                                    {
+                                        elFound = true;
+                                        break;
+                                    }
                                 }
                             }
 
@@ -906,7 +946,7 @@ namespace BTS.Controllers
 
                     if (bug.PmId != 0)
                     {
-                        ViewBag.ProjectManager = db.getUsers().Where(x => x.Id == bug.PmId).ToList().SingleOrDefault();
+                        ViewBag.ProjectManager = db.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
                     }
                     else
                     {
@@ -938,14 +978,22 @@ namespace BTS.Controllers
                 Bug toChange = db.GetProjectBugs(proj).Where(x => x.Id == bugId).ToList().SingleOrDefault();
 
                 User prevDeveloper = db.getUsers().Where(x => x.Id == toChange.DeveloperId).ToList().SingleOrDefault();
-                User pm = db.getUsers().Where(x => x.Id == toChange.PmId).ToList().SingleOrDefault();
+                User pm = db.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
 
-                if (prevDeveloper.Name != devNickname)
+                if (prevDeveloper != null)
                 {
-                    string text1 = "Project manager made " + devNickname + " responsible for bug #" + bugId
-                        + " in project " + projectName + " instead of you. Do not despair and move on!";
-                    db.WriteMessage(prevDeveloper.Nickname, pm.Nickname, text1);
+                    if (prevDeveloper.Name != devNickname)
+                    {
+                        string text1 = "Project manager made " + devNickname + " responsible for bug #" + bugId
+                            + " in project " + projectName + " instead of you. Do not despair and move on!";
+                        db.WriteMessage(prevDeveloper.Nickname, pm.Nickname, text1);
 
+                        string text2 = "You were made responsible for bug #" + bugId + " in project " + projectName + ". Have a luck!";
+                        db.WriteMessage(devNickname, pm.Nickname, text2);
+                    }
+                }
+                else
+                {
                     string text2 = "You were made responsible for bug #" + bugId + " in project " + projectName + ". Have a luck!";
                     db.WriteMessage(devNickname, pm.Nickname, text2);
                 }
@@ -1072,7 +1120,7 @@ namespace BTS.Controllers
                     Bug bug = db.GetProjectBugs(proj).Where(x => x.Id == bugId).ToList().SingleOrDefault();
 
                     User bugDeveloper = db.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
-                    User pm = db.getUsers().Where(x => x.Id == bug.PmId).ToList().SingleOrDefault();
+                    User pm = db.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
 
                     db.WriteMessage(bugDeveloper.Nickname, bug.TopicStarter, bug.TopicStarter + " closed discussion of bug #" + bugId + " in project " + projectName);
                     db.WriteMessage(pm.Nickname, bug.TopicStarter, bug.TopicStarter + " closed discussion of bug #" + bugId + " in project " + projectName);
@@ -1125,7 +1173,7 @@ namespace BTS.Controllers
 
                     Bug bug = db.GetProjectBugs(proj).Where(x => x.Id == bugId).ToList().FirstOrDefault();
 
-                    User pm = db.getUsers().Where(x => x.Id == bug.PmId).ToList().SingleOrDefault();
+                    User pm = db.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
 
                     db.WriteMessage(bug.TopicStarter, pm.Nickname, pm.Nickname + " documented solution of bug #" + bugId + " in project " + projectName);
                 }
