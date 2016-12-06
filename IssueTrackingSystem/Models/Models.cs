@@ -124,6 +124,8 @@ namespace BTS.Models
 
     public class Notification
     {
+        public int Id { get; set; }
+
         [Required]
         [MaxLength(15)]
         public string Sender { get; set; }

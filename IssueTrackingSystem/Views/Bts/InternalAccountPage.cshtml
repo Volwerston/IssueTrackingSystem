@@ -292,32 +292,32 @@
 
                 $("#notificationsTable").empty();
 
-                    $.ajax({
-                        type: "POST",
-                        url: "@Url.Action("GetUserNotifications", "Bts")",
-                        dataType: "json",
-                        data: JSON.stringify({ receiver: "@Model.Nickname"}),
-                        contentType: "application/json; charset=utf-8",
-                        success: function(res)
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("GetUserNotifications", "Bts")",
+                    dataType: "json",
+                    data: JSON.stringify({ receiver: "@Model.Nickname"}),
+                    contentType: "application/json; charset=utf-8",
+                    success: function(res)
+                    {
+                        if(res != null)
                         {
-                            if(res != null)
+                            for(var i = 0; i < res.length; ++i)
                             {
-                                for(var i = 0; i < res.length; ++i)
-                                {
-                                    var date = res[i].SendDate.split("T");
+                                var date = res[i].SendDate.split("T");
 
-                                    $("#notificationsTable").append(getDivForNotification(res[i], date));
-                                }
+                                $("#notificationsTable").append(getDivForNotification(res[i], date));
                             }
-                            else {
-                                $("#notificationsTable").append('<div class="text-center"><p>No notifications were found</p></div>');
-                            }
-                        },
-                        error: function(xhr, status, message)
-                        {
-                            displayMessage("Error", message);
                         }
-                    });
+                        else {
+                            $("#notificationsTable").append('<div class="text-center"><p>No notifications were found</p></div>');
+                        }
+                    },
+                    error: function(xhr, status, message)
+                    {
+                        displayMessage("Error", message);
+                    }
+                });
             });
 
             $("#emailSubmitButton").click(function () {
@@ -383,6 +383,7 @@
                 });
             });
 
+
             $("#avatarSubmitButton").click(function () {
                 var formData = new FormData();
                 formData.append("avatar", photo);
@@ -412,11 +413,46 @@
             });
         });
 
+        function setCursor(x) {
+            $(x).css("cursor", "pointer");
+        }
+
+        function removeNotification(id)
+        {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("RemoveNotification", "Bts")",
+                data: JSON.stringify({ id: id }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function(res)
+                {
+                    if(res)
+                    {
+                        $("#container" + id).hide("slow");
+                    }
+                    else
+                    {
+                        displayMessage("Error", "Changes were not applied");
+                    }
+                },
+                error: function(xhr, status, message)
+                {
+                    displayMessage("Error", message);
+                }
+            });
+        }
+
         function getDivForNotification(data, sendDate)
         {
-            return '<div class="row" style="margin-bottom: 15px;">'
+            return '<div class="row" style="margin-bottom: 15px;" id="container' + data.Id + '">'
          + '<div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="background-color: rgb(155, 210, 226); border-radius: 5px;">'
-          + '<div class="row" style="margin-bottom: 5px;">'
+        + '<div class="row" style="margin-bottom: 5px">'
+                + '<div class="col-lg-offset-10 col-sm-offset-10 col-md-offset-10 col-xs-2 col-sm-2 col-md-2 col-lg-2">'
+                + '<button type="button" class="btn btn-info" onmouseenter="setCursor(this)" onclick="removeNotification(' + data.Id + ')"><span class="glyphicon glyphicon-remove"></span></button>'
+                + '</div>'
+                + '</div>'
+                + '<div class="row" style="margin-bottom: 5px;">'
               + '<div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-3 col-xs-3 col-sm-3 col-md-3">'
                     + '<p>' + data.Sender + '</p>'
                + '</div>'

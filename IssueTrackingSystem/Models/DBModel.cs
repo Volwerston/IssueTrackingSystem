@@ -598,6 +598,7 @@ namespace BTS.Models
                         n.Receiver = rdr["RECEIVER"].ToString();
                         n.SendDate = Convert.ToDateTime(rdr["SEND_TIME"].ToString());
                         n.Message = rdr["MESSAGE"].ToString();
+                        n.Id = int.Parse(rdr["ID"].ToString());
 
                         toReturn.Add(n);
                     }
@@ -683,6 +684,35 @@ namespace BTS.Models
                 toReturn = true;
             }
             catch(Exception ex)
+            {
+                toReturn = false;
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+
+            return toReturn;
+        }
+
+        internal bool RemoveNotification(int id)
+        {
+            bool toReturn = false;
+
+            string cmdString = "DELETE FROM Notifications WHERE ID=@id;";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            cmd.Parameters.AddWithValue("@id", id);
+            SqlTransaction transaction = connection.BeginTransaction("NotificationRemoveTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+                toReturn = true;
+            }
+            catch (Exception ex)
             {
                 toReturn = false;
                 transaction.Rollback();

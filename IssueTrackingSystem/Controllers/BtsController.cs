@@ -166,7 +166,9 @@ namespace BTS.Controllers
                             TempData["status"] = "Success";
                             TempData["message"] = "Account has been successfully registered";
 
-                            string text = "Please confirm the personality of new user with nickname " + u.Nickname;
+                            int insertedId = db.getUsers().Where(x => x.Nickname == u.Nickname).ToList().First().Id;
+
+                            string text = "Please confirm the personality of new user <a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { @id = insertedId }) + "\">" + u.Nickname + "</a>";
 
                             List<User> admins = db.getUsers().Where(x => x.Status == "Admin").ToList();
 
@@ -573,7 +575,7 @@ namespace BTS.Controllers
 
                     User admin = db.getUsers().Where(x => x.Status == "Admin").ToList()[0];
 
-                    string text = "You were invited to the " + projectName + " project. Please go to the project page to accept invitation";
+                    string text = "You were invited to the <a href=\"" + Url.Action("ShowProject", "Bts", new { name = proj.Name }) + "\">" + projectName + "</a> project. Please go to the project page to accept invitation";
 
                     db.WriteMessage(dev.Nickname, admin.Nickname, text);
                 }
@@ -718,6 +720,21 @@ namespace BTS.Controllers
             }
 
             return toReturnString;
+        }
+
+        [HttpPost]
+        public string RemoveNotification(int id)
+        {
+            bool toReturn = false;
+
+            if(db.Open())
+            {
+                toReturn = db.RemoveNotification(id);
+
+                db.Close();
+            }
+
+            return JsonConvert.SerializeObject(toReturn);
         }
 
         [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
@@ -979,22 +996,33 @@ namespace BTS.Controllers
 
                 User prevDeveloper = db.getUsers().Where(x => x.Id == toChange.DeveloperId).ToList().SingleOrDefault();
                 User pm = db.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
+                User newDeveloper = db.getUsers().Where(x => x.Nickname == devNickname).Single();
 
                 if (prevDeveloper != null)
                 {
                     if (prevDeveloper.Name != devNickname)
                     {
-                        string text1 = "Project manager made " + devNickname + " responsible for bug #" + bugId
-                            + " in project " + projectName + " instead of you. Do not despair and move on!";
+                        string text1 = "Project manager made <a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = newDeveloper.Id })
+                            + "\">" + devNickname + "</a> responsible for <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId
+                            + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a> instead of you. Do not despair and move on!";
                         db.WriteMessage(prevDeveloper.Nickname, pm.Nickname, text1);
 
-                        string text2 = "You were made responsible for bug #" + bugId + " in project " + projectName + ". Have a luck!";
+                        string text2 = "You were made responsible for <a href=\"" + 
+                            Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId +
+                            "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + 
+                            "</a>. Have a luck!";
+
                         db.WriteMessage(devNickname, pm.Nickname, text2);
                     }
                 }
                 else
                 {
-                    string text2 = "You were made responsible for bug #" + bugId + " in project " + projectName + ". Have a luck!";
+
+                    string text2 = "You were made responsible for <a href=\"" +
+                        Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId +
+                        "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName +
+                        "</a>. Have a luck!";
+
                     db.WriteMessage(devNickname, pm.Nickname, text2);
                 }
 
@@ -1082,13 +1110,24 @@ namespace BTS.Controllers
                 {
                     User developer = db.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
 
-                    if (Session["Username"].ToString() == bug.TopicStarter)
+                    if (developer != null)
                     {
-                        db.WriteMessage(developer.Nickname, bug.TopicStarter, bug.TopicStarter + " added new message to discussion of bug #" + id);
-                    }
-                    else
-                    {
-                        db.WriteMessage(bug.TopicStarter, developer.Nickname, developer.Nickname + " added new message to discussion of bug #" + id);
+                        if (Session["Username"].ToString() == bug.TopicStarter)
+                        {
+                            string messageText = "<a href =\"" + Url.Action("ExternalAccountPage", "Bts", new { id = developer.Id })
+                                  + "\">" + bug.TopicStarter + "</a>  added new message to discussion of <a href=\""
+                                  + Url.Action("BugDescriptionPage", "Bts", new { id = bug.Id, projName = projName }) + "\"> bug # " + id + "</a>";
+
+                            db.WriteMessage(developer.Nickname, bug.TopicStarter, messageText);
+                        }
+                        else
+                        {
+                            string messageText = "<a href =\"" + Url.Action("ExternalAccountPage", "Bts", new { id = developer.Id })
+                            + "\">" + developer.Nickname + "</a>  added new message to discussion of <a href=\""
+                            + Url.Action("BugDescriptionPage", "Bts", new { id = bug.Id, projName = projName }) + "\"> bug # " + id + "</a>";
+
+                            db.WriteMessage(bug.TopicStarter, developer.Nickname, messageText);
+                        }
                     }
 
                     List<Message> messages = db.GetMessageLog(id);
@@ -1121,9 +1160,14 @@ namespace BTS.Controllers
 
                     User bugDeveloper = db.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
                     User pm = db.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
+                    User topicStarter = db.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
 
-                    db.WriteMessage(bugDeveloper.Nickname, bug.TopicStarter, bug.TopicStarter + " closed discussion of bug #" + bugId + " in project " + projectName);
-                    db.WriteMessage(pm.Nickname, bug.TopicStarter, bug.TopicStarter + " closed discussion of bug #" + bugId + " in project " + projectName);
+                    string message ="<a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = topicStarter.Id })
+                    + "\">" + bug.TopicStarter + "</a> closed discusion of <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId
+                    + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a>";
+
+                    db.WriteMessage(bugDeveloper.Nickname, bug.TopicStarter, message);
+                    db.WriteMessage(pm.Nickname, bug.TopicStarter, message);
                 }
 
                 db.Close();
@@ -1175,7 +1219,11 @@ namespace BTS.Controllers
 
                     User pm = db.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
 
-                    db.WriteMessage(bug.TopicStarter, pm.Nickname, pm.Nickname + " documented solution of bug #" + bugId + " in project " + projectName);
+                    string message = "<a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = pm.Id })
+                    + "\">" + pm.Nickname + "</a> documented solution of <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId
+                    + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a>";
+
+                    db.WriteMessage(bug.TopicStarter, pm.Nickname, message);
                 }
 
                 db.Close();
