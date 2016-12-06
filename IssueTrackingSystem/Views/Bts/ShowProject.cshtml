@@ -280,14 +280,14 @@
                 var paginationInfo = '<ul class="pagination"><li  id="prev" onclick="managePagination(\'first\')"><a href="#"><<</a></li>'
                                       + '<li  id="prev" onclick="managePagination(\'prev\')"><a href="#"><</a></li>';
 
-                if (currEntries.length < 3) {
-                    for (var i = 1; i <= currEntries.length; ++i) {
+                if (numOfLists < 3) {
+                    for (var i = 1; i <= numOfLists; ++i) {
                         paginationInfo += '<li id="' + i + '"  onclick="managePagination(\'' + i + '\')"><a href="#">' + i + '</a></li>';
                     }
-
+                    
                 }
                 else {
-                    for (var i = currEntries.length - 2; i <= currEntries.length; ++i) {
+                    for (var i = numOfLists - 2; i <= numOfLists; ++i) {
                         paginationInfo += '<li id="' + i + '"  onclick="managePagination(\'' + i + '\')"><a href="#">' + i + '</a></li>';
                     }
 
@@ -298,9 +298,9 @@
 
                 $("#paginationData").append(paginationInfo);
 
-                $("#" + currEntries.length).addClass("active");
+                $("#" + numOfLists).addClass("active");
 
-                showList(currEntries.length, $("#itemsCount").val());
+                showList(numOfLists, $("#itemsCount").val());
             }
             else {
                 $("#" + currId).addClass("active");
@@ -426,6 +426,8 @@
                     }
                 }
             }
+
+            numOfLists = currEntries.length;
         }
 
     function moveToBug(id)
