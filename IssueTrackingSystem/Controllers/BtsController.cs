@@ -175,6 +175,7 @@ namespace BTS.Controllers
                             foreach (var admin in admins)
                             {
                                 db.WriteMessage(admin.Nickname, u.Nickname, text);
+                                db.InformAboutNotification(admin);
                             }
                         }
                         else if (addResult == "Fail")
@@ -578,6 +579,7 @@ namespace BTS.Controllers
                     string text = "You were invited to the <a href=\"" + Url.Action("ShowProject", "Bts", new { name = proj.Name }) + "\">" + projectName + "</a> project. Please go to the project page to accept invitation";
 
                     db.WriteMessage(dev.Nickname, admin.Nickname, text);
+                    db.InformAboutNotification(dev);
                 }
 
                 db.Close();
@@ -1006,6 +1008,7 @@ namespace BTS.Controllers
                             + "\">" + devNickname + "</a> responsible for <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId
                             + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a> instead of you. Do not despair and move on!";
                         db.WriteMessage(prevDeveloper.Nickname, pm.Nickname, text1);
+                        db.InformAboutNotification(prevDeveloper);
 
                         string text2 = "You were made responsible for <a href=\"" + 
                             Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId +
@@ -1013,6 +1016,7 @@ namespace BTS.Controllers
                             "</a>. Have a luck!";
 
                         db.WriteMessage(devNickname, pm.Nickname, text2);
+                        db.InformAboutNotification(newDeveloper);
                     }
                 }
                 else
@@ -1119,6 +1123,7 @@ namespace BTS.Controllers
                                   + Url.Action("BugDescriptionPage", "Bts", new { id = bug.Id, projName = projName }) + "\"> bug # " + id + "</a>";
 
                             db.WriteMessage(developer.Nickname, bug.TopicStarter, messageText);
+                            db.InformAboutNotification(developer);
                         }
                         else
                         {
@@ -1126,7 +1131,10 @@ namespace BTS.Controllers
                             + "\">" + developer.Nickname + "</a>  added new message to discussion of <a href=\""
                             + Url.Action("BugDescriptionPage", "Bts", new { id = bug.Id, projName = projName }) + "\"> bug # " + id + "</a>";
 
+                            User topicStarter = db.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
+
                             db.WriteMessage(bug.TopicStarter, developer.Nickname, messageText);
+                            db.InformAboutNotification(topicStarter);
                         }
                     }
 
@@ -1167,7 +1175,10 @@ namespace BTS.Controllers
                     + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a>";
 
                     db.WriteMessage(bugDeveloper.Nickname, bug.TopicStarter, message);
+                    db.InformAboutNotification(bugDeveloper);
+
                     db.WriteMessage(pm.Nickname, bug.TopicStarter, message);
+                    db.InformAboutNotification(pm);
                 }
 
                 db.Close();
@@ -1219,11 +1230,14 @@ namespace BTS.Controllers
 
                     User pm = db.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
 
+                    User topicStarter = db.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
+
                     string message = "<a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = pm.Id })
                     + "\">" + pm.Nickname + "</a> documented solution of <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId
                     + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a>";
 
                     db.WriteMessage(bug.TopicStarter, pm.Nickname, message);
+                    db.InformAboutNotification(topicStarter);
                 }
 
                 db.Close();

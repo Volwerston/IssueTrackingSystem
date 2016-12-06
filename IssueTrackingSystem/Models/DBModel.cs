@@ -695,6 +695,71 @@ namespace BTS.Models
             return toReturn;
         }
 
+        internal void InformAboutNotification(User u)
+        {
+            string cmdString = "SELECT COUNT(ID) FROM Notifications WHERE RECEIVER=@receiver";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            cmd.Parameters.AddWithValue("@receiver", u.Nickname);
+
+            int numOfNotifications = 0;
+
+            SqlTransaction transaction = connection.BeginTransaction("InformTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                numOfNotifications = (int)cmd.ExecuteScalar();
+                transaction.Commit();
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+
+            if(numOfNotifications == 1)
+            {
+                string subject = "New message";
+                string text = "Hello, " + u.Name + ", <br/> You received new message on your account. <br/>"
+                    + "Follow this link to check current notifications: http://its.local <br/> Issue Tracking System";
+                WriteLetterToUser(u, subject, text);
+            }
+        }
+
+        internal void WriteLetterToUser(User u, string subject, string text)
+        {
+            string smtpHost = "smtp.gmail.com";
+            int smtpPort = 587;
+            string smtpUserName = "btsemail1@gmail.com";
+            string smtpUserPass = "btsadmin";
+
+            SmtpClient client = new SmtpClient(smtpHost, smtpPort);
+            client.UseDefaultCredentials = false;
+            client.Credentials = new NetworkCredential(smtpUserName, smtpUserPass);
+            client.EnableSsl = true;
+
+            string msgFrom = smtpUserName;
+            string msgTo = u.Email;
+            string msgSubject = "Password Notification";
+
+            MailMessage message = new MailMessage(msgFrom, msgTo, msgSubject, text);
+
+            message.IsBodyHtml = true;
+
+            try
+            {
+                client.Send(message);
+            }
+            catch (Exception ex)
+            {
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.Message);
+            }
+        }
+
         internal bool RemoveNotification(int id)
         {
             bool toReturn = false;
