@@ -18,6 +18,33 @@
 
         <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10">
 
+            @if ((Session["Username"].ToString() == Model.TopicStarter || Convert.ToInt32(Session["Id"].ToString()) == Model.DeveloperId) && Model.Status != "Closed")
+            {
+                using (Html.BeginForm("BugWorkflowPage", "Bts", FormMethod.Post, new { @class = "form-horizontal", id = "formData", style = "background-color: rgb(53, 198, 255); background-corner: 5px; padding: 10px;" }))
+                {
+                    @Html.Hidden("projName", (string)ViewBag.ProjectName);
+                    @Html.Hidden("id", 0);
+
+                            <div class="form-group">
+                                @Html.Label("To:", new { @class = "col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" })
+                                @Html.Editor("Recipient", new { htmlAttributes = new { @class = "col-xs-6 col-sm-6 col-md-6 col-lg-6 form-control", placeholder = "No message chosen", disabled="disabled" } })
+                                <button type="button"  id="removeRecipient" class="btn btn-info"><span class="glyphicon glyphicon-remove"></span></button>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-offset-3 col-sm-offset-3 col-md-offset-3 col-lg-7 col-xs-7 col-sm-7 col-md-7" style="margin-bottom: 5px; margin-top: 5px;">
+                                    @Html.TextArea("messageToAdd", new { cols = 60, rows = 10, @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-offset-5 col-sm-offset-5 col-md-offset-5">
+                                    <button class="btn btn-default col-lg-4 col-xs-4 col-sm-4 col-md-4" type="submit" id="addMessage" style="margin-bottom: 5px;">Send</button>
+                                </div>
+                            </div>
+                }
+            }
+            <br />
+            <hr />
+
     @if ((List<Message>)ViewBag.Messages != null)
     {
         foreach (Message message in (List<Message>)ViewBag.Messages)
@@ -38,42 +65,31 @@
                         </div>
                     </div>
 
-                    @if (Session["Username"].ToString() == Model.TopicStarter && Model.Status != "Closed")
+                    @if (Model.Status != "Closed")
                     {
-                    <div class="row" style="margin-bottom: 5px;">
+                    if ((Session["Username"].ToString() == Model.TopicStarter || int.Parse(Session["Id"].ToString()) == Model.DeveloperId)
+                            && Session["Username"].ToString() != message.SenderNick)
+                    {
+                        <div class="row" style="margin-bottom: 5px;">
+                            <div class="col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                <a onclick="setRecipient('@message.SenderNick', '@message.AddingTime', '@message.Id')">Reply</a>
+                                </div>
+
+                    @if (Session["Username"].ToString() == Model.TopicStarter)
+                    {
                         <div class="col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-3 col-sm-3 col-md-3 col-lg-3">
                             <button type="button" onclick='setSelected("@message.Id")' data-toggle="modal" data-target="#markAsRight" class="btn btn-default">Mark as correct</button>
                         </div>
-                    </div>
                     }
-                </div>
+                            </div>
+                    }
+                    }
+
+                        </div>
             </div>
         }
     }
     <br />
-    <hr />
-
-    @if ((Session["Username"].ToString() == Model.TopicStarter || Convert.ToInt32(Session["Id"].ToString()) == Model.DeveloperId) && Model.Status != "Closed")
-    {
-
-        using (Html.BeginForm()){
-        <div class="row" id="formData">
-            <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="background-color: rgb(155, 210, 226); border-radius: 5px;">
-                <div class="row">
-                    <div class="col-lg-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-10 col-xs-10 col-sm-10 col-md-10" style="margin-bottom: 5px; margin-top: 5px;">
-                        @Html.TextArea("messageToAdd", new { cols = 30, rows = 10, @class = "form-control" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-offset-4 col-sm-offset-4 col-md-offset-4">
-                       <button class="btn btn-default col-lg-4 col-xs-4 col-sm-4 col-md-4" type="submit" id="addMessage" style="margin-bottom: 5px;">Send</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-            }
-        }
-                <br />
             </div>
         </div>
     </div>
@@ -122,6 +138,24 @@
 
     <script>
         var selectedItemId = 0;
+        var messageToReply = 0;
+
+        function setRecipient(nickname, date, messageId)
+        {
+            $("input[name='Recipient']").val(nickname + " " + date);
+            messageToReply = messageId;
+
+            $("html, body").animate({ scrollTop: 0 });
+
+            $("#removeRecipient").show();
+        }
+
+        $("#removeRecipient").click(function ()
+        {
+            $("input[name='Recipient']").val("");
+            messageToReply = 0;
+            $(this).hide();
+        });
 
         function setSelected(selId)
         {
@@ -129,6 +163,8 @@
         }
 
         $(document).ready(function () {
+
+            $("#removeRecipient").hide();
 
             var correctItemId = "@ViewBag.CorrectItem";
 
