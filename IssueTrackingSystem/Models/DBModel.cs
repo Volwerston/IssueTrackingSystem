@@ -1101,10 +1101,11 @@ namespace BTS.Models
             return toReturn;
         }
 
-        internal void AddMessageToWorkflow(int bugId, string messageToAdd, string nickName)
+        internal void AddMessageToWorkflow(int bugId, Message message)
         {
-            string cmdString = "INSERT INTO Messages (MESSAGE, ADD_TIME, SENDER_NICKNAME, BUG_ID, CORRECT) VALUES('" + messageToAdd + "',"
-                + "CONVERT(smalldatetime, GETDATE(), 104), '" + nickName + "', " + bugId + ", 0);";
+            string cmdString = "INSERT INTO Messages (MESSAGE, ADD_TIME, SENDER_NICKNAME, BUG_ID, CORRECT, UserToReply, MessageIdToReply) VALUES('" 
+                + message.MessageText + "'," + "CONVERT(smalldatetime, GETDATE(), 104), '" + message.SenderNick + "', " + bugId + ", 0,'" 
+                + message.UserToReply + "', " + message.MessageToReplyId + ");";
 
             SqlCommand cmd = new SqlCommand(cmdString, connection);
             SqlTransaction transaction = connection.BeginTransaction("MessageAddTransaction");
@@ -1601,6 +1602,16 @@ namespace BTS.Models
                         toAdd.AddingTime = Convert.ToDateTime(rdr["ADD_TIME"].ToString());
                         toAdd.BugId = Convert.ToInt32(rdr["BUG_ID"].ToString());
                         toAdd.Correct = Convert.ToBoolean(rdr["CORRECT"].ToString());
+                        
+                    if(rdr["UserToReply"] != DBNull.Value)
+                    {
+                        toAdd.UserToReply = rdr["UserToReply"].ToString();
+                    }
+
+                    if(rdr["MessageIdToReply"] != DBNull.Value)
+                    {
+                        toAdd.MessageToReplyId = Convert.ToInt32(rdr["MessageIdToReply"].ToString());
+                    }
 
                         toReturn.Add(toAdd);
                     }

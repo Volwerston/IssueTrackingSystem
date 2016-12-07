@@ -23,11 +23,12 @@
                 using (Html.BeginForm("BugWorkflowPage", "Bts", FormMethod.Post, new { @class = "form-horizontal", id = "formData", style = "background-color: rgb(53, 198, 255); background-corner: 5px; padding: 10px;" }))
                 {
                     @Html.Hidden("projName", (string)ViewBag.ProjectName);
-                    @Html.Hidden("id", 0);
+                    @Html.Hidden("recipientId", "0", new { id = "recipientId" });
+                    @Html.Hidden("Recipient", "", new { id = "Recipient" });
 
                             <div class="form-group">
                                 @Html.Label("To:", new { @class = "col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label" })
-                                @Html.Editor("Recipient", new { htmlAttributes = new { @class = "col-xs-6 col-sm-6 col-md-6 col-lg-6 form-control", placeholder = "No message chosen", disabled="disabled" } })
+                                @Html.Editor("recipientData", new { htmlAttributes = new { @class = "col-xs-6 col-sm-6 col-md-6 col-lg-6 form-control", placeholder = "No message chosen", disabled="disabled"} })
                                 <button type="button"  id="removeRecipient" class="btn btn-info"><span class="glyphicon glyphicon-remove"></span></button>
                             </div>
                             <div class="form-group">
@@ -37,7 +38,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-offset-5 col-sm-offset-5 col-md-offset-5">
-                                    <button class="btn btn-default col-lg-4 col-xs-4 col-sm-4 col-md-4" type="submit" id="addMessage" style="margin-bottom: 5px;">Send</button>
+                                    <button class="btn btn-default col-lg-4 col-xs-4 col-sm-4 col-md-4" type="submit" id="addMessage" style="margin-bottom: 5px;" disabled>Send</button>
                                 </div>
                             </div>
                 }
@@ -47,10 +48,10 @@
 
     @if ((List<Message>)ViewBag.Messages != null)
     {
-        foreach (Message message in (List<Message>)ViewBag.Messages)
+        foreach(Message message in (List<Message>)ViewBag.Messages)
         {
             <div class="row" style="margin-bottom: 15px;">
-                <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10"  id="@message.Id" style="background-color: rgb(155, 210, 226); border-radius: 5px;">
+                <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10"  id="@Convert.ToString(message.Id)" style="background-color: rgb(155, 210, 226); border-radius: 5px;">
                     <div class="row" style="margin-bottom: 5px;">
                         <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-3 col-xs-3 col-sm-3 col-md-3">
                             <p>@message.SenderNick</p>
@@ -60,8 +61,17 @@
                         </div>
                     </div>
                     <div class="row" style="margin-bottom: 5px;word-wrap:break-word">
-                        <div class="co-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10 text-center">
-                            <p>@message.MessageText</p>
+
+                       
+                        <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10 text-center">
+                            @if (message.MessageToReplyId != null)
+                            {
+                                <p>To: <a href="#@Convert.ToString(message.MessageToReplyId)" >@message.UserToReply</a></p>
+                                <br/>
+                                <br/>
+                            }
+                                <p>@message.MessageText</p>
+                            
                         </div>
                     </div>
 
@@ -72,7 +82,10 @@
                     {
                         <div class="row" style="margin-bottom: 5px;">
                             <div class="col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                @if (Model.Status != "Closed")
+                                {
                                 <a onclick="setRecipient('@message.SenderNick', '@message.AddingTime', '@message.Id')">Reply</a>
+                                }
                                 </div>
 
                     @if (Session["Username"].ToString() == Model.TopicStarter)
@@ -138,12 +151,14 @@
 
     <script>
         var selectedItemId = 0;
-        var messageToReply = 0;
 
         function setRecipient(nickname, date, messageId)
         {
-            $("input[name='Recipient']").val(nickname + " " + date);
-            messageToReply = messageId;
+            $("input[name='recipientData']").val(nickname + " " + date);
+
+            $("#Recipient").val(nickname + " " + date);
+
+            $("#recipientId").val(messageId);
 
             $("html, body").animate({ scrollTop: 0 });
 
@@ -152,8 +167,9 @@
 
         $("#removeRecipient").click(function ()
         {
-            $("input[name='Recipient']").val("");
-            messageToReply = 0;
+            $("input[name='recipientData']").val("");
+            $("#recipientId").val("0");
+            $("#Recipient").val("");
             $(this).hide();
         });
 
@@ -173,8 +189,25 @@
                 $("#" + correctItemId).css("background-color", "rgb(86, 251, 179)");
             }
 
+            $("textarea[name='messageToAdd']").keyup(function () {
+
+                var str = $(this).val().trim();
+
+                if (str == "") {
+                    if (!($("#addMessage").prop("disabled"))) {
+                        $("#addMessage").prop("disabled", true);
+                    }
+                }
+                else {
+                    $("#addMessage").removeProp("disabled");
+                }
+            });
+
             $("textarea[name='finalComment']").keyup(function () {
-                if ($(this).val() == "") {
+
+                var str = $(this).val().trim();
+
+                if (str == "") {
                     if (!($("#correctSubmitButton").prop("disabled"))) {
                         $("#correctSubmitButton").prop("disabled", true);
                     }

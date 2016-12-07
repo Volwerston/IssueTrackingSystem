@@ -119,6 +119,10 @@ namespace BTS.Models
         public string SenderNick { get; set; }
         public int BugId { get; set; }
         public bool Correct { get; set; }
+
+        public string UserToReply { get; set; }
+
+        public int? MessageToReplyId { get; set; }
     }
 
 

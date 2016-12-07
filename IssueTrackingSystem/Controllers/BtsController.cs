@@ -1095,7 +1095,7 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
-        public ActionResult BugWorkflowPage(int id, string messageToAdd, string projName)
+        public ActionResult BugWorkflowPage(int id, string messageToAdd, string projName, int recipientId, string Recipient)
         {
             ViewBag.ProjectName = projName;
 
@@ -1103,57 +1103,73 @@ namespace BTS.Controllers
             {
                 Bug bug = null;
 
-                    db.AddMessageToWorkflow(id, messageToAdd, Session["Username"].ToString());
+                Message message = new Message();
+                message.SenderNick = Session["Username"].ToString();
+                message.UserToReply = Recipient;
+                message.MessageToReplyId = recipientId;
+                message.MessageText = messageToAdd;
 
-                    Project proj = db.GetProjectsByName(projName).ToList().SingleOrDefault();
+                if (id == 0)
+                {
+                    message.MessageToReplyId = null;
+                }
+
+                if (Recipient == "")
+                {
+                    message.UserToReply = null;
+                }
+
+                db.AddMessageToWorkflow(id, message);
+
+                Project proj = db.GetProjectsByName(projName).ToList().SingleOrDefault();
 
 
-                    if (proj != null)
+                if (proj != null)
+                {
+                    bug = db.GetProjectBugs(proj).Where(x => x.Id == id).ToList().SingleOrDefault();
+                }
+
+                if (bug != null)
+                {
+                    User developer = db.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
+
+                    if (developer != null)
                     {
-                        bug = db.GetProjectBugs(proj).Where(x => x.Id == id).ToList().SingleOrDefault();
+                        if (Session["Username"].ToString() == bug.TopicStarter)
+                        {
+                            string messageText = "<a href =\"" + Url.Action("ExternalAccountPage", "Bts", new { id = developer.Id })
+                                  + "\">" + bug.TopicStarter + "</a>  added new message to discussion of <a href=\""
+                                  + Url.Action("BugDescriptionPage", "Bts", new { id = bug.Id, projName = projName }) + "\"> bug # " + id + "</a>";
+
+                            db.WriteMessage(developer.Nickname, bug.TopicStarter, messageText);
+                            db.InformAboutNotification(developer);
+                        }
+                        else
+                        {
+                            string messageText = "<a href =\"" + Url.Action("ExternalAccountPage", "Bts", new { id = developer.Id })
+                            + "\">" + developer.Nickname + "</a>  added new message to discussion of <a href=\""
+                            + Url.Action("BugDescriptionPage", "Bts", new { id = bug.Id, projName = projName }) + "\"> bug # " + id + "</a>";
+
+                            User topicStarter = db.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
+
+                            db.WriteMessage(bug.TopicStarter, developer.Nickname, messageText);
+                            db.InformAboutNotification(topicStarter);
+                        }
                     }
 
-                    if (bug != null)
+                    List<Message> messages = db.GetMessageLog(id);
+
+                    if (messages != null)
                     {
-                        User developer = db.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
-
-                        if (developer != null)
-                        {
-                            if (Session["Username"].ToString() == bug.TopicStarter)
-                            {
-                                string messageText = "<a href =\"" + Url.Action("ExternalAccountPage", "Bts", new { id = developer.Id })
-                                      + "\">" + bug.TopicStarter + "</a>  added new message to discussion of <a href=\""
-                                      + Url.Action("BugDescriptionPage", "Bts", new { id = bug.Id, projName = projName }) + "\"> bug # " + id + "</a>";
-
-                                db.WriteMessage(developer.Nickname, bug.TopicStarter, messageText);
-                                db.InformAboutNotification(developer);
-                            }
-                            else
-                            {
-                                string messageText = "<a href =\"" + Url.Action("ExternalAccountPage", "Bts", new { id = developer.Id })
-                                + "\">" + developer.Nickname + "</a>  added new message to discussion of <a href=\""
-                                + Url.Action("BugDescriptionPage", "Bts", new { id = bug.Id, projName = projName }) + "\"> bug # " + id + "</a>";
-
-                                User topicStarter = db.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
-
-                                db.WriteMessage(bug.TopicStarter, developer.Nickname, messageText);
-                                db.InformAboutNotification(topicStarter);
-                            }
-                        }
-
-                        List<Message> messages = db.GetMessageLog(id);
-
-                        if (messages != null)
-                        {
-                            messages = messages.OrderByDescending(x => x.Id).ToList();
-                        }
-
-                        ViewBag.Messages = messages;
+                        messages = messages.OrderByDescending(x => x.Id).ToList();
                     }
+
+                    ViewBag.Messages = messages;
+                }
 
                 db.Close();
 
-                return View(bug);
+                return RedirectToAction("BugDescriptionPage", "Bts", new { id = id, projName = projName });
             }
 
 
@@ -1167,7 +1183,11 @@ namespace BTS.Controllers
 
             if(db.Open())
             {
-                db.AddMessageToWorkflow(bugId, finalComment, Session["Username"].ToString());
+                Message aMessage = new Message();
+                aMessage.MessageText = finalComment;
+                aMessage.SenderNick = Session["Username"].ToString();
+
+                db.AddMessageToWorkflow(bugId, aMessage);
 
                 toReturn = db.MarkRightIssueAnswer(bugId, selectedItemId, estimate);
 
@@ -1223,6 +1243,7 @@ namespace BTS.Controllers
             return RedirectToAction("PageNotFound", "Error");
         }
 
+        [HttpPost]
         [ValidateInput(false)]
         public string BugSolution(int bugId, string solution, string projectName)
         {
