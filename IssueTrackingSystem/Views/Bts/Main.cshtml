@@ -207,8 +207,6 @@ else
                                 if (res.length > 0) {
                                     lastId = res[(res.length / 2) - 1].Id;
 
-                                    alert(lastId);
-
                                     for (var i = 0; i < res.length/2; ++i) {
                                         $("#projects").append(getDivForProject(res[i], res[i + res.length/2]));
                                     }
