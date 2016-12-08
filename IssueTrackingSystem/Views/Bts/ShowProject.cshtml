@@ -52,6 +52,24 @@
     }
 }
 
+@if (TempData["status"] != null)
+{
+    @Html.Hidden(TempData["status"].ToString(), TempData["status"].ToString(), new { id = "status" })
+}
+else
+{
+    @Html.Hidden("null", "null", new { id = "status" })
+}
+
+@if (TempData["message"] != null)
+{
+    @Html.Hidden(TempData["message"].ToString(), TempData["message"].ToString(), new { id = "message" })
+}
+else
+{
+    @Html.Hidden("null", "null", new { id = "message" })
+}
+
 <div style="margin: 10px 10px 10px 10px; padding: 10px 10px 10px 10px;">
 <div class="row">
     <div class="col-md-3"  style="background-color: rgb(110, 255, 192); border-radius: 5px; margin: 0px 25px 25px 50px;">
@@ -65,7 +83,7 @@
         @if (canAddBug)
         {
         <div class="row" style="padding-bottom: 5px; margin-left: 2px; margin-right: 2px;">
-         <input type="submit" class="col-xs-2 col-sm-2 col-md-2 col-lg-2 btn btn-info btn-block" value="Report bug" onclick="location.href='@Url.Action("ReportBug", "Bts", new { @projectId = Model.Id })'" />
+         <input type="submit" class="col-xs-2 col-sm-2 col-md-2 col-lg-2 btn btn-info btn-block" value="Report bug" onclick="location.href='@Url.Action("ReportBug", "Bts", new { @projectId = Model.Id, projectName = Model.Name })'" />
         </div>
         }
 
@@ -176,6 +194,10 @@
         }).multipleSelect({
             width: '100%'
         });
+
+        if ($("#message").val() != "null") {
+            displayMessage($("#status").val(), $("#message").val());
+        }
 
         populateData("", $("#itemsCount").val());
 

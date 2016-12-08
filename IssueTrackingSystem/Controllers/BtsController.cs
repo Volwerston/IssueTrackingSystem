@@ -20,11 +20,11 @@ namespace BTS.Controllers
         private DBModel db = new DBModel();
         // GET: Bts
 
-        public ActionResult Index()
+        public ActionResult Index(string message, string messageType)
         {
             if (Session["Username"] != null && Session["Status"] != null)
             {
-                return RedirectToAction("Main");
+                return RedirectToAction("Main", "Bts", new { message = message, messageType = messageType });
             }
             else
             {
@@ -46,6 +46,12 @@ namespace BTS.Controllers
                             return RedirectToAction("Main");
                         }
                     }
+                }
+
+                if(message != null && messageType != null)
+                {
+                    TempData["message"] = message;
+                    TempData["status"] = messageType;
                 }
 
                 return View();
@@ -140,6 +146,7 @@ namespace BTS.Controllers
         [HttpPost]
         public ActionResult SignUp(User u, HttpPostedFileBase userAvatar, string confirmPassword, string birthDate)
         {
+
             if (birthDate != "")
             {
                 u.BirthDate = DateTime.ParseExact(birthDate, "dd.MM.yyyy",
@@ -163,9 +170,6 @@ namespace BTS.Controllers
 
                         if (addResult == "Success")
                         {
-                            TempData["status"] = "Success";
-                            TempData["message"] = "Account has been successfully registered";
-
                             int insertedId = db.getUsers().Where(x => x.Nickname == u.Nickname).ToList().First().Id;
 
                             string text = "Please confirm the personality of new user <a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { @id = insertedId }) + "\">" + u.Nickname + "</a>";
@@ -190,6 +194,12 @@ namespace BTS.Controllers
                         }
 
                         db.Close();
+
+                        if (addResult == "Success")
+                        {
+                            return RedirectToAction("Index", "Bts",
+                                new { messageType = "Success", message = "Account has been successfully registered" });
+                        }
                     }
                     else
                     {
@@ -233,8 +243,16 @@ namespace BTS.Controllers
 
                     db.Close();
 
-                    TempData["status"] = "Success";
-                    TempData["message"] = "Please check your e-mail";
+                    if(letterSent)
+                    {
+                        return RedirectToAction("Index", "Bts",
+                            new { messageType = "Success", message = "Letter was successfully sent" });
+                    }
+                    else
+                    {
+                        TempData["message"] = "Error";
+                        TempData["message"] = "Letter was not sent. Try again";
+                    }
 
                 }
             }
@@ -242,7 +260,7 @@ namespace BTS.Controllers
         }
 
         [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
-        public ActionResult Main()
+        public ActionResult Main(string message, string messageType)
         {
             List<Category> categories = new List<Category>();
 
@@ -250,6 +268,12 @@ namespace BTS.Controllers
             {
                 categories = db.getCategories();
                 db.Close();
+            }
+
+            if(messageType != null && message != null)
+            {
+                TempData["message"] = message;
+                TempData["status"] = messageType;
             }
 
             return View(categories);
@@ -408,7 +432,7 @@ namespace BTS.Controllers
         }
 
         [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
-        public ActionResult ShowProject(string name)
+        public ActionResult ShowProject(string name, string message, string messageType)
         {
             bool projectFound = false;
 
@@ -469,6 +493,12 @@ namespace BTS.Controllers
             }
 
             ViewBag.Pm = project.PmId;
+
+            if(messageType != null && message != null)
+            {
+                TempData["message"] = message;
+                TempData["status"] = messageType;
+            }
 
             return View(project);
         }
@@ -686,12 +716,9 @@ namespace BTS.Controllers
 
                 if (db.Open())
                 {
-                    if (db.ChangeUserPassword(Request.QueryString["uid"], password))
-                    {
-                        TempData["status"] = "Success";
-                        TempData["message"] = "Password changed successfully";
-                    }
-                    else
+                    bool passwordChanged = db.ChangeUserPassword(Request.QueryString["uid"], password);
+
+                    if(!passwordChanged)
                     {
                         TempData["status"] = "Error";
                         TempData["message"] = "Password Reset link has expired or is invalid";
@@ -700,6 +727,12 @@ namespace BTS.Controllers
                     db.deleteExpiredRecords();
 
                     db.Close();
+
+                    if(passwordChanged)
+                    {
+                        return RedirectToAction("Index", "Bts", 
+                            new { messageType = "Success", message = "Password successfully changed" });
+                    }
                 }
             }
             else
@@ -712,9 +745,10 @@ namespace BTS.Controllers
         }
 
         [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
-        public ActionResult ReportBug(int projectId)
+        public ActionResult ReportBug(int projectId, string projectName)
         {
             TempData["projId"] = projectId;
+            TempData["projname"] = projectName;
             Bug bug = new Bug();
             return View(bug);
         }
@@ -997,8 +1031,9 @@ namespace BTS.Controllers
 
             if (bugReported && attachmentsAdded)
             {
-                TempData["status"] = "Success";
-                TempData["message"] = "Bug successfully added. Wait for admin's confirmation";
+                
+                return RedirectToAction("ShowProject", "Bts",
+                    new { name=TempData["projName"].ToString(), messageType = "Success", message = "Bug successfully reported. Wait for further messages" });
             }
             else
             {
