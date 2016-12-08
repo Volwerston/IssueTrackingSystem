@@ -290,8 +290,33 @@ namespace BTS.Controllers
                 db.Close();
             }
 
-            string returnString = JsonConvert.SerializeObject(toReturn);
-            return returnString;
+            List<string> imageUrls = new List<string>();
+
+            if (toReturn != null)
+            {
+                foreach (Project proj in toReturn)
+                {
+                    var base64 = Convert.ToBase64String(proj.Logo);
+                    string toAdd = string.Format("data:image/jpg;base64, {0}", base64);
+                    imageUrls.Add(toAdd);
+                    proj.Logo = null;
+                }
+            }
+
+            string returnStringProjects = JsonConvert.SerializeObject(toReturn);
+
+            if (toReturn != null)
+            {
+                string returnStringImgs = JsonConvert.SerializeObject(imageUrls);
+
+                returnStringProjects = returnStringProjects.Substring(0, returnStringProjects.Count() - 1);
+                returnStringProjects += ",";
+                returnStringImgs = returnStringImgs.Substring(1);
+
+                returnStringProjects += returnStringImgs;
+            }
+
+            return returnStringProjects;
         }
 
         [HttpPost]
@@ -305,8 +330,33 @@ namespace BTS.Controllers
                 db.Close();
             }
 
-            string returnString = JsonConvert.SerializeObject(toReturn);
-            return returnString;
+            List<string> imageUrls = new List<string>();
+
+            if (toReturn != null && toReturn.Count() != 0)
+            {
+                foreach (Project proj in toReturn)
+                {
+                    var base64 = Convert.ToBase64String(proj.Logo);
+                    string toAdd = string.Format("data:image/jpg;base64, {0}", base64);
+                    imageUrls.Add(toAdd);
+                    proj.Logo = null;
+                }
+            }
+
+            string returnStringProjects = JsonConvert.SerializeObject(toReturn);
+
+            if (toReturn != null && toReturn.Count() != 0)
+            {
+                string returnStringImgs = JsonConvert.SerializeObject(imageUrls);
+
+                returnStringProjects = returnStringProjects.Substring(0, returnStringProjects.Count() - 1);
+                returnStringProjects += ",";
+                returnStringImgs = returnStringImgs.Substring(1);
+
+                returnStringProjects += returnStringImgs;
+            }
+
+            return returnStringProjects;
         }
 
         [SystemAuthorize(Roles="Project Manager,Admin")]

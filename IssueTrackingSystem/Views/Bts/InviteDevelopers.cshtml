@@ -53,6 +53,14 @@
                 });
             });
 
+        $("#userName").keypress(function (e) {
+            if (e.which == 13) {
+                $("#developers").empty();
+                lastId = 0;
+                searchForDevelopers();
+            }
+        });
+
 
         function getDivForDeveloper(userData, source) {
             return '<div class="row" id="developer' + userData.Id + '">'

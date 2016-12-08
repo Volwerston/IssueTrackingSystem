@@ -103,7 +103,22 @@ else
                             }
                          });
 
-                        });
+                    });
+
+                    $("#projectName").keypress(function (e) {
+                        if (e.which == 13) {
+                            $("#projects").empty();
+                            lastId = 0;
+
+                            if ($("#projectName").val() != "") {
+                                getDataByName();
+                            }
+                            else {
+                                getDataByCategories();
+                            }
+                        }
+                    });
+
 
                     function getDataByName()
                     {
@@ -119,8 +134,10 @@ else
                             success: function (res) {
 
                                 if (res.length > 0) {
-                                    for (var i = 0; i < res.length; ++i) {
-                                        $("#projects").append(getDivForBug(res[i]));
+                                    lastId = res[res.length / 2 - 1].Id;
+
+                                    for (var i = 0; i < res.length / 2; ++i) {
+                                        $("#projects").append(getDivForProject(res[i], res[i + res.length / 2]));
                                     }
                                 }
                                 else {
@@ -134,24 +151,37 @@ else
                     }
 
 
-                    function getDivForBug(val) {
-                        return '<div style="border-radius:5px; background-color: rgb(0, 255, 144);">'
-                             +  '<div style="padding: 10px 10px 10px 10px; margin: 10px 10px 10px 10px;">'
-                                 + '<div class="row">'
-                                + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(111, 255, 192); border-radius:3px; margin-bottom: 5px;">'
+                    function getDivForProject(val, imgSource) {
+                        var str = '<a href="@Url.Action("ShowProject", "Bts")' + '/?name=' + val.Name + '">'
+                            + '<div style="border-radius:5px; background-color: rgb(0, 255, 144);">'
+                             + '<div style="padding: 10px 10px 10px 10px; margin: 10px 10px 10px 10px;">'
+                        + '<div class="row">';
+
+                       str += '<div class="col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-5 col-sm-5 col-md-5 col-lg-5">'
+                           + '<div class="row">'
+                           + '<div class="col-md-offset-1 col-md-10 text-center" style="background-color: rgb(111, 255, 192); border-radius:3px; margin-bottom: 5px;">'
                                     + '<p>' + val.Name + '</p>'
                                  + '</div>'
                             + '</div>'
                                 + '<div class="row">'
-                                   + '<div class="col-md-offset-1 col-md-5 text-center" style="background-color: rgb(86, 251, 179); border-radius:3px;">'
+                                   + '<div class="col-md-offset-1 col-md-10 text-center" style="background-color: rgb(86, 251, 179); border-radius:3px;">'
                                         + '<p>' + val.Description + '</p>'
                                    + '</div>'
-                                    + '<div class="col-md-5">'
-                                    + '<a href="@Url.Action("ShowProject", "Bts")' + '/?name=' + val.Name + '"><input type="submit" class="btn btn-info" value="View"/></a>'
-                                    + '</div>'
                                + ' </div>'
+                               + '</div>'
+
+                       if (imgSource != null) {
+                           str += '<div class="col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-5 col-sm-5 col-md-5 col-lg-5">'
+                            + '<img src="' + imgSource + '" class="img-responsive" style="margin: 10px 10px 10px 10px; max-height: 150px;" />'
+                           + '</div>';
+                       }
+
+                               str += '</div>'
                             + '</div>'
-                            + '</div>';
+                            + '</div>'
+                             + '</a>';
+
+                        return str;
                     }
 
                     function getDataByCategories() {
@@ -175,10 +205,12 @@ else
                             success: function (res) {
 
                                 if (res.length > 0) {
-                                    lastId = res[res.length - 1].Id;
+                                    lastId = res[(res.length / 2) - 1].Id;
 
-                                    for (var i = 0; i < res.length; ++i) {
-                                        $("#projects").append(getDivForBug(res[i]));
+                                    alert(lastId);
+
+                                    for (var i = 0; i < res.length/2; ++i) {
+                                        $("#projects").append(getDivForProject(res[i], res[i + res.length/2]));
                                     }
 
                                 }
