@@ -289,32 +289,122 @@ namespace BTS.Controllers
         public ActionResult AddProject()
         {
             Project proj = new Project();
-            return View(proj);
+
+            if(db.Open())
+            {
+                List<Category> categories = db.getCategories();
+               
+                db.Close();
+
+                if (categories != null)
+                { 
+
+                    List<SelectListItem> categoryItems = new List<SelectListItem>();
+
+                    foreach(Category category in categories)
+                    {
+                        SelectListItem item = new SelectListItem()
+                        {
+                            Text = category.Title,
+                            Value = category.Title
+                        };
+
+                        categoryItems.Add(item);
+                    }
+
+                    ViewBag.Categories = categoryItems;
+
+                    return View(proj);
+                }
+            }
+
+            return View("PageNotFound", "Error");
         }
 
         [HttpPost]
-        public ActionResult AddProject(Project proj, HttpPostedFileBase aLogo)
+        public ActionResult AddProject(Project proj, HttpPostedFileBase aLogo, FormCollection collection)
         {
             if(ModelState.IsValid)
             {
                 proj.PmId = int.Parse(Session["Id"].ToString());
 
-                byte[] img = new byte[aLogo.ContentLength];
-                aLogo.InputStream.Read(img, 0, aLogo.ContentLength);
-
-                proj.Logo = img;
-
-                if(db.Open())
+                if (collection["projectCategories"] != null)
                 {
-                    bool success = db.AddProject(proj);
+                    List<string> items = collection["projectCategories"].ToString().Split(',').ToList();
 
-                    db.Close();
+                    List<Category> categories = null;
+
+                    if (db.Open())
+                    {
+                        categories = db.getCategories();
+                        db.Close();
+                    }
+
+                    if (categories != null)
+                    {
+
+                        List<int> categoryIds = new List<int>();
+
+                        foreach (string categoryName in items)
+                        {
+                            int categoryId = categories.Where(x => x.Title == categoryName).Single().Id;
+
+                            categoryIds.Add(categoryId);
+                        }
+
+                        if (aLogo != null)
+                        {
+                            byte[] img = new byte[aLogo.ContentLength];
+                            aLogo.InputStream.Read(img, 0, aLogo.ContentLength);
+
+                            proj.Logo = img;
+                        }
+
+                        bool success = false;
+
+                        if (db.Open())
+                        {
+                            success = db.AddProject(proj, categoryIds);
+
+                            db.Close();
+                        }
+
+                        if (success)
+                        {
+                            return RedirectToAction("InternalAccountPage", "Bts");
+                        }
+                    }
                 }
-
-                return RedirectToAction("InternalAccountPage", "Bts");
             }
 
-            return View();
+            if (db.Open())
+            {
+                List<Category> categories = db.getCategories();
+
+                db.Close();
+
+                if (categories != null)
+                {
+
+                    List<SelectListItem> categoryItems = new List<SelectListItem>();
+
+                    foreach (Category category in categories)
+                    {
+                        SelectListItem item = new SelectListItem()
+                        {
+                            Text = category.Title,
+                            Value = category.Title
+                        };
+
+                        categoryItems.Add(item);
+                    }
+
+                    ViewBag.Categories = categoryItems;
+                    return View();
+                }
+            }
+
+                return View("PageNotFound", "Error");
         }
 
         [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
@@ -963,7 +1053,7 @@ namespace BTS.Controllers
                         ViewBag.DeveloperInDuty = null;
                     }
 
-                    if (bug.PmId != 0)
+                    if (proj.PmId != 0)
                     {
                         ViewBag.ProjectManager = db.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
                     }
@@ -976,7 +1066,6 @@ namespace BTS.Controllers
 
                     return View(bug);
                 }
-
             }
 
             return RedirectToAction("PageNotFound", "Error");
@@ -1109,16 +1198,6 @@ namespace BTS.Controllers
                 message.MessageToReplyId = recipientId;
                 message.MessageText = messageToAdd;
 
-                if (id == 0)
-                {
-                    message.MessageToReplyId = null;
-                }
-
-                if (Recipient == "")
-                {
-                    message.UserToReply = null;
-                }
-
                 db.AddMessageToWorkflow(id, message);
 
                 Project proj = db.GetProjectsByName(projName).ToList().SingleOrDefault();
@@ -1236,6 +1315,8 @@ namespace BTS.Controllers
 
                 if (bug != null)
                 {
+                    ViewBag.PmId = proj.PmId;
+
                     return View(bug);
                 }
             }

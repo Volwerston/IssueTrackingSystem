@@ -308,12 +308,16 @@ namespace BTS.Models
             return toReturn;
         }
 
-        internal bool AddProject(Project proj)
+        internal bool AddProject(Project proj, List<int> categoryIds)
         {
             bool toReturn = false;
 
             string cmdString = "INSERT INTO Projects (NAME, DESCRIPTION, LOGO, PmId) VALUES(@Name, @Descr, @Logo, @PmId);";
 
+            foreach(int categoryId in categoryIds)
+            {
+                cmdString += "INSERT INTO ProjectCategory VALUES('" + proj.Name + "', " + categoryId + ");";
+            }
 
             SqlCommand cmd = new SqlCommand(cmdString, connection);
             SqlTransaction transaction = connection.BeginTransaction("ProjectAddTransaction");
@@ -321,8 +325,22 @@ namespace BTS.Models
 
             cmd.Parameters.AddWithValue("@Name", proj.Name);
             cmd.Parameters.AddWithValue("@Descr", proj.Description);
-            cmd.Parameters.AddWithValue("@Logo", proj.Logo);
-            cmd.Parameters.AddWithValue("@PmId", proj.PmId);
+
+
+            SqlParameter param = new SqlParameter("@Logo", SqlDbType.Binary);
+
+            if (proj.Logo != null)
+            {
+                param.Value = proj.Logo;
+            }
+            else
+            {
+                param.Value = DBNull.Value;
+            }
+
+            cmd.Parameters.Add(param);
+
+            cmd.Parameters.AddWithValue("@PmId", proj.PmId.ToString());
 
             try
             {
@@ -1398,8 +1416,11 @@ namespace BTS.Models
                 }
             }
 
+            toReturn = toReturn.GroupBy(x => x.Id).Select(group => group.First()).ToList();
+
             return toReturn;
         }
+
 
         public List<Project> GetProjectsByCategories(int[] categories)
         {
@@ -1409,7 +1430,7 @@ namespace BTS.Models
             if (categories != null)
             {
                 string cmdString = "SELECT TOP 5 A.ID, A.NAME, A.DESCRIPTION, A.PmId, A.LOGO" +
-                                    " FROM Projects A inner join ProjectCategory B on A.ID = B.PROJECT_ID" +
+                                    " FROM Projects A inner join ProjectCategory B on A.NAME = B.PROJECT_NAME" +
                                     " WHERE A.ID > " + categories[categories.Length - 1] + " AND ( ";
 
                 for(int i = 0; i < categories.Length - 1; ++i)
@@ -1496,11 +1517,6 @@ namespace BTS.Models
                         if (rdr["DEVELOPER_ID"] != DBNull.Value)
                         {
                             bug.DeveloperId = Convert.ToInt32(rdr["DEVELOPER_ID"].ToString());
-                        }
-
-                        if (rdr["PM_ID"] != DBNull.Value)
-                        {
-                            bug.PmId = Convert.ToInt32(rdr["PM_ID"].ToString());
                         }
 
                         if (rdr["ESTIMATE"] != DBNull.Value)

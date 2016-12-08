@@ -34,7 +34,9 @@
             <br />
         }
 
-        @if (Session["Status"].ToString() == "Admin")
+        @if (Session["Status"].ToString() == "Project Manager"
+            && int.Parse(Session["Id"].ToString()) == (int)ViewBag.PmId
+            && Model.Status == "Closed")
         {
             <div class="row">
                 <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-8 col-sm-8 col-md-8 col-lg-8 text-center">

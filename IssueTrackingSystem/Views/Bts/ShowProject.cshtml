@@ -76,7 +76,7 @@
             </div>
         }
 
-        @if (Session["Status"].ToString() == "Admin")
+        @if (Session["Status"].ToString() == "Project Manager" &&  int.Parse(Session["Id"].ToString()) == Model.PmId)
         {
             <div class="row" style="padding-bottom: 5px; margin-left: 2px; margin-right: 2px;">
                 <input type="submit" class="col-xs-2 col-sm-2 col-md-2 col-lg-2 btn btn-info btn-block" value="Manage staff" data-toggle="modal" data-target="#accountManager" />

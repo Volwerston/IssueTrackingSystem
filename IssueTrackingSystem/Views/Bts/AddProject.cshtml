@@ -1,5 +1,5 @@
 ﻿@model BTS.Models.Project
-
+@using BTS.Models
 @{
     ViewBag.Title = "AddProject";
     Layout = "~/Views/Shared/_Main.cshtml";
@@ -14,10 +14,8 @@
         <div class="form-horizontal">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 <div class="form-group">
-                    <div class="col-md-offset-1 col-sm-offset-1 col-lg-offset-1 col-xs-10 col-sm-10 col-lg-10 col-md-10">
                         @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Title" } })
                         @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-                    </div>
                 </div>
 
             @Html.HiddenFor(model => model.Id)
@@ -25,17 +23,22 @@
             @Html.HiddenFor(model => model.PmId)
 
                 <div class="form-group">
-                    <div class="col-md-offset-1 col-sm-offset-1 col-lg-offset-1 col-xs-10 col-sm-10 col-lg-10 col-md-10">
                         @Html.TextAreaFor(model => model.Description, 10, 75, new { @class = "form-control", placeholder = "Description" })
                         @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-                    </div>
                 </div>
 
                 <div class="form-group">
-                    <div class="col-md-offset-1 col-sm-offset-1 col-lg-offset-1 col-xs-10 col-sm-10 col-lg-10 col-md-10">
                         <input type="file" placeholder="Logotype" name="aLogo" />
-                    </div>
                 </div>
+
+                <div class="form-group text-center">
+                    @Html.Label("Categories", new { @class = "control-label" })
+                </div>
+
+                <div class="form-group">
+                    @Html.DropDownList("projectCategories", (List<SelectListItem>)ViewBag.Categories, null, new { id = "ms", multiple = "multiple", @class = "form-control" })
+                </div>
+
 
                 <div class="form-group">
                     <div class="col-md-offset-4 col-sm-offset-4 col-lg-offset-4 col-md-4 col-xs-4 col-sm-4 col-lg-4">
@@ -49,10 +52,17 @@
 @section Scripts {
 
     @Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/multiple-select.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function ()
         {
+            $('#ms').change(function () {
+                console.log($(this).val());
+            }).multipleSelect({
+                width: '100%'
+            });
+
             $(":file").filestyle({ buttonText: "Find file" });
         });
     </script>

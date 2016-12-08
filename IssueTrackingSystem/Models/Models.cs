@@ -93,8 +93,6 @@ namespace BTS.Models
 
         public int DeveloperId { get; set; }
 
-        public int PmId { get; set; }
-
         public string Solution { get; set; }
     }
 
