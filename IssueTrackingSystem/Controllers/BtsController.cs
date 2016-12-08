@@ -395,7 +395,8 @@ namespace BTS.Controllers
 
                         if (success)
                         {
-                            return RedirectToAction("InternalAccountPage", "Bts");
+                            return RedirectToAction("InternalAccountPage", "Bts", 
+                                new { messageType = "Success", message = "New project has been successfully added" });
                         }
                     }
                 }
@@ -864,7 +865,7 @@ namespace BTS.Controllers
         }
 
         [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
-        public ActionResult InternalAccountPage()
+        public ActionResult InternalAccountPage(string message, string messageType)
         {
             User user = new User();
 
@@ -889,6 +890,12 @@ namespace BTS.Controllers
             if(user == null)
             {
                 return RedirectToAction("PageNotFound", "Error");
+            }
+
+            if(messageType != null && message != null)
+            {
+                TempData["message"] = message;
+                TempData["status"] = messageType;
             }
 
             return View(user);

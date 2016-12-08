@@ -15,6 +15,24 @@
     string userBirthData = Model.BirthDate.Day + "." + Model.BirthDate.Month + "." + Model.BirthDate.Year;
 }
 
+@if (TempData["status"] != null)
+{
+    @Html.Hidden(TempData["status"].ToString(), TempData["status"].ToString(), new { id = "status" })
+}
+else
+{
+    @Html.Hidden("null", "null", new { id = "status" })
+}
+
+@if (TempData["message"] != null)
+{
+    @Html.Hidden(TempData["message"].ToString(), TempData["message"].ToString(), new { id = "message" })
+}
+else
+{
+    @Html.Hidden("null", "null", new { id = "message" })
+}
+
 <div class="row" style="margin: 10px 10px 10px 10px;">
     <div class="col-md-offset-2 col-md-8" style="background-color: wheat;border-radius: 5px;">
         <div class="row text-center" style="color: coral">
@@ -208,6 +226,11 @@
         });
 
         $(document).ready(function () {
+
+            if ($("#message").val() != "null") {
+                displayMessage($("#status").val(), $("#message").val());
+            }
+
             $('#editPopup').appendTo("body");
 
             $("#birthdateEditor").blur(function () {

@@ -5,8 +5,6 @@
     Layout = "~/Views/Shared/_Main.cshtml";
 }
 
-
-
 @using (Html.BeginForm("AddProject", "Bts", FormMethod.Post, new { enctype="multipart/form-data", style = "display: table;margin: auto;" }))
 {
     @Html.AntiForgeryToken()
@@ -62,6 +60,7 @@
             }).multipleSelect({
                 width: '100%'
             });
+
 
             $(":file").filestyle({ buttonText: "Find file" });
         });
