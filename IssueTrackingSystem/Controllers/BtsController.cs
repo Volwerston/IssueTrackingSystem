@@ -1058,7 +1058,7 @@ namespace BTS.Controllers
             if (TempData["projId"] != null)
             { 
             b.ProjectId = Convert.ToInt32(TempData["projId"].ToString());
-            b.Status = "Unconfirmed";
+            b.Status = "Pending";
             b.TopicStarter = Session["Username"].ToString();
 
                 if (ModelState.IsValid)
