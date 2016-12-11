@@ -784,6 +784,7 @@ namespace BTS.Models
 
             string cmdString = "DELETE FROM Notifications WHERE ID=@id;";
 
+
             SqlCommand cmd = new SqlCommand(cmdString, connection);
             cmd.Parameters.AddWithValue("@id", id);
             SqlTransaction transaction = connection.BeginTransaction("NotificationRemoveTransaction");
@@ -1099,7 +1100,7 @@ namespace BTS.Models
         {
             bool toReturn = false;
 
-            string cmdString = "UPDATE Bugs SET DEVELOPER_ID=" + id + " WHERE ID=" + bugId + ";";
+            string cmdString = "UPDATE Bugs SET DEVELOPER_ID=" + id + ", StatusChangeDate = GETDATE() WHERE ID=" + bugId + ";";
             SqlCommand cmd = new SqlCommand(cmdString, connection);
             SqlTransaction transaction = connection.BeginTransaction("AlterDevId");
             cmd.Transaction = transaction;
@@ -1513,6 +1514,8 @@ namespace BTS.Models
                         bug.Description = rdr["DESCRIPTION"].ToString();
                         bug.Status = rdr["STATUS"].ToString();
                         bug.TopicStarter = rdr["TOPIC_STARTER"].ToString();
+                        bug.StatusChangeDate = Convert.ToDateTime(rdr["StatusChangeDate"].ToString());
+                        bug.AddingTime = Convert.ToDateTime(rdr["AddingTime"].ToString());
 
                         if (rdr["DEVELOPER_ID"] != DBNull.Value)
                         {

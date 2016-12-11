@@ -94,6 +94,8 @@ namespace BTS.Models
         public int DeveloperId { get; set; }
 
         public string Solution { get; set; }
+        public DateTime AddingTime { get; set; }
+        public DateTime StatusChangeDate { get; set; }
     }
 
     public class ProjectUser
