@@ -500,7 +500,7 @@ namespace BTS.Models
 
                 foreach (string name in userNames)
                 {
-                    cmdString += "(Upper(NAME)='" + name.ToUpper() + "' OR Upper(SURNAME)='" + name.ToUpper() + "' OR Upper(NICKNAME)='" + name.ToUpper() + "') OR ";
+                    cmdString += "(Upper(NAME) LIKE '%" + name.ToUpper() + "%' OR Upper(SURNAME) LIKE '%" + name.ToUpper() + "%' OR Upper(NICKNAME) LIKE '%" + name.ToUpper() + "%') OR ";
                 }
 
                 cmdString = cmdString.Substring(0, cmdString.Length - 4);
@@ -512,7 +512,7 @@ namespace BTS.Models
 
                 foreach (string name in userNames)
                 {
-                    cmdString += "(Upper(NAME)='" + name.ToUpper() + "' OR Upper(SURNAME)='" + name.ToUpper() + "' OR Upper(NICKNAME)='" + name.ToUpper() + "') OR ";
+                    cmdString += "(Upper(NAME) LIKE '%" + name.ToUpper() + "%' OR Upper(SURNAME) LIKE '%" + name.ToUpper() + "%' OR Upper(NICKNAME) LIKE '%" + name.ToUpper() + "%') OR ";
                 }
 
                 cmdString = cmdString.Substring(0, cmdString.Length - 4);
@@ -636,6 +636,10 @@ namespace BTS.Models
             if(toReturn != null && toReturn.Count() == 0)
             {
                 toReturn = null;
+            }
+            else
+            {
+                toReturn = toReturn.OrderByDescending(x => x.SendDate).ToList();
             }
 
             return toReturn;
@@ -1426,7 +1430,7 @@ namespace BTS.Models
 
             if (name != null)
             {
-                string cmdString = "SELECT * FROM Projects WHERE NAME = '" + name + "';";
+                string cmdString = "SELECT * FROM Projects WHERE UPPER(NAME) LIKE '%" + name.ToUpper() + "%';";
 
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
 

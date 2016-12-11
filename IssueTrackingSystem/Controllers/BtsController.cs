@@ -293,7 +293,7 @@ namespace BTS.Controllers
 
             List<string> imageUrls = new List<string>();
 
-            if (toReturn != null)
+            if (toReturn != null && toReturn.Count() != 0)
             {
                 foreach (Project proj in toReturn)
                 {
@@ -306,7 +306,7 @@ namespace BTS.Controllers
 
             string returnStringProjects = JsonConvert.SerializeObject(toReturn);
 
-            if (toReturn != null)
+            if (toReturn != null && toReturn.Count() != 0)
             {
                 string returnStringImgs = JsonConvert.SerializeObject(imageUrls);
 
@@ -831,6 +831,27 @@ namespace BTS.Controllers
                 if (db.Open())
                 {
                     toReturn = db.RemoveDevsFromProject(projName, toErase.ToList());
+                    db.Close();
+                }
+            }
+
+           if(toReturn && toErase != null)
+            {
+                if (db.Open())
+                {
+                    Project proj = db.GetProjectsByName(projName).Single();
+                    User pm = db.getUsers().Where(x => x.Id == proj.PmId).Single();
+
+                    foreach (int devId in toErase)
+                    {
+                        User user = db.getUsers().Where(x => x.Id == devId).Single();
+
+
+                        string text1 = "Project manager dismissed you from project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projName }) + "\">"
+                            + projName + "</a> . Do not despair and move on!";
+                        db.WriteMessage(user.Nickname, pm.Nickname, text1);
+                    }
+
                     db.Close();
                 }
             }

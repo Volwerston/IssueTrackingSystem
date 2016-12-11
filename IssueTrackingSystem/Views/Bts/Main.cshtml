@@ -32,10 +32,10 @@ else
                         @Html.Editor("Project Name", new { htmlAttributes = new { id = "projectName", placeholder = "Name...", @class = "form-control" } })
                     </div>
                     <div class="col-md-2">
-                        @Html.Label("Category: ")
+                        @Html.Label("Category: ", new { @class = "control-label" })
                     </div>
                     <div class="col-md-4">
-                        <select id="ms" multiple="multiple">
+                        <select id="ms" multiple="multiple"  class="form-control">
                             @{
                                 foreach (var item in Model)
                                 {

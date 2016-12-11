@@ -12,10 +12,10 @@
                         @Html.Editor("User Name", new { htmlAttributes = new { id = "userName", placeholder = "Search", @class = "form-control" } })
                     </div>
                     <div class="col-md-2">
-                        @Html.Label("Category: ")
+                        @Html.Label("Category: ", new { @class = "control-label" })
                     </div>
                     <div class="col-md-4">
-                        <select id="ms" multiple="multiple">
+                        <select id="ms" multiple="multiple" class="form-control">
                             @{ 
                                 List<string> statusList = (List<string>)ViewBag.StatusList;
 
