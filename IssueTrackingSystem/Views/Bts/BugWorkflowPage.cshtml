@@ -63,14 +63,14 @@
                     <div class="row" style="margin-bottom: 5px;word-wrap:break-word">
 
                        
-                        <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10 text-center">
+                        <div class="col-lg-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-10 col-xs-10 col-sm-10 col-md-10">
                             @if (message.MessageToReplyId != 0)
                             {
                                 <p>To: <a href="#@Convert.ToString(message.MessageToReplyId)" >@message.UserToReply</a></p>
                                 <br/>
                                 <br/>
                             }
-                                <p>@message.MessageText</p>
+                                <pre class="dataClass">@message.MessageText</pre>
                             
                         </div>
                     </div>
@@ -180,7 +180,14 @@
 
         $(document).ready(function () {
 
-            $("#removeRecipient").hide();
+            var preData = $('pre');
+
+            preData.each(function ()
+            {
+                var text = $(this).text();
+                $(this).empty();
+                $(this).append(text);
+            });
 
             var correctItemId = "@ViewBag.CorrectItem";
 
@@ -260,5 +267,21 @@
                 });
             });
         });
+
+        function encodePreElements() {
+            var pre = document.getElementsByTagName('pre');
+            alert(pre);
+            for (var i = 0; i < pre.length; i++) {
+                var encoded = htmlEncode(pre[i].innerHTML);
+                pre[i].innerHTML = encoded;
+            }
+        }
+
+        function htmlEncode(value) {
+            var div = document.createElement('div');
+            var text = document.createTextNode(value);
+            div.appendChild(text);
+            return div.innerHTML;
+        }
     </script>
 }

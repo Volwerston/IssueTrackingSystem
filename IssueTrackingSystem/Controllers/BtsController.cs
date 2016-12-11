@@ -10,6 +10,7 @@ using System.Web.Routing;
 using IssueTrackingSystem.Common;
 using System.Web.Security;
 using System.IO;
+using System.Text;
 
 namespace BTS.Controllers
 {
@@ -1279,6 +1280,33 @@ namespace BTS.Controllers
         public ActionResult BugWorkflowPage(int id, string messageToAdd, string projName, int recipientId, string Recipient)
         {
             ViewBag.ProjectName = projName;
+
+            string[] urlSearch = messageToAdd.Split(' ');
+
+            for(int i = 0; i < urlSearch.Count(); ++i)
+            {
+                if(urlSearch[i].Length > 10 && urlSearch[i].Substring(0, 7) == "http://")
+                {
+                    urlSearch[i] = "<a href=\"" + urlSearch[i] + "\">" + urlSearch[i] + "</a>";
+                }
+            }
+
+            StringBuilder builder = new StringBuilder();
+            builder.Append("<b>");
+
+            for(int i = 0; i < urlSearch.Count(); ++i)
+            {
+                builder.Append(urlSearch[i]);
+                builder.Append(" ");
+            }
+
+            builder.Append("</b>");
+
+            messageToAdd = builder.ToString();
+
+            messageToAdd.Replace(' ', '_');
+
+            messageToAdd.Replace("\r\n", "<br/>");
 
             if (db.Open())
             {

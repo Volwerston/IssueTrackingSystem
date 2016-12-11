@@ -1618,6 +1618,8 @@ namespace BTS.Models
                         toAdd.AddingTime = Convert.ToDateTime(rdr["ADD_TIME"].ToString());
                         toAdd.BugId = Convert.ToInt32(rdr["BUG_ID"].ToString());
                         toAdd.Correct = Convert.ToBoolean(rdr["CORRECT"].ToString());
+
+                    toAdd.MessageText.Replace('_', ' ');
                         
                     if(rdr["UserToReply"] != DBNull.Value)
                     {
