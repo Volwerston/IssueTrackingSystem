@@ -482,14 +482,21 @@ else
             if (numOfItems * numOfList > currEntries.length) {
                 for (var i = numOfItems * (numOfList - 1) ; i < currEntries.length; ++i) {
 
-                    var lastIndex = 100;
+                    var text = "";
 
-                    while (currEntries[i].Description[lastIndex] != " ")
-                    {
-                        --lastIndex;
+                    if (currEntries[i].Description.length > 100) {
+                        var lastIndex = 100;
+
+                        while (currEntries[i].Description[lastIndex] != " ") {
+                            --lastIndex;
+                        }
+
+
+                        text = currEntries[i].Description.substr(0, lastIndex) + "...";
                     }
-
-                    var text = currEntries[i].Description.substr(0, lastIndex) + "...";
+                    else {
+                        text = currEntries[i].Description;
+                    }
 
                     var addTime = currEntries[i].AddingTime.replace("T", " ");
 
@@ -502,14 +509,21 @@ else
             else {
                 for (var i = numOfItems * (numOfList - 1) ; i < numOfItems * numOfList; ++i) {
 
-                    var lastIndex = 100;
+                    var text = "";
 
-                    while (currEntries[i].Description[lastIndex] != " ")
-                    {
-                        --lastIndex;
+                    if (currEntries[i].Description.length > 100) {
+                        var lastIndex = 100;
+
+                        while (currEntries[i].Description[lastIndex] != " ") {
+                            --lastIndex;
+                        }
+
+
+                        text = currEntries[i].Description.substr(0, lastIndex) + "...";
                     }
-
-                    var text = currEntries[i].Description.substr(0, lastIndex) + "...";
+                    else {
+                        text = currEntries[i].Description;
+                    }
 
                     var addTime = currEntries[i].AddingTime.replace("T", " ");
 

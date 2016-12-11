@@ -68,7 +68,6 @@
                             {
                                 <p>To: <a href="#@Convert.ToString(message.MessageToReplyId)" >@message.UserToReply</a></p>
                                 <br/>
-                                <br/>
                             }
                                 <pre class="dataClass">@message.MessageText</pre>
                             
@@ -91,7 +90,7 @@
                     @if (Session["Username"].ToString() == Model.TopicStarter)
                     {
                         <div class="col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                            <button type="button" onclick='setSelected("@message.Id")' data-toggle="modal" data-target="#markAsRight" class="btn btn-default">Mark as correct</button>
+                            <button type="button" onclick='setSelected("@message.Id", "@message.SenderNick")' data-toggle="modal" data-target="#markAsRight" class="btn btn-default">Mark as correct</button>
                         </div>
                     }
                             </div>
@@ -151,6 +150,7 @@
 
     <script>
         var selectedItemId = 0;
+        var rightAnswerAuthor = "";
 
         function setRecipient(nickname, date, messageId)
         {
@@ -173,9 +173,10 @@
             $(this).hide();
         });
 
-        function setSelected(selId)
+        function setSelected(selId, authName)
         {
             selectedItemId = selId;
+            rightAnswerAuthor = authName;
         }
 
         $(document).ready(function () {
@@ -230,7 +231,8 @@
                     estimate: $("select[name='Mark'] option:selected").val(),
                     finalComment: $("textarea[name='finalComment']").val(),
                     bugId: "@Model.Id",
-                    projectName: "@ViewBag.ProjectName.ToString()"
+                    projectName: "@ViewBag.ProjectName.ToString()",
+                    userToReply:  rightAnswerAuthor
                 });
 
                 $.ajax({
@@ -267,21 +269,5 @@
                 });
             });
         });
-
-        function encodePreElements() {
-            var pre = document.getElementsByTagName('pre');
-            alert(pre);
-            for (var i = 0; i < pre.length; i++) {
-                var encoded = htmlEncode(pre[i].innerHTML);
-                pre[i].innerHTML = encoded;
-            }
-        }
-
-        function htmlEncode(value) {
-            var div = document.createElement('div');
-            var text = document.createTextNode(value);
-            div.appendChild(text);
-            return div.innerHTML;
-        }
     </script>
 }

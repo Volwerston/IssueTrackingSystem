@@ -1144,6 +1144,57 @@ namespace BTS.Models
             }
         }
 
+        internal void RestartBug(int bugId)
+        {
+            string cmdString = "UPDATE Bugs SET STATUS = 'Assigned', StatusChangeDate=GETDATE(), ESTIMATE = NULL WHERE ID=@id; "
+                + "UPDATE Messages SET CORRECT=0 WHERE BUG_ID = @id;";
+
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            cmd.Parameters.AddWithValue("@id", bugId);
+
+            SqlTransaction transaction = connection.BeginTransaction("MessageAddTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+        }
+
+        internal void SetBugStatus(int bugId, string status)
+        {
+            string cmdString = "UPDATE Bugs SET STATUS=@Status, StatusChangeDate=GETDATE() WHERE ID= @id";
+
+            SqlCommand cmd = new SqlCommand(cmdString, connection);
+            cmd.Parameters.AddWithValue("@Status", status);
+            cmd.Parameters.AddWithValue("@id", bugId);
+
+            SqlTransaction transaction = connection.BeginTransaction("BugStatusTransaction");
+            cmd.Transaction = transaction;
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+        }
+
         internal bool MarkRightIssueAnswer(int bugId, int selectedItemId, int estimate)
         {
             bool toReturn = false;

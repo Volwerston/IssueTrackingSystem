@@ -1215,12 +1215,45 @@ namespace BTS.Controllers
                 if (u != null)
                 {
                     toReturn = db.SetDevIdForBug(bugId, u.Id);
+                    db.SetBugStatus(bugId, "Assigned");
                 }
 
                 db.Close();
             }
 
             return JsonConvert.SerializeObject(toReturn);
+        }
+
+        [HttpPost]
+        public ActionResult RestartBug(string projName, int id)
+        {
+            if(db.Open())
+            {
+                db.RestartBug(id);
+
+                Project proj = db.GetProjectsByName(projName).ToList().SingleOrDefault();
+                Bug bug = db.GetProjectBugs(proj).Where(x => x.Id == id).ToList().SingleOrDefault();
+
+                User bugDeveloper = db.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
+                User pm = db.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
+                User topicStarter = db.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
+
+                string message = "<a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = topicStarter.Id })
+                + "\">" + bug.TopicStarter + "</a> restarted discusion of <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = id, projName = projName }) + "\">" + "bug #" + id
+                + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projName }) + "\">" + projName + "</a>";
+
+                db.WriteMessage(bugDeveloper.Nickname, bug.TopicStarter, message);
+                db.InformAboutNotification(bugDeveloper);
+
+                db.WriteMessage(pm.Nickname, bug.TopicStarter, message);
+                db.InformAboutNotification(pm);
+
+                db.Close();
+
+                return RedirectToAction("BugDescriptionPage", "Bts", new { projName = projName, id = id });
+            }
+
+            return RedirectToAction("PageNotFound", "Error");
         }
 
         [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
@@ -1376,7 +1409,7 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
-        public string MarkRightAnswer(int selectedItemId, int bugId, int estimate, string finalComment, string projectName)
+        public string MarkRightAnswer(int selectedItemId, int bugId, int estimate, string finalComment, string projectName, string userToReply)
         {
             bool toReturn = false;
 
@@ -1385,6 +1418,8 @@ namespace BTS.Controllers
                 Message aMessage = new Message();
                 aMessage.MessageText = finalComment;
                 aMessage.SenderNick = Session["Username"].ToString();
+                aMessage.MessageToReplyId = selectedItemId;
+                aMessage.UserToReply = userToReply;
 
                 db.AddMessageToWorkflow(bugId, aMessage);
 

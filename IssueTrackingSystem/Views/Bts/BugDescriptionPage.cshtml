@@ -57,13 +57,21 @@
             <dd>@pmName</dd>
             <dt style="margin-bottom: 10px;">Developer: </dt>
             <dd id="developerData">@developerName
-            @if(Session["Status"].ToString() == "Project Manager" && Session["Username"].ToString() == pmName)
+            @if(Session["Status"].ToString() == "Project Manager" && Session["Username"].ToString() == pmName && Model.Status != "Closed")
             {
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#changeDev"><span class="glyphicon glyphicon-edit"></span></button>
             }
             </dd>
         </dl>
         <br/>
+
+        @if (Session["Username"].ToString() == Model.TopicStarter && Model.Status == "Closed")
+        {
+            using (Html.BeginForm("RestartBug", "Bts", new { projName = (string)ViewBag.ProjectName, id = Model.Id }, FormMethod.Post, null))
+            {
+                <input type="submit" class="btn btn-default" style="margin-bottom: 15px;" value="Restart topic" />
+            }
+        }
     </div>
 </div>
 
