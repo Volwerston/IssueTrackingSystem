@@ -1,5 +1,4 @@
-﻿using BTS.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,25 +9,19 @@ using System.Text;
 using System.ServiceModel;
 using ServiceClasses;
 using System.Data;
+using IssueTrackingSystem.ServiceReference1;
 
 namespace BTS.Controllers
 {
     [LogError]
     public class BtsController : Controller
     {
-        private static Uri tcpUri = new Uri("http://localhost:1050/TestService");
-        private static EndpointAddress address = new EndpointAddress(tcpUri);
-        private static BasicHttpBinding binding = new BasicHttpBinding();
-        
 
-        private static ChannelFactory<IService> factory = new ChannelFactory<IService>(binding, address);
-        private IService service = factory.CreateChannel();
+        private static IssueTrackingSystem.ServiceReference1.ServiceClient client = new IssueTrackingSystem.ServiceReference1.ServiceClient();
         // GET: Bts
 
         public ActionResult Index(string message, string messageType)
         {
-            binding.MaxReceivedMessageSize = Int32.MaxValue;
-
             if (Session["Username"] != null && Session["Status"] != null)
             {
                 return RedirectToAction("Main", "Bts", new { message = message, messageType = messageType });
@@ -37,20 +30,20 @@ namespace BTS.Controllers
             {
                 if (Request.Cookies["username"] != null && Request.Cookies["password"] != null)
                 {
-                        User u = service.getAuthenticatedUser(Request.Cookies["username"].Value, Request.Cookies["password"].Value);
+                    User u = client.getAuthenticatedUser(Request.Cookies["username"].Value, Request.Cookies["password"].Value);
 
-                        if (u.Id != -1)
-                        {
-                            Session["Username"] = Request.Cookies["username"].Value;
-                            Session["Status"] = u.Status;
-                            Session["Confirmed"] = u.Confirmed.ToString();
-                            Session["Id"] = u.Id;
+                    if (u.Id != -1)
+                    {
+                        Session["Username"] = Request.Cookies["username"].Value;
+                        Session["Status"] = u.Status;
+                        Session["Confirmed"] = u.Confirmed.ToString();
+                        Session["Id"] = u.Id;
 
-                            return RedirectToAction("Main");
-                        }
+                        return RedirectToAction("Main");
                     }
+                }
 
-                if(message != null && messageType != null)
+                if (message != null && messageType != null)
                 {
                     TempData["message"] = message;
                     TempData["status"] = messageType;
@@ -65,7 +58,7 @@ namespace BTS.Controllers
         {
             bool toReturn = false;
 
-                toReturn = service.ConfirmUser(userId);
+            toReturn = client.ConfirmUser(userId);
 
 
             return RedirectToAction("ExternalAccountPage", "Bts", new { id = userId });
@@ -76,29 +69,29 @@ namespace BTS.Controllers
 
             bool authenticated = false;
 
-                User u = service.getAuthenticatedUser(Login, Password);
-                if (u.Id != -1)
+            User u = client.getAuthenticatedUser(Login, Password);
+            if (u.Id != -1)
+            {
+                Session["Username"] = Login;
+                Session["Status"] = u.Status;
+                Session["Id"] = u.Id;
+                Session["Confirmed"] = u.Confirmed.ToString();
+
+                if (rememberMe)
                 {
-                    Session["Username"] = Login;
-                    Session["Status"] = u.Status;
-                    Session["Id"] = u.Id;
-                    Session["Confirmed"] = u.Confirmed.ToString();
+                    HttpCookie nick = new HttpCookie("username");
+                    nick.Expires = DateTime.Now.AddDays(1d);
+                    nick.Value = Login;
+                    Response.SetCookie(nick);
 
-                    if (rememberMe)
-                    {
-                        HttpCookie nick = new HttpCookie("username");
-                        nick.Expires = DateTime.Now.AddDays(1d);
-                        nick.Value = Login;
-                        Response.SetCookie(nick);
-
-                        HttpCookie pass = new HttpCookie("password");
-                        pass.Expires = DateTime.Now.AddDays(1d);
-                        pass.Value = Password;
-                        Response.SetCookie(pass);
-                    }
-
-                    authenticated = true;
+                    HttpCookie pass = new HttpCookie("password");
+                    pass.Expires = DateTime.Now.AddDays(1d);
+                    pass.Value = Password;
+                    Response.SetCookie(pass);
                 }
+
+                authenticated = true;
+            }
 
 
             if (!authenticated)
@@ -158,39 +151,39 @@ namespace BTS.Controllers
                         userAvatar.InputStream.Read(u.Avatar, 0, userAvatar.ContentLength);
                     }
 
-                        string addResult = service.AddAccount(u);
+                    string addResult = client.AddAccount(u);
 
-                        if (addResult == "Success")
+                    if (addResult == "Success")
+                    {
+
+                        int insertedId = client.getUsers().Where(x => x.Nickname == u.Nickname).ToList().First().Id;
+
+                        string text = "Please confirm the personality of new user <a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { @id = insertedId }) + "\">" + u.Nickname + "</a>";
+
+                        List<User> admins = client.getUsers().Where(x => x.Status == "Admin").ToList();
+
+                        foreach (var admin in admins)
                         {
-
-                            int insertedId = service.getUsers().Where(x => x.Nickname == u.Nickname).ToList().First().Id;
-
-                            string text = "Please confirm the personality of new user <a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { @id = insertedId }) + "\">" + u.Nickname + "</a>";
-
-                            List<User> admins = service.getUsers().Where(x => x.Status == "Admin").ToList();
-
-                            foreach (var admin in admins)
-                            {
-                                service.WriteMessage(admin.Nickname, u.Nickname, text);
-                                service.InformAboutNotification(admin);
-                            }
+                            client.WriteMessage(admin.Nickname, u.Nickname, text);
+                            client.InformAboutNotification(admin);
                         }
-                        else if (addResult == "Fail")
-                        {
-                            TempData["status"] = "Error";
-                            TempData["message"] = "Internal error. Try again. The problem may be with your birth date";
-                        }
-                        else
-                        {
-                            TempData["status"] = "Warning";
-                            TempData["message"] = "User with the same nickname or e-mail has already been registered";
-                        }
+                    }
+                    else if (addResult == "Fail")
+                    {
+                        TempData["status"] = "Error";
+                        TempData["message"] = "Internal error. Try again. The problem may be with your birth date";
+                    }
+                    else
+                    {
+                        TempData["status"] = "Warning";
+                        TempData["message"] = "User with the same nickname or e-mail has already been registered";
+                    }
 
-                        if (addResult == "Success")
-                        {
-                            return RedirectToAction("Index", "Bts",
-                                new { messageType = "Success", message = "Account has been successfully registered" });
-                        }
+                    if (addResult == "Success")
+                    {
+                        return RedirectToAction("Index", "Bts",
+                            new { messageType = "Success", message = "Account has been successfully registered" });
+                    }
                     else
                     {
                         TempData["status"] = "Error";
@@ -222,23 +215,23 @@ namespace BTS.Controllers
             }
             else
             {
-                    bool letterSent = false;
+                bool letterSent = false;
 
-                    if (email != "")
-                    {
-                        letterSent = service.isEmailSent(email);
-                    }
+                if (email != "")
+                {
+                    letterSent = client.isEmailSent(email);
+                }
 
-                    if(letterSent)
-                    {
-                        return RedirectToAction("Index", "Bts",
-                            new { messageType = "Success", message = "Letter was successfully sent" });
-                    }
-                    else
-                    {
-                        TempData["message"] = "Error";
-                        TempData["message"] = "Letter was not sent. Try again";
-                    }
+                if (letterSent)
+                {
+                    return RedirectToAction("Index", "Bts",
+                        new { messageType = "Success", message = "Letter was successfully sent" });
+                }
+                else
+                {
+                    TempData["message"] = "Error";
+                    TempData["message"] = "Letter was not sent. Try again";
+                }
             }
             return View();
         }
@@ -246,25 +239,26 @@ namespace BTS.Controllers
         [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult Main(string message, string messageType)
         {
-            List<Category> categories = new List<Category>();
+            Category[] categories = new Category[] { };
 
-            categories = service.getCategories();
+            categories = client.getCategories();
 
-            if(messageType != null && message != null)
+            if (messageType != null && message != null)
             {
                 TempData["message"] = message;
                 TempData["status"] = messageType;
             }
 
-            return View(categories);
+            IEnumerable<Category> toPass = categories.ToList();
+            return View(toPass);
         }
 
         [HttpPost]
         public string GetProjectsByName(string[] prName)
         {
-            List<Project> toReturn = null;
+            Project[] toReturn = null;
 
-                toReturn = service.GetProjectsByName(prName[0]);
+            toReturn = client.GetProjectsByName(prName[0]);
 
 
             List<string> imageUrls = new List<string>();
@@ -299,9 +293,13 @@ namespace BTS.Controllers
         [HttpPost]
         public string GetProjectsByCategories(int[] categories)
         {
-            List<Project> toReturn = null;
+            List<int> categ = categories.ToList();
+            categ.Remove(0);
+            categories = categ.ToArray();
 
-            toReturn = service.GetProjectsByCategories(categories);
+            Project[] toReturn = null;
+
+            toReturn = client.GetProjectsByCategories(categories);
 
 
             List<string> imageUrls = new List<string>();
@@ -333,34 +331,34 @@ namespace BTS.Controllers
             return returnStringProjects;
         }
 
-        [SystemAuthorize(Roles="Project Manager,Admin")]
+        [SystemAuthorize(Roles = "Project Manager,Admin")]
         public ActionResult AddProject()
         {
             Project proj = new Project();
 
-                List<Category> categories = service.getCategories();
+            Category[] categories = client.getCategories();
 
 
-                if (categories != null)
-                { 
+            if (categories != null)
+            {
 
-                    List<SelectListItem> categoryItems = new List<SelectListItem>();
+                List<SelectListItem> categoryItems = new List<SelectListItem>();
 
-                    foreach(Category category in categories)
+                foreach (Category category in categories)
+                {
+                    SelectListItem item = new SelectListItem()
                     {
-                        SelectListItem item = new SelectListItem()
-                        {
-                            Text = category.Title,
-                            Value = category.Title
-                        };
+                        Text = category.Title,
+                        Value = category.Title
+                    };
 
-                        categoryItems.Add(item);
-                    }
-
-                    ViewBag.Categories = categoryItems;
-
-                    return View(proj);
+                    categoryItems.Add(item);
                 }
+
+                ViewBag.Categories = categoryItems.ToList();
+
+                return View(proj);
+            }
 
             return View("PageNotFound", "Error");
         }
@@ -369,7 +367,7 @@ namespace BTS.Controllers
         public ActionResult AddProject(Project proj, HttpPostedFileBase aLogo, FormCollection collection)
         {
 
-            List<Category> categories = null;
+            Category[] categories = null;
 
             if (ModelState.IsValid)
             {
@@ -379,8 +377,8 @@ namespace BTS.Controllers
                 {
                     List<string> items = collection["projectCategories"].ToString().Split(',').ToList();
 
-                    categories = service.getCategories();
-                        
+                    categories = client.getCategories();
+
                     if (categories != null)
                     {
 
@@ -403,40 +401,40 @@ namespace BTS.Controllers
 
                         bool success = false;
 
-                            success = service.AddProject(proj, categoryIds);
+                        success = client.AddProject(proj, categoryIds.ToArray());
 
 
                         if (success)
                         {
-                            return RedirectToAction("InternalAccountPage", "Bts", 
+                            return RedirectToAction("InternalAccountPage", "Bts",
                                 new { messageType = "Success", message = "New project has been successfully added" });
                         }
                     }
                 }
             }
 
-                categories = service.getCategories();
+            categories = client.getCategories();
 
-                if (categories != null)
+            if (categories != null)
+            {
+                List<SelectListItem> categoryItems = new List<SelectListItem>();
+
+                foreach (Category category in categories)
                 {
-                    List<SelectListItem> categoryItems = new List<SelectListItem>();
-
-                    foreach (Category category in categories)
+                    SelectListItem item = new SelectListItem()
                     {
-                        SelectListItem item = new SelectListItem()
-                        {
-                            Text = category.Title,
-                            Value = category.Title
-                        };
+                        Text = category.Title,
+                        Value = category.Title
+                    };
 
-                        categoryItems.Add(item);
-                    }
-
-                    ViewBag.Categories = categoryItems;
-                    return View();
+                    categoryItems.Add(item);
                 }
 
-                return View("PageNotFound", "Error");
+                ViewBag.Categories = categoryItems.ToList();
+                return View();
+            }
+
+            return View("PageNotFound", "Error");
         }
 
         [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
@@ -446,41 +444,41 @@ namespace BTS.Controllers
 
             Project project = new Project();
 
-            List<Bug> projectBugs = null;
+            Bug[] projectBugs = null;
 
-                List<Project> chosenProjects = service.GetProjectsByName(name);
+            Project[] chosenProjects = client.GetProjectsByName(name);
 
-                if (chosenProjects.Count > 0)
+            if (chosenProjects.Count() > 0)
+            {
+                projectFound = true;
+                project = chosenProjects[0];
+            }
+
+            if (project != null)
+            {
+                User[] invitedDevs = null;
+                User[] developers = client.GetDevelopersOfProject(name, out invitedDevs);
+                List<SelectListItem> developerList = null;
+
+                ViewBag.InvitedDevs = invitedDevs.ToList();
+
+                if (developers != null)
                 {
-                    projectFound = true;
-                    project = chosenProjects[0];
-                }
+                    ViewBag.ApprovedDevelopers = developers.ToList();
 
-                if (project != null)
-                {
-                    List<User> invitedDevs = null;
-                    List<User> developers = service.GetDevelopersOfProject(name, out invitedDevs);
-                    List<SelectListItem> developerList = null;
+                    developerList = new List<SelectListItem>();
 
-                    ViewBag.InvitedDevs = invitedDevs;
-                    ViewBag.ApprovedDevelopers = developers;
-                    
-
-                    if (developers != null)
+                    foreach (User dev in developers)
                     {
-                        developerList = new List<SelectListItem>();
-
-                        foreach (User dev in developers)
-                        {
-                            SelectListItem item = new SelectListItem() { Text = dev.Name + " " + dev.Surname, Value = dev.Id.ToString() };
-                            developerList.Add(item);
-                        }
+                        SelectListItem item = new SelectListItem() { Text = dev.Name + " " + dev.Surname, Value = dev.Id.ToString() };
+                        developerList.Add(item);
                     }
-
-                    ViewBag.Developers = developerList;
                 }
 
-                projectBugs = service.GetProjectBugs(project);
+                ViewBag.Developers = developerList;
+            }
+
+            projectBugs = client.GetProjectBugs(project);
 
 
             if (!projectFound)
@@ -490,7 +488,7 @@ namespace BTS.Controllers
 
             if (projectBugs != null)
             {
-                ViewBag.ProjectBugs = projectBugs;
+                ViewBag.ProjectBugs = projectBugs.ToList();
             }
             else
             {
@@ -499,7 +497,7 @@ namespace BTS.Controllers
 
             ViewBag.Pm = project.PmId;
 
-            if(messageType != null && message != null)
+            if (messageType != null && message != null)
             {
                 TempData["message"] = message;
                 TempData["status"] = messageType;
@@ -510,18 +508,18 @@ namespace BTS.Controllers
 
         public ActionResult JoinProject(int id, string projectName)
         {
-            service.ApproveDeveloperForProject(projectName, id);
+            client.ApproveDeveloperForProject(projectName, id);
 
             return RedirectToAction("ShowProject", "Bts", new { name = projectName });
         }
 
         public ActionResult ChangePassword()
         {
-                if (!service.IsPasswordResetLinkValid(Request.QueryString["uid"]))
-                {
-                    TempData["status"] = "Error";
-                    TempData["message"] = "Password Reset link has expired or is invalid";
-                }
+            if (!client.IsPasswordResetLinkValid(Request.QueryString["uid"]))
+            {
+                TempData["status"] = "Error";
+                TempData["message"] = "Password Reset link has expired or is invalid";
+            }
 
             return View();
         }
@@ -532,72 +530,78 @@ namespace BTS.Controllers
             List<User> toReturn = new List<User>();
             List<string> imgPaths = null;
             User anonymous = null;
-            List<string> userNames = names.Distinct().ToList();
-            userNames.Remove("");
+            List<string> usrNames = names.Distinct().ToList();
+            usrNames.Remove("");
+            string[] userNames = usrNames.ToArray();
 
-                anonymous = service.getUsers().Where(x => x.Nickname == "Anonymous").ToList()[0];
+            anonymous = client.getUsers().Where(x => x.Nickname == "Anonymous").ToList()[0];
 
-                List<User> invitedDevs = null;
-                List<User> currDevelopers = service.GetDevelopersOfProject(projectName, out invitedDevs);
+            User[] invitedDevs = null;
+            User[] currDevelopers = client.GetDevelopersOfProject(projectName, out invitedDevs);
 
-                if(invitedDevs.Count() > 0)
+            if (invitedDevs.Count() > 0)
+            {
+                if (currDevelopers == null)
                 {
-                    if(currDevelopers == null)
-                    {
-                        currDevelopers = new List<User>();
-                    }
-
-                    currDevelopers.AddRange(invitedDevs);
+                    currDevelopers = new User[] { };
                 }
 
-                while (toReturn.Count() < 5)
+                List<User> devs = currDevelopers.ToList();
+
+                devs.AddRange(invitedDevs);
+
+                currDevelopers = devs.ToArray();
+
+            }
+
+            while (toReturn.Count() < 5)
+            {
+                int prevCount = toReturn.Count();
+                User[] buf = null;
+
+                buf = client.searchForUsers(id, userNames, new string[] { "Developer" });
+
+                if (buf != null)
                 {
-                    int prevCount = toReturn.Count();
-                    List<User> buf = null;
+                    id = buf.Last().Id;
 
-                    buf = service.searchForUsers(id, userNames, new List<string> { "Developer" });
+                    buf = buf.Where(x => x.Confirmed).ToArray();
+                }
 
-                    if(buf != null)
+                if (buf == null)
+                {
+                    break;
+                }
+                else
+                {
+                    foreach (User newDeveloper in buf)
                     {
-                        id = buf.Last().Id;
+                        bool elFound = false;
 
-                        buf = buf.Where(x => x.Confirmed).ToList();
-                    }
-
-                    if(buf == null)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        foreach(User newDeveloper in buf)
+                        if (currDevelopers != null)
                         {
-                            bool elFound = false;
-
-                            if (currDevelopers != null)
+                            foreach (User existingDeveloper in currDevelopers)
                             {
-                                foreach (User existingDeveloper in currDevelopers)
+                                if (existingDeveloper.Id == newDeveloper.Id)
                                 {
-                                    if (existingDeveloper.Id == newDeveloper.Id)
-                                    {
-                                        elFound = true;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if(!elFound)
-                            {
-                                toReturn.Add(newDeveloper);
-
-                                if(toReturn.Count() == 5)
-                                {
+                                    elFound = true;
                                     break;
                                 }
                             }
                         }
+
+                        if (!elFound)
+                        {
+                            toReturn.Add(newDeveloper);
+
+                            if (toReturn.Count() == 5)
+                            {
+                                break;
+                            }
+                        }
                     }
                 }
+            }
 
             if (toReturn != null)
             {
@@ -624,7 +628,7 @@ namespace BTS.Controllers
                 }
             }
 
-            if(toReturn.Count() == 0)
+            if (toReturn.Count() == 0)
             {
                 toReturn = null;
             }
@@ -661,9 +665,9 @@ namespace BTS.Controllers
         [HttpPost]
         public string GetUserNotifications(string receiver)
         {
-            List<Notification> toReturn = null;
+            Notification[] toReturn = null;
 
-                toReturn = service.GetNotificationsOfUser(receiver);
+            toReturn = client.GetNotificationsOfUser(receiver);
 
             return JsonConvert.SerializeObject(toReturn);
         }
@@ -673,23 +677,23 @@ namespace BTS.Controllers
         {
             bool toReturn = false;
 
-                toReturn = service.InviteDeveloperToProject(projectName, devId);
+            toReturn = client.InviteDeveloperToProject(projectName, devId);
 
-                if(toReturn)
-                {
-                    Project proj = service.GetProjectsByName(projectName).ToList().SingleOrDefault();
+            if (toReturn)
+            {
+                Project proj = client.GetProjectsByName(projectName).ToList().SingleOrDefault();
 
-                    User dev = service.getUsers().Where(x => x.Id == devId).ToList().SingleOrDefault();
+                User dev = client.getUsers().Where(x => x.Id == devId).ToList().SingleOrDefault();
 
-                    User admin = service.getUsers().Where(x => x.Status == "Admin").ToList()[0];
+                User admin = client.getUsers().Where(x => x.Status == "Admin").ToList()[0];
 
-                    string text = "You were invited to the <a href=\"" + Url.Action("ShowProject", "Bts", new { name = proj.Name }) + "\">" + projectName + "</a> project. Please go to the project page to accept invitation";
+                string text = "You were invited to the <a href=\"" + Url.Action("ShowProject", "Bts", new { name = proj.Name }) + "\">" + projectName + "</a> project. Please go to the project page to accept invitation";
 
-                    service.WriteMessage(dev.Nickname, admin.Nickname, text);
-                    service.InformAboutNotification(dev);
-                }
+                client.WriteMessage(dev.Nickname, admin.Nickname, text);
+                client.InformAboutNotification(dev);
+            }
 
-   
+
             return JsonConvert.SerializeObject(toReturn);
         }
 
@@ -698,21 +702,21 @@ namespace BTS.Controllers
         {
             if (password == confirmPassword)
             {
-                    bool passwordChanged = service.ChangeUserPassword(Request.QueryString["uid"], password);
+                bool passwordChanged = client.ChangeUserPassword(Request.QueryString["uid"], password);
 
-                    if(!passwordChanged)
-                    {
-                        TempData["status"] = "Error";
-                        TempData["message"] = "Password Reset link has expired or is invalid";
-                    }
+                if (!passwordChanged)
+                {
+                    TempData["status"] = "Error";
+                    TempData["message"] = "Password Reset link has expired or is invalid";
+                }
 
-                    service.deleteExpiredRecords();
+                client.deleteExpiredRecords();
 
-                    if(passwordChanged)
-                    {
-                        return RedirectToAction("Index", "Bts", 
-                            new { messageType = "Success", message = "Password successfully changed" });
-                    }
+                if (passwordChanged)
+                {
+                    return RedirectToAction("Index", "Bts",
+                        new { messageType = "Success", message = "Password successfully changed" });
+                }
             }
             else
             {
@@ -735,9 +739,10 @@ namespace BTS.Controllers
         [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult FindUsers()
         {
-            List<string> statuses = service.getUsers().Select(x => x.Status).ToList().Distinct().ToList();
+            List<string> statuses = client.getUsers().Select(x => x.Status).ToList().Distinct().ToList();
 
-            ViewBag.StatusList = statuses;
+            
+            ViewBag.StatusList = statuses.ToList();
             return View();
         }
 
@@ -748,23 +753,23 @@ namespace BTS.Controllers
 
             if (toErase != null)
             {
-                    toReturn = service.RemoveDevsFromProject(projName, toErase.ToList());
+                toReturn = client.RemoveDevsFromProject(projName, toErase.ToArray());
             }
 
-           if(toReturn && toErase != null)
+            if (toReturn && toErase != null)
             {
-                    Project proj = service.GetProjectsByName(projName).Single();
-                    User pm = service.getUsers().Where(x => x.Id == proj.PmId).Single();
+                Project proj = client.GetProjectsByName(projName).Single();
+                User pm = client.getUsers().Where(x => x.Id == proj.PmId).Single();
 
-                    foreach (int devId in toErase)
-                    {
-                        User user = service.getUsers().Where(x => x.Id == devId).Single();
+                foreach (int devId in toErase)
+                {
+                    User user = client.getUsers().Where(x => x.Id == devId).Single();
 
 
-                        string text1 = "Project manager dismissed you from project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projName }) + "\">"
-                            + projName + "</a> . Do not despair and move on!";
-                        service.WriteMessage(user.Nickname, pm.Nickname, text1);
-                    }
+                    string text1 = "Project manager dismissed you from project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projName }) + "\">"
+                        + projName + "</a> . Do not despair and move on!";
+                    client.WriteMessage(user.Nickname, pm.Nickname, text1);
+                }
 
             }
 
@@ -772,22 +777,32 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
-        public string FindUsers(int id, string[]  names, string[] statusItems)
+        public string FindUsers(int id, string[] names, string[] statusItems)
         {
-            List<User> toReturn = null;
+            User[] toReturn = null;
             List<string> userStatuses = null;
-            List<string> userNames = names.Distinct().ToList();
+            List<string> usrNames = names.Distinct().ToList();
             List<string> imgPaths = null;
             User anonymous = null;
-            userNames.Remove("");
+            usrNames.Remove("");
+
+            string[] userNames = usrNames.ToArray();
 
             if (statusItems != null)
             {
                 userStatuses = statusItems.ToList();
             }
 
-                toReturn = service.searchForUsers(id, userNames, userStatuses);
-                anonymous = service.getUsers().Where(x => x.Nickname == "Anonymous").ToList()[0];
+            if (userStatuses != null)
+            {
+                toReturn = client.searchForUsers(id, userNames.ToArray(), userStatuses.ToArray());
+            }
+            else
+            {
+                toReturn = client.searchForUsers(id, userNames.ToArray(),null);
+            }
+
+            anonymous = client.getUsers().Where(x => x.Nickname == "Anonymous").ToList()[0];
 
 
             if (toReturn != null)
@@ -836,7 +851,7 @@ namespace BTS.Controllers
         {
             bool toReturn = false;
 
-            toReturn = service.RemoveNotification(id);
+            toReturn = client.RemoveNotification(id);
 
 
             return JsonConvert.SerializeObject(toReturn);
@@ -848,28 +863,28 @@ namespace BTS.Controllers
             User user = new User();
 
 
-                user = service.getUsers().Where(x => x.Nickname == Session["Username"].ToString()).Single();
-                List<User> users = service.getUsers();
+            user = client.getUsers().Where(x => x.Nickname == Session["Username"].ToString()).Single();
+            User[] users = client.getUsers();
 
-                if (user.Avatar == null)
-                {
-                    User anonymous = users.Single(x => x.Name == "Anonymous");
-                    var base64 = Convert.ToBase64String(anonymous.Avatar);
-                    ViewBag.ImgPath = string.Format("data:image/jpg;base64, {0}", base64);
-                }
-                else
-                {
-                    var base64 = Convert.ToBase64String(user.Avatar);
-                    ViewBag.ImgPath = string.Format("data:image/jpg;base64, {0}", base64);
-                }
-            
-            
-            if(user == null)
+            if (user.Avatar == null)
+            {
+                User anonymous = users.Single(x => x.Name == "Anonymous");
+                var base64 = Convert.ToBase64String(anonymous.Avatar);
+                ViewBag.ImgPath = string.Format("data:image/jpg;base64, {0}", base64);
+            }
+            else
+            {
+                var base64 = Convert.ToBase64String(user.Avatar);
+                ViewBag.ImgPath = string.Format("data:image/jpg;base64, {0}", base64);
+            }
+
+
+            if (user == null)
             {
                 return RedirectToAction("PageNotFound", "Error");
             }
 
-            if(messageType != null && message != null)
+            if (messageType != null && message != null)
             {
                 TempData["message"] = message;
                 TempData["status"] = messageType;
@@ -882,17 +897,17 @@ namespace BTS.Controllers
         public ActionResult ExternalAccountPage(int id)
         {
             User u = null;
-            List<User> users = null;
+            User[] users = null;
 
-                users = service.getUsers();
-                u = users.SingleOrDefault(x => x.Id == id);
+            users = client.getUsers();
+            u = users.SingleOrDefault(x => x.Id == id);
 
 
-            if(u == null)
+            if (u == null)
             {
                 return RedirectToAction("PageNotFound", "Error");
             }
-            else if(u.Nickname == Session["Username"].ToString())
+            else if (u.Nickname == Session["Username"].ToString())
             {
                 return RedirectToAction("InternalAccountPage");
             }
@@ -913,11 +928,11 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
-        public string EditEmail(int id,string email)
+        public string EditEmail(int id, string email)
         {
             bool toReturn = false;
 
-                toReturn = service.EditUserEmail(id, email);
+            toReturn = client.EditUserEmail(id, email);
 
             return JsonConvert.SerializeObject(toReturn);
         }
@@ -927,7 +942,7 @@ namespace BTS.Controllers
         {
             bool toReturn = false;
 
-                toReturn = service.EditUserBirthDate(id, birthdate);
+            toReturn = client.EditUserBirthDate(id, birthdate);
 
 
             return JsonConvert.SerializeObject(toReturn);
@@ -940,9 +955,9 @@ namespace BTS.Controllers
             bool success = false;
             byte[] toPost = new byte[avatar.ContentLength];
 
-                avatar.InputStream.Read(toPost, 0, avatar.ContentLength);
+            avatar.InputStream.Read(toPost, 0, avatar.ContentLength);
 
-                success = service.EditUserAvatar(id, toPost);
+            success = client.EditUserAvatar(id, toPost);
 
 
             string toReturn = null;
@@ -952,24 +967,24 @@ namespace BTS.Controllers
                 var base64 = Convert.ToBase64String(toPost);
                 toReturn = string.Format("data:image/jpg;base64, {0}", base64);
             }
-            
+
 
             return toReturn;
         }
 
-    [ValidateInput(false)]
+        [ValidateInput(false)]
         [HttpPost]
         public ActionResult ReportBug(Bug b)
         {
 
             bool bugReported = false;
             bool attachmentsAdded = true;
-            
+
             if (TempData["projId"] != null)
-            { 
-            b.ProjectId = Convert.ToInt32(TempData["projId"].ToString());
-            b.Status = "Pending";
-            b.TopicStarter = Session["Username"].ToString();
+            {
+                b.ProjectId = Convert.ToInt32(TempData["projId"].ToString());
+                b.Status = "Pending";
+                b.TopicStarter = Session["Username"].ToString();
 
                 if (ModelState.IsValid)
                 {
@@ -979,13 +994,7 @@ namespace BTS.Controllers
                     b.Subject = encodedSubject;
                     b.Description = encodedDescripton;
 
-                    Uri tcpUri = new Uri("http://localhost:1050/TestService");
-                    EndpointAddress address = new EndpointAddress(tcpUri);
-                    BasicHttpBinding binding = new BasicHttpBinding();
-                    ChannelFactory<IService> factory = new ChannelFactory<IService>(binding, address);
-                    IService service = factory.CreateChannel();
-
-                    bugReported = service.ReportBug(b);
+                    bugReported = client.ReportBug(b);
                 }
 
                 TempData["projId"] = b.ProjectId;
@@ -993,9 +1002,9 @@ namespace BTS.Controllers
 
             if (bugReported && attachmentsAdded)
             {
-                
+
                 return RedirectToAction("ShowProject", "Bts",
-                    new { name=TempData["projName"].ToString(), messageType = "Success", message = "Bug successfully reported. Wait for further messages" });
+                    new { name = TempData["projName"].ToString(), messageType = "Success", message = "Bug successfully reported. Wait for further messages" });
             }
             else
             {
@@ -1011,56 +1020,59 @@ namespace BTS.Controllers
         {
             ViewBag.ProjectName = projName;
 
-                Project proj = service.GetProjectsByName(projName)[0];
+            Project proj = client.GetProjectsByName(projName)[0];
 
-                Bug bug = null;
+            Bug bug = null;
 
-                if (proj != null)
+            if (proj != null)
+            {
+                bug = client.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
+            }
+
+            if (bug != null)
+            {
+                User[] invitedDevs = null;
+                User[] developers = client.GetDevelopersOfProject(projName, out invitedDevs);
+                List<SelectListItem> developerList = null;
+
+                if (developers != null)
                 {
-                    bug = service.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
+                    developerList = new List<SelectListItem>();
+
+                    foreach (User dev in developers)
+                    {
+                        SelectListItem item = new SelectListItem() { Text = dev.Nickname, Value = dev.Nickname };
+                        developerList.Add(item);
+                    }
                 }
 
-                if (bug != null)
+                if (developerList != null)
                 {
-                    List<User> invitedDevs = null;
-                    List<User> developers = service.GetDevelopersOfProject(projName, out invitedDevs);
-                    List<SelectListItem> developerList = null;
-
-                    if (developers != null)
-                    {
-                        developerList = new List<SelectListItem>();
-
-                        foreach (User dev in developers)
-                        {
-                            SelectListItem item = new SelectListItem() { Text = dev.Nickname, Value = dev.Nickname };
-                            developerList.Add(item);
-                        }
-                    }
-
-                    ViewBag.Developers = developerList;
-
-                    if (bug.DeveloperId != 0)
-                    {
-                        ViewBag.DeveloperInDuty = service.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
-                    }
-                    else
-                    {
-                        ViewBag.DeveloperInDuty = null;
-                    }
-
-                    if (proj.PmId != 0)
-                    {
-                        ViewBag.ProjectManager = service.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
-                    }
-                    else
-                    {
-                        ViewBag.ProjectManager = null;
-                    }
-
-                     
-
-                    return View(bug);
+                    ViewBag.Developers = developerList.ToList();
                 }
+
+                if (bug.DeveloperId != 0)
+                {
+                    ViewBag.DeveloperInDuty = client.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
+                }
+                else
+                {
+                    ViewBag.DeveloperInDuty = null;
+                }
+
+                if (proj.PmId != 0)
+                {
+                    ViewBag.ProjectManager = client.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
+                }
+                else
+                {
+                    ViewBag.ProjectManager = null;
+                }
+
+
+
+                return View(bug);
+            }
 
             return RedirectToAction("PageNotFound", "Error");
         }
@@ -1071,33 +1083,33 @@ namespace BTS.Controllers
 
             bool toReturn = false;
 
-                User u = service.getUsers().Where(x => x.Nickname == devNickname).ToList().SingleOrDefault();
+            User u = client.getUsers().Where(x => x.Nickname == devNickname).ToList().SingleOrDefault();
 
-                Project proj = service.GetProjectsByName(projectName).SingleOrDefault();
+            Project proj = client.GetProjectsByName(projectName).SingleOrDefault();
 
-                Bug toChange = service.GetProjectBugs(proj).Where(x => x.Id == bugId).ToList().SingleOrDefault();
+            Bug toChange = client.GetProjectBugs(proj).Where(x => x.Id == bugId).ToList().SingleOrDefault();
 
-                User prevDeveloper = service.getUsers().Where(x => x.Id == toChange.DeveloperId).ToList().SingleOrDefault();
-                User pm = service.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
-                User newDeveloper = service.getUsers().Where(x => x.Nickname == devNickname).Single();
+            User prevDeveloper = client.getUsers().Where(x => x.Id == toChange.DeveloperId).ToList().SingleOrDefault();
+            User pm = client.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
+            User newDeveloper = client.getUsers().Where(x => x.Nickname == devNickname).Single();
 
-                if (prevDeveloper != null)
+            if (prevDeveloper != null)
+            {
+                if (prevDeveloper.Name != devNickname)
                 {
-                    if (prevDeveloper.Name != devNickname)
-                    {
-                        string text1 = "Project manager made <a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = newDeveloper.Id })
-                            + "\">" + devNickname + "</a> responsible for <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId
-                            + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a> instead of you. Do not despair and move on!";
-                        service.WriteMessage(prevDeveloper.Nickname, pm.Nickname, text1);
-                        service.InformAboutNotification(prevDeveloper);
+                    string text1 = "Project manager made <a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = newDeveloper.Id })
+                        + "\">" + devNickname + "</a> responsible for <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId
+                        + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a> instead of you. Do not despair and move on!";
+                    client.WriteMessage(prevDeveloper.Nickname, pm.Nickname, text1);
+                    client.InformAboutNotification(prevDeveloper);
 
-                        string text2 = "You were made responsible for <a href=\"" + 
-                            Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId +
-                            "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + 
-                            "</a>. Have a luck!";
+                    string text2 = "You were made responsible for <a href=\"" +
+                        Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId +
+                        "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName +
+                        "</a>. Have a luck!";
 
-                        service.WriteMessage(devNickname, pm.Nickname, text2);
-                        service.InformAboutNotification(newDeveloper);
+                    client.WriteMessage(devNickname, pm.Nickname, text2);
+                    client.InformAboutNotification(newDeveloper);
                 }
                 else
                 {
@@ -1107,15 +1119,24 @@ namespace BTS.Controllers
                         "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName +
                         "</a>. Have a luck!";
 
-                    service.WriteMessage(devNickname, pm.Nickname, text2);
-                }      
+                    client.WriteMessage(devNickname, pm.Nickname, text2);
+                }
+            }
+            else
+            {
+                string text2 = "You were made responsible for <a href=\"" +
+                    Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId +
+                    "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName +
+                     "</a>. Have a luck!";
+
+                client.WriteMessage(devNickname, pm.Nickname, text2);
             }
 
 
             if (u != null)
             {
-                toReturn = service.SetDevIdForBug(bugId, u.Id);
-                service.SetBugStatus(bugId, "Assigned");
+                toReturn = client.SetDevIdForBug(bugId, u.Id);
+                client.SetBugStatus(bugId, "Assigned");
             }
 
             return JsonConvert.SerializeObject(toReturn);
@@ -1125,28 +1146,28 @@ namespace BTS.Controllers
         public ActionResult RestartBug(string projName, int id)
         {
 
-                service.RestartBug(id);
+            client.RestartBug(id);
 
-                Project proj = service.GetProjectsByName(projName).ToList().SingleOrDefault();
-                Bug bug = service.GetProjectBugs(proj).Where(x => x.Id == id).ToList().SingleOrDefault();
+            Project proj = client.GetProjectsByName(projName).ToList().SingleOrDefault();
+            Bug bug = client.GetProjectBugs(proj).Where(x => x.Id == id).ToList().SingleOrDefault();
 
-                User bugDeveloper = service.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
-                User pm = service.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
-                User topicStarter = service.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
+            User bugDeveloper = client.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
+            User pm = client.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
+            User topicStarter = client.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
 
-                string message = "<a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = topicStarter.Id })
-                + "\">" + bug.TopicStarter + "</a> restarted discusion of <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = id, projName = projName }) + "\">" + "bug #" + id
-                + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projName }) + "\">" + projName + "</a>";
+            string message = "<a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = topicStarter.Id })
+            + "\">" + bug.TopicStarter + "</a> restarted discusion of <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = id, projName = projName }) + "\">" + "bug #" + id
+            + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projName }) + "\">" + projName + "</a>";
 
-                service.WriteMessage(bugDeveloper.Nickname, bug.TopicStarter, message);
-                service.InformAboutNotification(bugDeveloper);
+            client.WriteMessage(bugDeveloper.Nickname, bug.TopicStarter, message);
+            client.InformAboutNotification(bugDeveloper);
 
-                service.WriteMessage(pm.Nickname, bug.TopicStarter, message);
-                service.InformAboutNotification(pm);
+            client.WriteMessage(pm.Nickname, bug.TopicStarter, message);
+            client.InformAboutNotification(pm);
 
-                 
 
-                return RedirectToAction("BugDescriptionPage", "Bts", new { projName = projName, id = id });
+
+            return RedirectToAction("BugDescriptionPage", "Bts", new { projName = projName, id = id });
 
         }
 
@@ -1155,46 +1176,49 @@ namespace BTS.Controllers
         {
             ViewBag.ProjectName = projName;
 
-                Project proj = service.GetProjectsByName(projName)[0];
+            Project proj = client.GetProjectsByName(projName)[0];
 
-                Bug bug = null;
+            Bug bug = null;
 
-                if (proj != null)
+            if (proj != null)
+            {
+                bug = client.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
+            }
+
+            if (bug != null)
+            {
+                Message[] messages = client.GetMessageLog(id);
+
+                int correct = -1;
+
+                if (messages != null)
                 {
-                    bug = service.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
-                }
+                    messages = messages.OrderByDescending(x => x.Id).ToArray();
 
-                if (bug != null)
-                {
-                    List<Message> messages = service.GetMessageLog(id);
-
-                    int correct = -1;
-
-                    if (messages != null)
+                    foreach (Message message in messages)
                     {
-                        messages = messages.OrderByDescending(x => x.Id).ToList();
-
-                        foreach (Message message in messages)
+                        if (message.Correct)
                         {
-                            if (message.Correct)
-                            {
-                                correct = message.Id;
-                            }
+                            correct = message.Id;
                         }
                     }
+                }
 
-                    if(correct != -1)
-                    {
-                        ViewBag.CorrectItem = correct;
-                    }
-                    else
-                    {
-                        ViewBag.CorectItem = 0;
-                    }
+                if (correct != -1)
+                {
+                    ViewBag.CorrectItem = correct;
+                }
+                else
+                {
+                    ViewBag.CorectItem = 0;
+                }
 
-                    ViewBag.Messages = messages;
+                if (messages != null)
+                {
+                    ViewBag.Messages = messages.ToList();
+                }
 
-                    return View(bug);
+                return View(bug);
             }
 
             return RedirectToAction("PageNotFound", "Error");
@@ -1207,24 +1231,21 @@ namespace BTS.Controllers
 
             string[] urlSearch = messageToAdd.Split(' ');
 
-            for(int i = 0; i < urlSearch.Count(); ++i)
+            for (int i = 0; i < urlSearch.Count(); ++i)
             {
-                if(urlSearch[i].Length > 10 && urlSearch[i].Substring(0, 7) == "http://")
+                if (urlSearch[i].Length > 10 && urlSearch[i].Substring(0, 7) == "http://")
                 {
                     urlSearch[i] = "<a href=\"" + urlSearch[i] + "\">" + urlSearch[i] + "</a>";
                 }
             }
 
             StringBuilder builder = new StringBuilder();
-            builder.Append("<b>");
 
-            for(int i = 0; i < urlSearch.Count(); ++i)
+            for (int i = 0; i < urlSearch.Count(); ++i)
             {
                 builder.Append(urlSearch[i]);
                 builder.Append(" ");
             }
-
-            builder.Append("</b>");
 
             messageToAdd = builder.ToString();
 
@@ -1232,65 +1253,64 @@ namespace BTS.Controllers
 
             messageToAdd.Replace("\r\n", "<br/>");
 
-                Bug bug = null;
+            Bug bug = null;
 
-                Message message = new Message();
-                message.SenderNick = Session["Username"].ToString();
-                message.UserToReply = Recipient;
-                message.MessageToReplyId = recipientId;
-                message.MessageText = messageToAdd;
+            Message message = new Message();
+            message.SenderNick = Session["Username"].ToString();
+            message.UserToReply = Recipient;
+            message.MessageToReplyId = recipientId;
+            message.MessageText = messageToAdd;
 
-                service.AddMessageToWorkflow(id, message);
+            client.AddMessageToWorkflow(id, message);
 
-                Project proj = service.GetProjectsByName(projName).ToList().SingleOrDefault();
+            Project proj = client.GetProjectsByName(projName).ToList().SingleOrDefault();
 
 
-                if (proj != null)
+            if (proj != null)
+            {
+                bug = client.GetProjectBugs(proj).Where(x => x.Id == id).ToList().SingleOrDefault();
+            }
+
+            if (bug != null)
+            {
+                User developer = client.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
+
+                if (developer != null)
                 {
-                    bug = service.GetProjectBugs(proj).Where(x => x.Id == id).ToList().SingleOrDefault();
+                    if (Session["Username"].ToString() == bug.TopicStarter)
+                    {
+                        string messageText = "<a href =\"" + Url.Action("ExternalAccountPage", "Bts", new { id = developer.Id })
+                              + "\">" + bug.TopicStarter + "</a>  added new message to discussion of <a href=\""
+                              + Url.Action("BugDescriptionPage", "Bts", new { id = bug.Id, projName = projName }) + "\"> bug # " + id + "</a>";
+
+                        client.WriteMessage(developer.Nickname, bug.TopicStarter, messageText);
+                        client.InformAboutNotification(developer);
+                    }
+                    else
+                    {
+                        string messageText = "<a href =\"" + Url.Action("ExternalAccountPage", "Bts", new { id = developer.Id })
+                        + "\">" + developer.Nickname + "</a>  added new message to discussion of <a href=\""
+                        + Url.Action("BugDescriptionPage", "Bts", new { id = bug.Id, projName = projName }) + "\"> bug # " + id + "</a>";
+
+                        User topicStarter = client.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
+
+                        client.WriteMessage(bug.TopicStarter, developer.Nickname, messageText);
+                        client.InformAboutNotification(topicStarter);
+                    }
                 }
 
-                if (bug != null)
+                Message[] messages = client.GetMessageLog(id);
+
+                if (messages != null)
                 {
-                    User developer = service.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
-
-                    if (developer != null)
-                    {
-                        if (Session["Username"].ToString() == bug.TopicStarter)
-                        {
-                            string messageText = "<a href =\"" + Url.Action("ExternalAccountPage", "Bts", new { id = developer.Id })
-                                  + "\">" + bug.TopicStarter + "</a>  added new message to discussion of <a href=\""
-                                  + Url.Action("BugDescriptionPage", "Bts", new { id = bug.Id, projName = projName }) + "\"> bug # " + id + "</a>";
-
-                            service.WriteMessage(developer.Nickname, bug.TopicStarter, messageText);
-                            service.InformAboutNotification(developer);
-                        }
-                        else
-                        {
-                            string messageText = "<a href =\"" + Url.Action("ExternalAccountPage", "Bts", new { id = developer.Id })
-                            + "\">" + developer.Nickname + "</a>  added new message to discussion of <a href=\""
-                            + Url.Action("BugDescriptionPage", "Bts", new { id = bug.Id, projName = projName }) + "\"> bug # " + id + "</a>";
-
-                            User topicStarter = service.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
-
-                            service.WriteMessage(bug.TopicStarter, developer.Nickname, messageText);
-                            service.InformAboutNotification(topicStarter);
-                        }
-                    }
-
-                    List<Message> messages = service.GetMessageLog(id);
-
-                    if (messages != null)
-                    {
-                        messages = messages.OrderByDescending(x => x.Id).ToList();
-                    }
-
-                    ViewBag.Messages = messages;
+                    messages = messages.OrderByDescending(x => x.Id).ToArray();
+                    ViewBag.Messages = messages.ToList();
                 }
+            }
 
-                 
 
-                return RedirectToAction("BugDescriptionPage", "Bts", new { id = id, projName = projName });
+
+            return RedirectToAction("BugDescriptionPage", "Bts", new { id = id, projName = projName });
         }
 
         [HttpPost]
@@ -1298,60 +1318,60 @@ namespace BTS.Controllers
         {
             bool toReturn = false;
 
-                Message aMessage = new Message();
-                aMessage.MessageText = finalComment;
-                aMessage.SenderNick = Session["Username"].ToString();
-                aMessage.MessageToReplyId = selectedItemId;
-                aMessage.UserToReply = userToReply;
+            Message aMessage = new Message();
+            aMessage.MessageText = finalComment;
+            aMessage.SenderNick = Session["Username"].ToString();
+            aMessage.MessageToReplyId = selectedItemId;
+            aMessage.UserToReply = userToReply;
 
-                service.AddMessageToWorkflow(bugId, aMessage);
+            client.AddMessageToWorkflow(bugId, aMessage);
 
-                toReturn = service.MarkRightIssueAnswer(bugId, selectedItemId, estimate);
+            toReturn = client.MarkRightIssueAnswer(bugId, selectedItemId, estimate);
 
-                if(toReturn)
-                {
-                    Project proj = service.GetProjectsByName(projectName).ToList().SingleOrDefault();
-                    Bug bug = service.GetProjectBugs(proj).Where(x => x.Id == bugId).ToList().SingleOrDefault();
+            if (toReturn)
+            {
+                Project proj = client.GetProjectsByName(projectName).ToList().SingleOrDefault();
+                Bug bug = client.GetProjectBugs(proj).Where(x => x.Id == bugId).ToList().SingleOrDefault();
 
-                    User bugDeveloper = service.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
-                    User pm = service.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
-                    User topicStarter = service.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
+                User bugDeveloper = client.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
+                User pm = client.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
+                User topicStarter = client.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
 
-                    string message ="<a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = topicStarter.Id })
-                    + "\">" + bug.TopicStarter + "</a> closed discusion of <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId
-                    + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a>";
+                string message = "<a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = topicStarter.Id })
+                + "\">" + bug.TopicStarter + "</a> closed discusion of <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId
+                + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a>";
 
-                    service.WriteMessage(bugDeveloper.Nickname, bug.TopicStarter, message);
-                    service.InformAboutNotification(bugDeveloper);
+                client.WriteMessage(bugDeveloper.Nickname, bug.TopicStarter, message);
+                client.InformAboutNotification(bugDeveloper);
 
-                    service.WriteMessage(pm.Nickname, bug.TopicStarter, message);
-                    service.InformAboutNotification(pm);
-                }
+                client.WriteMessage(pm.Nickname, bug.TopicStarter, message);
+                client.InformAboutNotification(pm);
+            }
 
             return JsonConvert.SerializeObject(toReturn);
         }
 
-        [SystemAuthorize(Roles= "Admin,Tester,Developer,Project Manager")]
+        [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult BugSolutionPage(int id, string projName)
         {
 
             ViewBag.ProjectName = projName;
 
-                Project proj = service.GetProjectsByName(projName)[0];
+            Project proj = client.GetProjectsByName(projName)[0];
 
-                Bug bug = null;
+            Bug bug = null;
 
-                if (proj != null)
-                {
-                    bug = service.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
-                }
+            if (proj != null)
+            {
+                bug = client.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
+            }
 
-                if (bug != null)
-                {
-                    ViewBag.PmId = proj.PmId;
+            if (bug != null)
+            {
+                ViewBag.PmId = proj.PmId;
 
-                    return View(bug);
-                }
+                return View(bug);
+            }
 
             return RedirectToAction("PageNotFound", "Error");
         }
@@ -1362,25 +1382,25 @@ namespace BTS.Controllers
         {
             bool toReturn = true;
 
-                toReturn = service.AddSolutionOfBug(bugId, solution);
+            toReturn = client.AddSolutionOfBug(bugId, solution);
 
-                if(toReturn)
-                {
-                    Project proj = service.GetProjectsByName(projectName).ToList().FirstOrDefault();
+            if (toReturn)
+            {
+                Project proj = client.GetProjectsByName(projectName).ToList().FirstOrDefault();
 
-                    Bug bug = service.GetProjectBugs(proj).Where(x => x.Id == bugId).ToList().FirstOrDefault();
+                Bug bug = client.GetProjectBugs(proj).Where(x => x.Id == bugId).ToList().FirstOrDefault();
 
-                    User pm = service.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
+                User pm = client.getUsers().Where(x => x.Id == proj.PmId).ToList().SingleOrDefault();
 
-                    User topicStarter = service.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
+                User topicStarter = client.getUsers().Where(x => x.Nickname == bug.TopicStarter).Single();
 
-                    string message = "<a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = pm.Id })
-                    + "\">" + pm.Nickname + "</a> documented solution of <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId
-                    + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a>";
+                string message = "<a href=\"" + Url.Action("ExternalAccountPage", "Bts", new { id = pm.Id })
+                + "\">" + pm.Nickname + "</a> documented solution of <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId
+                + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a>";
 
-                    service.WriteMessage(bug.TopicStarter, pm.Nickname, message);
-                    service.InformAboutNotification(topicStarter);
-                }
+                client.WriteMessage(bug.TopicStarter, pm.Nickname, message);
+                client.InformAboutNotification(topicStarter);
+            }
 
 
             return JsonConvert.SerializeObject(toReturn);

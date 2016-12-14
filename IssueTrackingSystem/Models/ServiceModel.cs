@@ -36,7 +36,7 @@ namespace ServiceClasses
         bool SetBugStatus(int bugId, string status);
 
         [OperationContract]
-        bool AddProject(Project proj, List<int> categoryIds);
+        bool AddProject(Project proj, int[] categoryIds);
 
         [OperationContract]
         List<Project> GetProjectsByName(string name);
@@ -48,13 +48,13 @@ namespace ServiceClasses
         void ApproveDeveloperForProject(string projectName, int userId);
 
         [OperationContract]
-        bool RemoveDevsFromProject(string projName, List<int> toErase);
+        bool RemoveDevsFromProject(string projName, int[] toErase);
 
         [OperationContract]
         bool InviteDeveloperToProject(string projectName, int devId);
 
         [OperationContract]
-        List<User> GetDevelopersOfProject(string projName, out List<User> invitedDevelopers);
+        List<User> GetDevelopersOfProject(string projName, out User[] invitedDevelopers);
 
         [OperationContract]
         bool ConfirmUser(int userId);
@@ -72,7 +72,7 @@ namespace ServiceClasses
         bool isEmailSent(string email);
 
         [OperationContract]
-        List<User> searchForUsers(int id, List<string> userNames, List<string> userStatuses);
+        List<User> searchForUsers(int id, string[] userNames, string[] userStatuses);
 
         [OperationContract]
         void InformAboutNotification(User u);
@@ -415,7 +415,7 @@ namespace ServiceClasses
 
         // PROJECT FUNCTIONS
 
-        public bool AddProject(Project proj, List<int> categoryIds)
+        public bool AddProject(Project proj, int[] categoryIds)
         {
             bool toReturn = false;
 
@@ -531,7 +531,7 @@ namespace ServiceClasses
             List<Project> toReturn = new List<Project>();
 
 
-            if (categories != null)
+            if (categories != null && categories.Count() > 0)
             {
                 string cmdString = "SELECT TOP 5 A.ID, A.NAME, A.DESCRIPTION, A.PmId, A.LOGO" +
                                     " FROM Projects A inner join ProjectCategory B on A.NAME = B.PROJECT_NAME" +
@@ -616,7 +616,7 @@ namespace ServiceClasses
                 }
             }
         }
-        public bool RemoveDevsFromProject(string projName, List<int> toErase)
+        public bool RemoveDevsFromProject(string projName, int[] toErase)
         {
             bool toReturn = false;
 
@@ -697,10 +697,10 @@ namespace ServiceClasses
 
             return toReturn;
         }
-        public List<User> GetDevelopersOfProject(string projName, out List<User> invitedDevelopers)
+        public List<User> GetDevelopersOfProject(string projName, out User[] invitedDevelopers)
         {
             List<User> toReturn = null;
-            invitedDevelopers = new List<User>();
+            List<User> invitedDevs = new List<User>();
 
             string cmdString = "SELECT A.ID, A.NAME, A.SURNAME, A.NICKNAME, A.STATUS, A.Confirmed, B.Approved "
                 + "FROM Users A inner join ProjectDeveloper B ON A.ID = B.DEV_ID "
@@ -749,12 +749,12 @@ namespace ServiceClasses
                                 }
                                 else
                                 {
-                                    invitedDevelopers.Add(u);
+                                    invitedDevs.Add(u);
                                 }
                             }
                             else
                             {
-                                invitedDevelopers.Add(u);
+                                invitedDevs.Add(u);
                             }
                         }
                     }
@@ -770,6 +770,8 @@ namespace ServiceClasses
                     tracker.LogError(ex.ToString());
                 }
             }
+
+            invitedDevelopers = invitedDevs.ToArray();
 
             if (toReturn != null && toReturn.Count() == 0)
             {
@@ -1057,16 +1059,16 @@ namespace ServiceClasses
 
             return toReturn;
         }
-        public List<User> searchForUsers(int id, List<string> userNames, List<string> userStatuses)
+        public List<User> searchForUsers(int id, string[] userNames, string[] userStatuses)
         {
             List<User> toReturn = null;
             string cmdString = null;
 
-            if (userNames.Count == 0 && userStatuses == null)
+            if (userNames.Count() == 0 && userStatuses == null)
             {
                 cmdString = "";
             }
-            else if (userNames.Count == 0 && userStatuses != null)
+            else if (userNames.Count() == 0 && userStatuses != null)
             {
                 cmdString = "SELECT TOP 5 * FROM Users WHERE ID>" + id + " AND(";
 
@@ -1078,7 +1080,7 @@ namespace ServiceClasses
                 cmdString = cmdString.Substring(0, cmdString.Length - 4);
                 cmdString += ");";
             }
-            else if (userNames.Count != 0 && userStatuses == null)
+            else if (userNames.Count() != 0 && userStatuses == null)
             {
                 cmdString = "SELECT TOP 5 * FROM Users WHERE ID>" + id + " AND(";
 

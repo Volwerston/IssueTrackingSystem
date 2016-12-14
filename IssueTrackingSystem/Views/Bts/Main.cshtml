@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BTS.Models.Category>
+﻿@model List<IssueTrackingSystem.ServiceReference1.Category >
 
 @{
     ViewBag.Title = "Main";
@@ -37,7 +37,7 @@ else
                     <div class="col-md-4">
                         <select id="ms" multiple="multiple"  class="form-control">
                             @{
-                                foreach (var item in Model)
+                                foreach (IssueTrackingSystem.ServiceReference1.Category item in Model)
                                 {
                                     <option value="@item.Id" selected>@item.Title</option>
                                 }
