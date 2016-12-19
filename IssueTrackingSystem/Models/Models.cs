@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 using System.Web;
+using System.Web.Script.Serialization;
+using System.Xml.Serialization;
 
 namespace BTS.Models
 {
@@ -67,10 +70,13 @@ namespace BTS.Models
         public int PmId { get; set; }
     }
 
+
+
     public class Bug
     {
-        public int Id { get; set; }
 
+        public int Id { get; set; }
+        
         [Required(ErrorMessage ="Subject field cannot be empty")]
         [MaxLength(30, ErrorMessage = "Subject field must contain at most 30 characters")]
         [MinLength(5, ErrorMessage = "Subject field must contain at least 5 characters")]
@@ -78,9 +84,11 @@ namespace BTS.Models
 
         [Required(ErrorMessage ="Description field must be filled")]
         public string Description { get; set; }
+
         public byte[] Image { get; set; }
 
         public int ProjectId { get; set; }
+
 
         [MaxLength(30, ErrorMessage ="Status field must contain at most 30 characters")]
         public string Status { get; set; }
@@ -89,12 +97,12 @@ namespace BTS.Models
 
         public string TopicStarter { get; set; }
 
-        public IEnumerable<HttpPostedFileBase> Attachments { get; set; }
-
         public int DeveloperId { get; set; }
 
         public string Solution { get; set; }
+
         public DateTime AddingTime { get; set; }
+
         public DateTime StatusChangeDate { get; set; }
     }
 
@@ -109,6 +117,8 @@ namespace BTS.Models
         [Required]
         [MaxLength(15)]
         public string Status { get; set; }
+
+        public IEnumerable<HttpPostedFileBase> Attachments { get; set; }
     }
 
     public class Message
@@ -144,17 +154,21 @@ namespace BTS.Models
         public DateTime SendDate { get; set; }
     }
 
+    [DataContract]
     public class Attachment
     {
+        [DataMember]
         [Required]
         public int Id { get; set; }
 
+        [DataMember]
         [Required]
         [MaxLength(20)]
         public string Name { get; set; }
 
         [Required]
-        public string Location { get; set; }
+        [DataMember]
+        public HttpPostedFileBase Data { get; set; }
     }
 
     public class BugAttachment

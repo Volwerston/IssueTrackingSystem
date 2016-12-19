@@ -291,15 +291,18 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
-        public string GetProjectsByCategories(int[] categories)
+        public string GetProjectsByCategories(int[] categories, string lastId)
         {
-            List<int> categ = categories.ToList();
-            categ.Remove(0);
-            categories = categ.ToArray();
+            List<int> categ = new List<int> {};
+
+            if (categories != null)
+            {
+                categ.AddRange(categories);
+            }
 
             Project[] toReturn = null;
 
-            toReturn = client.GetProjectsByCategories(categories);
+            toReturn = client.GetProjectsByCategories(categ.ToArray(), lastId);
 
 
             List<string> imageUrls = new List<string>();
@@ -448,6 +451,8 @@ namespace BTS.Controllers
 
             Project[] chosenProjects = client.GetProjectsByName(name);
 
+            User[] developers = null;
+
             if (chosenProjects.Count() > 0)
             {
                 projectFound = true;
@@ -457,7 +462,7 @@ namespace BTS.Controllers
             if (project != null)
             {
                 User[] invitedDevs = null;
-                User[] developers = client.GetDevelopersOfProject(name, out invitedDevs);
+                developers = client.GetDevelopersOfProject(name, out invitedDevs);
                 List<SelectListItem> developerList = null;
 
                 ViewBag.InvitedDevs = invitedDevs.ToList();
@@ -476,9 +481,11 @@ namespace BTS.Controllers
                 }
 
                 ViewBag.Developers = developerList;
+
             }
 
             projectBugs = client.GetProjectBugs(project);
+
 
 
             if (!projectFound)
@@ -486,9 +493,26 @@ namespace BTS.Controllers
                 return RedirectToAction("PageNotFound", "Error");
             }
 
+            List<User> bugUsers = new List<User>();
+
             if (projectBugs != null)
             {
                 ViewBag.ProjectBugs = projectBugs.ToList();
+
+                if (developers != null)
+                {
+                    foreach(Bug bug in projectBugs)
+                    {
+                        if(bug.DeveloperId != 0)
+                        {
+                            bugUsers.Add(developers.Where(x => x.Id == bug.DeveloperId).Single());
+                        }
+                        else
+                        {
+                            bugUsers.Add(null);
+                        }
+                    }
+                }
             }
             else
             {
@@ -496,6 +520,8 @@ namespace BTS.Controllers
             }
 
             ViewBag.Pm = project.PmId;
+
+            ViewBag.BugDevelopers = bugUsers;
 
             if (messageType != null && message != null)
             {
@@ -978,7 +1004,6 @@ namespace BTS.Controllers
         {
 
             bool bugReported = false;
-            bool attachmentsAdded = true;
 
             if (TempData["projId"] != null)
             {
@@ -993,6 +1018,7 @@ namespace BTS.Controllers
 
                     b.Subject = encodedSubject;
                     b.Description = encodedDescripton;
+                    b.Attachments = null;
 
                     bugReported = client.ReportBug(b);
                 }
@@ -1000,7 +1026,7 @@ namespace BTS.Controllers
                 TempData["projId"] = b.ProjectId;
             }
 
-            if (bugReported && attachmentsAdded)
+            if (bugReported)
             {
 
                 return RedirectToAction("ShowProject", "Bts",

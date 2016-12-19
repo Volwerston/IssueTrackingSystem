@@ -928,10 +928,10 @@ namespace IssueTrackingSystem.ServiceReference1 {
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Project[]> GetProjectsByNameAsync(string name);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetProjectsByCategories", ReplyAction="http://tempuri.org/IService/GetProjectsByCategoriesResponse")]
-        IssueTrackingSystem.ServiceReference1.Project[] GetProjectsByCategories(int[] categories);
+        IssueTrackingSystem.ServiceReference1.Project[] GetProjectsByCategories(int[] categories,string lastId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetProjectsByCategories", ReplyAction="http://tempuri.org/IService/GetProjectsByCategoriesResponse")]
-        System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Project[]> GetProjectsByCategoriesAsync(int[] categories);
+        System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Project[]> GetProjectsByCategoriesAsync(int[] categories,string lastId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ApproveDeveloperForProject", ReplyAction="http://tempuri.org/IService/ApproveDeveloperForProjectResponse")]
         void ApproveDeveloperForProject(string projectName, int userId);
@@ -1224,12 +1224,12 @@ namespace IssueTrackingSystem.ServiceReference1 {
             return base.Channel.GetProjectsByNameAsync(name);
         }
         
-        public IssueTrackingSystem.ServiceReference1.Project[] GetProjectsByCategories(int[] categories) {
-            return base.Channel.GetProjectsByCategories(categories);
+        public IssueTrackingSystem.ServiceReference1.Project[] GetProjectsByCategories(int[] categories, string lastId) {
+            return base.Channel.GetProjectsByCategories(categories, lastId);
         }
         
-        public System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Project[]> GetProjectsByCategoriesAsync(int[] categories) {
-            return base.Channel.GetProjectsByCategoriesAsync(categories);
+        public System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Project[]> GetProjectsByCategoriesAsync(int[] categories, string lastId) {
+            return base.Channel.GetProjectsByCategoriesAsync(categories, lastId);
         }
         
         public void ApproveDeveloperForProject(string projectName, int userId) {

@@ -42,7 +42,7 @@ namespace ServiceClasses
         List<Project> GetProjectsByName(string name);
 
         [OperationContract]
-        List<Project> GetProjectsByCategories(int[] categories);
+        List<Project> GetProjectsByCategories(int[] categories, string lastId);
 
         [OperationContract]
         void ApproveDeveloperForProject(string projectName, int userId);
@@ -100,9 +100,6 @@ namespace ServiceClasses
 
         [OperationContract]
         bool IsPasswordResetLinkValid(string queryString);
-
-        [OperationContract]
-        bool AddAttachments(List<HttpPostedFileBase> attachments, int id);
 
         [OperationContract]
         bool RemoveNotification(int id);
@@ -319,7 +316,7 @@ namespace ServiceClasses
 
             bool toReturn = false;
 
-            string cmdString = "UPDATE Bugs SET STATUS = 'Assigned', StatusChangeDate=GETDATE(), ESTIMATE = NULL WHERE ID=@id; "
+            string cmdString = "UPDATE Bugs SET STATUS = 'Assigned', Solution = NULL, StatusChangeDate=GETDATE(), ESTIMATE = NULL WHERE ID=@id; "
      + "UPDATE Messages SET CORRECT=0 WHERE BUG_ID = @id;";
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
@@ -526,7 +523,7 @@ namespace ServiceClasses
 
             return toReturn;
         }
-        public List<Project> GetProjectsByCategories(int[] categories)
+        public List<Project> GetProjectsByCategories(int[] categories, string lastId)
         {
             List<Project> toReturn = new List<Project>();
 
@@ -535,16 +532,24 @@ namespace ServiceClasses
             {
                 string cmdString = "SELECT TOP 5 A.ID, A.NAME, A.DESCRIPTION, A.PmId, A.LOGO" +
                                     " FROM Projects A inner join ProjectCategory B on A.NAME = B.PROJECT_NAME" +
-                                    " WHERE A.ID > " + categories[categories.Length - 1] + " AND ( ";
+                                    " WHERE (";
 
-                for (int i = 0; i < categories.Length - 1; ++i)
+                for (int i = 0; i < categories.Length; ++i)
                 {
                     cmdString += "B.CATEGORY_ID = " + categories[i] + " OR ";
                 }
 
                 cmdString = cmdString.Substring(0, cmdString.Length - 4);
 
-                cmdString += ");";
+                if (lastId != null)
+                {
+                    cmdString += ") AND A.ID > " + lastId + ";";
+                }
+                else
+                {
+                    cmdString += ");";
+                }
+
 
                 using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
                 {
@@ -1562,70 +1567,7 @@ namespace ServiceClasses
             return ExecuteSP("IsResetLinkValid", paramList);
         }
 
-        // OTHER FUNCTIONS
 
-        public bool AddAttachments(List<HttpPostedFileBase> attachments, int id)
-        {
-            if (id != -1)
-            {
-                bool allSucceeded = true;
-                using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
-                {
-                    connection.Open();
-                    SqlTransaction transaction = connection.BeginTransaction("InsertAttachments");
-
-                    foreach (HttpPostedFileBase attachment in attachments)
-                    {
-                        if (attachment != null)
-                        {
-                            string cmdString = "INSERT INTO Attachments (NAME, DATA, BUG_ID) VALUES(@Name, @Data, @BugId)";
-                            SqlCommand cmd = new SqlCommand(cmdString, connection);
-                            cmd.Transaction = transaction;
-
-                            byte[] file = new byte[attachment.ContentLength];
-                            attachment.InputStream.Read(file, 0, attachment.ContentLength);
-
-                            SqlParameter paramName = new SqlParameter("@Name", attachment.GetType().ToString());
-                            SqlParameter paramBugId = new SqlParameter("@BugId", id);
-                            SqlParameter paramData = new SqlParameter("@Data", SqlDbType.Binary);
-                            paramData.Value = file;
-
-                            cmd.Parameters.Add(paramName);
-                            cmd.Parameters.Add(paramData);
-                            cmd.Parameters.Add(paramBugId);
-
-                            try
-                            {
-                                cmd.ExecuteNonQuery();
-                            }
-                            catch (Exception ex)
-                            {
-                                allSucceeded = false;
-
-                                ErrorTracker tracker = new ErrorTracker();
-                                tracker.LogError(ex.Message);
-                                break;
-                            }
-                        }
-                    }
-
-                    if (allSucceeded)
-                    {
-                        transaction.Commit();
-                    }
-                    else
-                    {
-                        transaction.Rollback();
-                    }
-                }
-
-                return allSucceeded;
-            }
-            else
-            {
-                return false;
-            }
-        }
         public bool RemoveNotification(int id)
         {
             bool toReturn = false;

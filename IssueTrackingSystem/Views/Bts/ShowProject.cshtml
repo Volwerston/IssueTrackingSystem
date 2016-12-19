@@ -124,12 +124,14 @@ else
                 </div>
             </div>
         </div>
+        <div style="padding: 10px 10px 10px 10px">
         <div id="tableData" style="margin: 5px 5px 5px 5px; color:rgb(141, 202, 246); color: black;">
 
         </div>
         <div class="text-center" id="paginationData">
 
         </div>
+            </div>
     </div>
     </div>
 </div>
@@ -185,6 +187,7 @@ else
 <script>
     var allEntries = [];
     var currEntries = [];
+    var bugDevelopers = [];
     var numOfLists;
     var sortOrderId = "byId";
     var currList;
@@ -436,6 +439,10 @@ else
                 var str = '@Html.Raw(JsonConvert.SerializeObject(((List<Bug>)ViewBag.ProjectBugs).OrderBy(x => x.Id).ToList()))';
 
                 allEntries = JSON.parse(str);
+
+                var devsStr = '@Html.Raw(JsonConvert.SerializeObject(((List<User>)ViewBag.BugDevelopers).ToList()))';
+
+                bugDevelopers = JSON.parse(devsStr);
             }
 
             if (toSearch == "") {
@@ -445,9 +452,19 @@ else
                 currEntries = [];
 
                 for (var i = 0; i < allEntries.length; ++i) {
-                    if (allEntries[i].Subject.indexOf(toSearch) != -1) {
+
+                    if (allEntries[i].Subject.toLowerCase().indexOf(toSearch.toLowerCase()) != -1 ||
+                        allEntries[i].Description.toLowerCase().indexOf(toSearch.toLowerCase()) != -1 ||
+                        allEntries[i].TopicStarter.toLowerCase().indexOf(toSearch.toLowerCase()) != -1){
+
                         currEntries.push(allEntries[i]);
                     }
+
+                    if(bugDevelopers[i] != null && bugDevelopers[i].Nickname.toLowerCase().indexOf(toSearch.toLowerCase()) != -1)
+                    {
+                        currEntries.push(allEntries[i]);
+                    }
+
                 }
             }
 
@@ -476,10 +493,14 @@ else
                 '<button onclick="changeSortOrder(\'bySubject\')" class="btn btn-default">Subject <span class="glyphicon glyphicon-arrow-down" id="bySubject"></span></button></th><th>' +
                 '<button onclick="changeSortOrder(\'byStatus\')" class="btn btn-default">Status <span class="glyphicon glyphicon-arrow-down" id="byStatus"></button></th><th>' +
                 '<button onclick="changeSortOrder(\'byDate\')" class="btn btn-default">Added on <span class="glyphicon glyphicon-arrow-down" id="byDate"></span></button></th><th>' +
-                'Description</th></tr></thead><tbody>';
+                'Description</th><th>'
+                 + 'Reported</th><th>'
+                 + 'Developer</th>'
+                 +'</tr></thead><tbody>';
            ;
 
             if (numOfItems * numOfList > currEntries.length) {
+
                 for (var i = numOfItems * (numOfList - 1) ; i < currEntries.length; ++i) {
 
                     var text = "";
@@ -503,7 +524,17 @@ else
                     var numOfDays = @DateTime.Now.Day -currEntries[i].AddingTime.substr(8, 2);
 
                     toAppend += '<tr class="tableEntry" id="trow' + currEntries[i].Id + '" onmouseenter="setWhite(' + currEntries[i].Id + ')" onmouseleave="setNormal(' + currEntries[i].Id + ')" onclick="moveToBug(' + currEntries[i].Id + ')"><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
-                                + currEntries[i].Status + ' (' + numOfDays +' days)</td><td>' + addTime + '</td><td>' + text + '</td></tr>';
+                                + currEntries[i].Status + ' (' + numOfDays + ' days)</td><td>' + addTime + '</td><td>' + text + '</td>'
+                    + '<td>' + currEntries[i].TopicStarter + '</td>';
+
+                    if (bugDevelopers[i] == null) {
+                        toAppend += '<td></td>';
+                    }
+                    else {
+                        toAppend += '<td>' + bugDevelopers[i].Nickname + '</td>';
+                    }
+
+                    toAppend += '</tr>';
                 }
             }
             else {
@@ -530,7 +561,18 @@ else
                     var numOfDays = @DateTime.Now.Day -currEntries[i].AddingTime.substr(8, 2);
 
                     toAppend += '<tr class="tableEntry" id="trow' + currEntries[i].Id + '" onmouseenter="setWhite(' + currEntries[i].Id + ')" onmouseleave="setNormal(' + currEntries[i].Id + ')" onclick="moveToBug(' + currEntries[i].Id + ')"><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
-                                + currEntries[i].Status + '<br/> (' + numOfDays + ' days) </td><td>' + addTime + '</td><td>' + text + '</td></tr>';
+                                + currEntries[i].Status + '<br/> (' + numOfDays + ' days) </td><td>' + addTime + '</td><td>' + text + '</td>'
+                         + '<td>' + currEntries[i].TopicStarter + '</td>';
+
+                    if (bugDevelopers[i] == null)
+                    {
+                        toAppend += '<td></td>';
+                    }
+                    else {
+                        toAppend += '<td>' + bugDevelopers[i].Nickname + '</td>';
+                    }
+
+                    toAppend += '</tr>';
                 }
             }
 

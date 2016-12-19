@@ -193,12 +193,15 @@ else
                             categoryStr.push($(this).val());
                         });
 
-                        categoryStr.push(lastId);
+                        var f = JSON.stringify({
+                            categories: categoryStr,
+                            lastId : lastId
+                        });
 
                         $.ajax({
                             type: "POST",
                             url: "@Url.Action("GetProjectsByCategories", "Bts")",
-                            data: JSON.stringify(categoryStr),
+                            data: f,
                             dataType: "json",
                             async: false,
                             contentType: "application/json; charset=utf-8",
