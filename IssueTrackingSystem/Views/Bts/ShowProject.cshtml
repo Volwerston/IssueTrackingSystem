@@ -631,23 +631,29 @@ else
                         {
                             subjA = 1;
                         }
-                        else if(a.Status == "Assigned")
+                        else if(a.Status == "In progress")
                         {
                             subjA = 2;
                         }
-                        else
+                        else if(a.Status == "Assigned")
                         {
                             subjA = 3;
+                        }
+                        else {
+                            subA = 4;
                         }
 
                         if (b.Status == "Closed") {
                             subjB = 1;
                         }
-                        else if (b.Status == "Assigned") {
-                            subjB = 2;;
+                        else if (b.Status == "In progress") {
+                            subjB = 2;
+                        }
+                        else if(a.Status == "Assigned") {
+                            subjB = 3;
                         }
                         else {
-                            subjB = 3;
+                            subjB = 4;
                         }
 
                         return subjA < subjB;
@@ -663,23 +669,28 @@ else
                         if (a.Status == "Closed") {
                             subjA = 1;
                         }
+                        else if (a.Status == "In progress") {
+                            subjA = 2;
+                        }
                         else if (a.Status == "Assigned") {
-                            subjA = 2;;
+                            subjA = 3;
                         }
                         else {
-                            subjA = 3;
+                            subA = 4;
                         }
 
                         if (b.Status == "Closed") {
                             subjB = 1;
                         }
-                        else if (b.Status == "Assigned") {
+                        else if (b.Status == "In progress") {
                             subjB = 2;
                         }
-                        else {
+                        else if (a.Status == "Assigned") {
                             subjB = 3;
                         }
-
+                        else {
+                            subjB = 4;
+                        }
                         return subjA > subjB;
                     })
                 }

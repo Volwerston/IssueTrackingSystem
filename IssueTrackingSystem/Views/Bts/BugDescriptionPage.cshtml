@@ -45,6 +45,15 @@
             {
                 <dd>Unknown</dd>
             }
+
+            <dt style="margin-bottom: 10px;">Status:</dt>
+            <dd>@Model.Status</dd>
+
+            @if (Model.Status == "Closed")
+            {
+                <dt style="margin-bottom: 10px;">Estimate: </dt>
+                <dd>@Model.Estimate</dd>
+            }
         </dl>
         <div class="row text-center" style="margin-bottom: 10px;">
             <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-8 col-sm-8 col-md-8 col-lg-8" style="background-color: rgb(155, 210, 226); border-radius: 5px;">

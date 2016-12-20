@@ -1299,6 +1299,13 @@ namespace BTS.Controllers
 
             if (bug != null)
             {
+
+
+                if(bug.Status != "In progress")
+                {
+                    client.SetBugStatus(id, "In progress");
+                }
+
                 User developer = client.getUsers().Where(x => x.Id == bug.DeveloperId).ToList().SingleOrDefault();
 
                 if (developer != null)
