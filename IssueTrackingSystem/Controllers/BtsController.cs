@@ -1062,6 +1062,18 @@ namespace BTS.Controllers
             return View();
         }
 
+        public ActionResult DownloadAttachment(string attachmentName, int bugId)
+        {
+            Attachment a = client.GetBugAttachment(bugId, attachmentName);
+
+            FileContentResult result = new FileContentResult(a.Data, "application/octet-stream")
+            {
+                FileDownloadName = attachmentName
+            };
+
+            return result;
+        }
+
         [SystemAuthorize(Roles = "Admin,Tester,Developer,Project Manager")]
         public ActionResult BugDescriptionPage(string projName, int id)
         {

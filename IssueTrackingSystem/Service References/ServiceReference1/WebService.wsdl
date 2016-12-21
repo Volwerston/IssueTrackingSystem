@@ -194,6 +194,12 @@
   <wsdl:message name="IService_deleteExpiredRecords_OutputMessage">
     <wsdl:part name="parameters" element="tns:deleteExpiredRecordsResponse" />
   </wsdl:message>
+  <wsdl:message name="IService_GetBugAttachment_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBugAttachment" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetBugAttachment_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBugAttachmentResponse" />
+  </wsdl:message>
   <wsdl:message name="IService_WriteMessage_InputMessage">
     <wsdl:part name="parameters" element="tns:WriteMessage" />
   </wsdl:message>
@@ -348,6 +354,10 @@
     <wsdl:operation name="deleteExpiredRecords">
       <wsdl:input wsaw:Action="http://tempuri.org/IService/deleteExpiredRecords" message="tns:IService_deleteExpiredRecords_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IService/deleteExpiredRecordsResponse" message="tns:IService_deleteExpiredRecords_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBugAttachment">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetBugAttachment" message="tns:IService_GetBugAttachment_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetBugAttachmentResponse" message="tns:IService_GetBugAttachment_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="WriteMessage">
       <wsdl:input wsaw:Action="http://tempuri.org/IService/WriteMessage" message="tns:IService_WriteMessage_InputMessage" />
@@ -644,6 +654,15 @@
     </wsdl:operation>
     <wsdl:operation name="deleteExpiredRecords">
       <soap:operation soapAction="http://tempuri.org/IService/deleteExpiredRecords" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBugAttachment">
+      <soap:operation soapAction="http://tempuri.org/IService/GetBugAttachment" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

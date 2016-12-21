@@ -443,6 +443,21 @@
       <xs:sequence />
     </xs:complexType>
   </xs:element>
+  <xs:element name="GetBugAttachment">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="bugId" type="xs:int" />
+        <xs:element minOccurs="0" name="attachmentName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBugAttachmentResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q23="http://schemas.datacontract.org/2004/07/BTS.Models" minOccurs="0" name="GetBugAttachmentResult" nillable="true" type="q23:Attachment" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="WriteMessage">
     <xs:complexType>
       <xs:sequence>
@@ -477,7 +492,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="bugId" type="xs:int" />
-        <xs:element xmlns:q23="http://schemas.datacontract.org/2004/07/BTS.Models" minOccurs="0" name="message" nillable="true" type="q23:Message" />
+        <xs:element xmlns:q24="http://schemas.datacontract.org/2004/07/BTS.Models" minOccurs="0" name="message" nillable="true" type="q24:Message" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -494,7 +509,7 @@
   <xs:element name="getCategoriesResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q24="http://schemas.datacontract.org/2004/07/BTS.Models" minOccurs="0" name="getCategoriesResult" nillable="true" type="q24:ArrayOfCategory" />
+        <xs:element xmlns:q25="http://schemas.datacontract.org/2004/07/BTS.Models" minOccurs="0" name="getCategoriesResult" nillable="true" type="q25:ArrayOfCategory" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -508,7 +523,7 @@
   <xs:element name="GetMessageLogResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q25="http://schemas.datacontract.org/2004/07/BTS.Models" minOccurs="0" name="GetMessageLogResult" nillable="true" type="q25:ArrayOfMessage" />
+        <xs:element xmlns:q26="http://schemas.datacontract.org/2004/07/BTS.Models" minOccurs="0" name="GetMessageLogResult" nillable="true" type="q26:ArrayOfMessage" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

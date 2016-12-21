@@ -111,6 +111,9 @@ namespace ServiceClasses
         void deleteExpiredRecords();
 
         [OperationContract]
+        BTS.Models.Attachment GetBugAttachment(int bugId, string attachmentName);
+
+        [OperationContract]
         void WriteMessage(string To, string From, string message);
 
         [OperationContract]
@@ -129,6 +132,49 @@ namespace ServiceClasses
     public class WebService : IService
     {
         // BUG FUNCTIONS
+
+        public BTS.Models.Attachment GetBugAttachment(int bugId, string attachmentName)
+        {
+            BTS.Models.Attachment toReturn = null;
+
+            string cmdString = "SELECT * FROM Attachments WHERE BUG_ID = @id AND NAME=@name";
+
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
+            {
+                connection.Open();
+
+                SqlCommand cmd = new SqlCommand(cmdString, connection);
+                cmd.Parameters.AddWithValue("@id", bugId);
+                cmd.Parameters.AddWithValue("@name", attachmentName);
+
+                SqlDataReader rdr = null;
+
+                try
+                {
+                    rdr = cmd.ExecuteReader();
+
+                    if(rdr.Read())
+                    {
+                        toReturn = new BTS.Models.Attachment();
+                        toReturn.Name = rdr["NAME"].ToString();
+                        toReturn.BugId = int.Parse(rdr["BUG_ID"].ToString());
+                        toReturn.Data = (byte[])rdr["DATA"];
+                    }
+                }
+                catch(Exception ex)
+                {
+                    ErrorTracker tracker = new ErrorTracker();
+                    tracker.LogError(ex.ToString());
+                    toReturn = null;
+                }
+                finally
+                {
+                    rdr.Close();
+                }
+            }
+
+                return toReturn;
+        }
         public bool AddSolutionOfBug(int bugId, string solution)
         {
             bool toReturn = false;

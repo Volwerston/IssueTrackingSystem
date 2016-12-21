@@ -1143,6 +1143,12 @@ namespace IssueTrackingSystem.ServiceReference1 {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/deleteExpiredRecords", ReplyAction="http://tempuri.org/IService/deleteExpiredRecordsResponse")]
         System.Threading.Tasks.Task deleteExpiredRecordsAsync();
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetBugAttachment", ReplyAction="http://tempuri.org/IService/GetBugAttachmentResponse")]
+        IssueTrackingSystem.ServiceReference1.Attachment GetBugAttachment(int bugId, string attachmentName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetBugAttachment", ReplyAction="http://tempuri.org/IService/GetBugAttachmentResponse")]
+        System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Attachment> GetBugAttachmentAsync(int bugId, string attachmentName);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/WriteMessage", ReplyAction="http://tempuri.org/IService/WriteMessageResponse")]
         void WriteMessage(string To, string From, string message);
         
@@ -1492,6 +1498,14 @@ namespace IssueTrackingSystem.ServiceReference1 {
         
         public System.Threading.Tasks.Task deleteExpiredRecordsAsync() {
             return base.Channel.deleteExpiredRecordsAsync();
+        }
+        
+        public IssueTrackingSystem.ServiceReference1.Attachment GetBugAttachment(int bugId, string attachmentName) {
+            return base.Channel.GetBugAttachment(bugId, attachmentName);
+        }
+        
+        public System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Attachment> GetBugAttachmentAsync(int bugId, string attachmentName) {
+            return base.Channel.GetBugAttachmentAsync(bugId, attachmentName);
         }
         
         public void WriteMessage(string To, string From, string message) {

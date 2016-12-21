@@ -87,9 +87,9 @@
             <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-8 col-sm-8 col-md-8 col-lg-8 text-center">
                 <h3>Attachments</h3>
 
-                @foreach(string attachment in (string[])ViewBag.BugAttachments)
+                @foreach (string attachment in (string[])ViewBag.BugAttachments)
                 {
-                    <a href="#">@attachment</a><br/>
+                    <a href="@Url.Action("DownloadAttachment", "Bts", new { attachmentName = attachment, bugId = Model.Id })">@attachment</a><br/>
                 }
             </div>
         </div>
@@ -164,11 +164,6 @@
             }
         });
     });
-
-        $("#attachmentsHolder a").click(function (e) {
-            e.preventDefault();
-            alert($(this).html());
-        });
     });
 </script> 
 }
