@@ -6,8 +6,6 @@ using System.Web;
 using System.Web.Mvc;
 using IssueTrackingSystem.Common;
 using System.Text;
-using System.ServiceModel;
-using ServiceClasses;
 using System.Data;
 using IssueTrackingSystem.ServiceReference1;
 
@@ -17,7 +15,7 @@ namespace BTS.Controllers
     public class BtsController : Controller
     {
 
-        private static IssueTrackingSystem.ServiceReference1.ServiceClient client = new IssueTrackingSystem.ServiceReference1.ServiceClient();
+        private static IssueTrackingSystem.ServiceReference1.Service1Client client = new IssueTrackingSystem.ServiceReference1.Service1Client();
         // GET: Bts
 
         public ActionResult Index(string message, string messageType)
@@ -1021,9 +1019,9 @@ namespace BTS.Controllers
 
                     List<Attachment> attachments = new List<Attachment>();
 
-                    if(Attachments != null)
+                    if (Attachments != null)
                     {
-                        for(int i = 0; i < Attachments.Count(); ++i)
+                        for (int i = 0; i < Attachments.Count(); ++i)
                         {
                             Attachment attachment = new Attachment();
                             attachment.Name = Attachments[i].FileName;
@@ -1130,7 +1128,7 @@ namespace BTS.Controllers
 
                 string[] bugAttachmentNames = client.GetBugAttachmentNames(bug.Id);
 
-                if(bugAttachmentNames.Count() == 0)
+                if (bugAttachmentNames.Count() == 0)
                 {
                     bugAttachmentNames = null;
                 }

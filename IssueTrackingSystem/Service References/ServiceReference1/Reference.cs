@@ -953,230 +953,230 @@ namespace IssueTrackingSystem.ServiceReference1 {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="ServiceReference1.IService")]
-    public interface IService {
+    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="ServiceReference1.IService1")]
+    public interface IService1 {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetProjectBugs", ReplyAction="http://tempuri.org/IService/GetProjectBugsResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetProjectBugs", ReplyAction="http://tempuri.org/IService1/GetProjectBugsResponse")]
         IssueTrackingSystem.ServiceReference1.Bug[] GetProjectBugs(IssueTrackingSystem.ServiceReference1.Project proj);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetProjectBugs", ReplyAction="http://tempuri.org/IService/GetProjectBugsResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetProjectBugs", ReplyAction="http://tempuri.org/IService1/GetProjectBugsResponse")]
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Bug[]> GetProjectBugsAsync(IssueTrackingSystem.ServiceReference1.Project proj);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/AddSolutionOfBug", ReplyAction="http://tempuri.org/IService/AddSolutionOfBugResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/AddSolutionOfBug", ReplyAction="http://tempuri.org/IService1/AddSolutionOfBugResponse")]
         bool AddSolutionOfBug(int bugId, string solution);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/AddSolutionOfBug", ReplyAction="http://tempuri.org/IService/AddSolutionOfBugResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/AddSolutionOfBug", ReplyAction="http://tempuri.org/IService1/AddSolutionOfBugResponse")]
         System.Threading.Tasks.Task<bool> AddSolutionOfBugAsync(int bugId, string solution);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/SetDevIdForBug", ReplyAction="http://tempuri.org/IService/SetDevIdForBugResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/SetDevIdForBug", ReplyAction="http://tempuri.org/IService1/SetDevIdForBugResponse")]
         bool SetDevIdForBug(int bugId, int id);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/SetDevIdForBug", ReplyAction="http://tempuri.org/IService/SetDevIdForBugResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/SetDevIdForBug", ReplyAction="http://tempuri.org/IService1/SetDevIdForBugResponse")]
         System.Threading.Tasks.Task<bool> SetDevIdForBugAsync(int bugId, int id);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ReportBug", ReplyAction="http://tempuri.org/IService/ReportBugResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/ReportBug", ReplyAction="http://tempuri.org/IService1/ReportBugResponse")]
         bool ReportBug(IssueTrackingSystem.ServiceReference1.Bug b, IssueTrackingSystem.ServiceReference1.Attachment[] attachments);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ReportBug", ReplyAction="http://tempuri.org/IService/ReportBugResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/ReportBug", ReplyAction="http://tempuri.org/IService1/ReportBugResponse")]
         System.Threading.Tasks.Task<bool> ReportBugAsync(IssueTrackingSystem.ServiceReference1.Bug b, IssueTrackingSystem.ServiceReference1.Attachment[] attachments);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/RestartBug", ReplyAction="http://tempuri.org/IService/RestartBugResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/RestartBug", ReplyAction="http://tempuri.org/IService1/RestartBugResponse")]
         bool RestartBug(int bugId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/RestartBug", ReplyAction="http://tempuri.org/IService/RestartBugResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/RestartBug", ReplyAction="http://tempuri.org/IService1/RestartBugResponse")]
         System.Threading.Tasks.Task<bool> RestartBugAsync(int bugId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/SetBugStatus", ReplyAction="http://tempuri.org/IService/SetBugStatusResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/SetBugStatus", ReplyAction="http://tempuri.org/IService1/SetBugStatusResponse")]
         bool SetBugStatus(int bugId, string status);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/SetBugStatus", ReplyAction="http://tempuri.org/IService/SetBugStatusResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/SetBugStatus", ReplyAction="http://tempuri.org/IService1/SetBugStatusResponse")]
         System.Threading.Tasks.Task<bool> SetBugStatusAsync(int bugId, string status);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/AddProject", ReplyAction="http://tempuri.org/IService/AddProjectResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/AddProject", ReplyAction="http://tempuri.org/IService1/AddProjectResponse")]
         bool AddProject(IssueTrackingSystem.ServiceReference1.Project proj, int[] categoryIds);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/AddProject", ReplyAction="http://tempuri.org/IService/AddProjectResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/AddProject", ReplyAction="http://tempuri.org/IService1/AddProjectResponse")]
         System.Threading.Tasks.Task<bool> AddProjectAsync(IssueTrackingSystem.ServiceReference1.Project proj, int[] categoryIds);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetProjectsByName", ReplyAction="http://tempuri.org/IService/GetProjectsByNameResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetProjectsByName", ReplyAction="http://tempuri.org/IService1/GetProjectsByNameResponse")]
         IssueTrackingSystem.ServiceReference1.Project[] GetProjectsByName(string name);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetProjectsByName", ReplyAction="http://tempuri.org/IService/GetProjectsByNameResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetProjectsByName", ReplyAction="http://tempuri.org/IService1/GetProjectsByNameResponse")]
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Project[]> GetProjectsByNameAsync(string name);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetProjectsByCategories", ReplyAction="http://tempuri.org/IService/GetProjectsByCategoriesResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetProjectsByCategories", ReplyAction="http://tempuri.org/IService1/GetProjectsByCategoriesResponse")]
         IssueTrackingSystem.ServiceReference1.Project[] GetProjectsByCategories(int[] categories, string lastId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetProjectsByCategories", ReplyAction="http://tempuri.org/IService/GetProjectsByCategoriesResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetProjectsByCategories", ReplyAction="http://tempuri.org/IService1/GetProjectsByCategoriesResponse")]
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Project[]> GetProjectsByCategoriesAsync(int[] categories, string lastId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ApproveDeveloperForProject", ReplyAction="http://tempuri.org/IService/ApproveDeveloperForProjectResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/ApproveDeveloperForProject", ReplyAction="http://tempuri.org/IService1/ApproveDeveloperForProjectResponse")]
         void ApproveDeveloperForProject(string projectName, int userId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ApproveDeveloperForProject", ReplyAction="http://tempuri.org/IService/ApproveDeveloperForProjectResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/ApproveDeveloperForProject", ReplyAction="http://tempuri.org/IService1/ApproveDeveloperForProjectResponse")]
         System.Threading.Tasks.Task ApproveDeveloperForProjectAsync(string projectName, int userId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/RemoveDevsFromProject", ReplyAction="http://tempuri.org/IService/RemoveDevsFromProjectResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/RemoveDevsFromProject", ReplyAction="http://tempuri.org/IService1/RemoveDevsFromProjectResponse")]
         bool RemoveDevsFromProject(string projName, int[] toErase);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/RemoveDevsFromProject", ReplyAction="http://tempuri.org/IService/RemoveDevsFromProjectResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/RemoveDevsFromProject", ReplyAction="http://tempuri.org/IService1/RemoveDevsFromProjectResponse")]
         System.Threading.Tasks.Task<bool> RemoveDevsFromProjectAsync(string projName, int[] toErase);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/InviteDeveloperToProject", ReplyAction="http://tempuri.org/IService/InviteDeveloperToProjectResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/InviteDeveloperToProject", ReplyAction="http://tempuri.org/IService1/InviteDeveloperToProjectResponse")]
         bool InviteDeveloperToProject(string projectName, int devId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/InviteDeveloperToProject", ReplyAction="http://tempuri.org/IService/InviteDeveloperToProjectResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/InviteDeveloperToProject", ReplyAction="http://tempuri.org/IService1/InviteDeveloperToProjectResponse")]
         System.Threading.Tasks.Task<bool> InviteDeveloperToProjectAsync(string projectName, int devId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetDevelopersOfProject", ReplyAction="http://tempuri.org/IService/GetDevelopersOfProjectResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetDevelopersOfProject", ReplyAction="http://tempuri.org/IService1/GetDevelopersOfProjectResponse")]
         IssueTrackingSystem.ServiceReference1.GetDevelopersOfProjectResponse GetDevelopersOfProject(IssueTrackingSystem.ServiceReference1.GetDevelopersOfProjectRequest request);
         
         // CODEGEN: Generating message contract since the operation has multiple return values.
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetDevelopersOfProject", ReplyAction="http://tempuri.org/IService/GetDevelopersOfProjectResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetDevelopersOfProject", ReplyAction="http://tempuri.org/IService1/GetDevelopersOfProjectResponse")]
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.GetDevelopersOfProjectResponse> GetDevelopersOfProjectAsync(IssueTrackingSystem.ServiceReference1.GetDevelopersOfProjectRequest request);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ConfirmUser", ReplyAction="http://tempuri.org/IService/ConfirmUserResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/ConfirmUser", ReplyAction="http://tempuri.org/IService1/ConfirmUserResponse")]
         bool ConfirmUser(int userId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ConfirmUser", ReplyAction="http://tempuri.org/IService/ConfirmUserResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/ConfirmUser", ReplyAction="http://tempuri.org/IService1/ConfirmUserResponse")]
         System.Threading.Tasks.Task<bool> ConfirmUserAsync(int userId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/AddAccount", ReplyAction="http://tempuri.org/IService/AddAccountResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/AddAccount", ReplyAction="http://tempuri.org/IService1/AddAccountResponse")]
         string AddAccount(IssueTrackingSystem.ServiceReference1.User u);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/AddAccount", ReplyAction="http://tempuri.org/IService/AddAccountResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/AddAccount", ReplyAction="http://tempuri.org/IService1/AddAccountResponse")]
         System.Threading.Tasks.Task<string> AddAccountAsync(IssueTrackingSystem.ServiceReference1.User u);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/getNickname", ReplyAction="http://tempuri.org/IService/getNicknameResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/getNickname", ReplyAction="http://tempuri.org/IService1/getNicknameResponse")]
         string getNickname(string email);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/getNickname", ReplyAction="http://tempuri.org/IService/getNicknameResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/getNickname", ReplyAction="http://tempuri.org/IService1/getNicknameResponse")]
         System.Threading.Tasks.Task<string> getNicknameAsync(string email);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/getUsers", ReplyAction="http://tempuri.org/IService/getUsersResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/getUsers", ReplyAction="http://tempuri.org/IService1/getUsersResponse")]
         IssueTrackingSystem.ServiceReference1.User[] getUsers();
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/getUsers", ReplyAction="http://tempuri.org/IService/getUsersResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/getUsers", ReplyAction="http://tempuri.org/IService1/getUsersResponse")]
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.User[]> getUsersAsync();
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/isEmailSent", ReplyAction="http://tempuri.org/IService/isEmailSentResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/isEmailSent", ReplyAction="http://tempuri.org/IService1/isEmailSentResponse")]
         bool isEmailSent(string email);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/isEmailSent", ReplyAction="http://tempuri.org/IService/isEmailSentResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/isEmailSent", ReplyAction="http://tempuri.org/IService1/isEmailSentResponse")]
         System.Threading.Tasks.Task<bool> isEmailSentAsync(string email);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/searchForUsers", ReplyAction="http://tempuri.org/IService/searchForUsersResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/searchForUsers", ReplyAction="http://tempuri.org/IService1/searchForUsersResponse")]
         IssueTrackingSystem.ServiceReference1.User[] searchForUsers(int id, string[] userNames, string[] userStatuses);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/searchForUsers", ReplyAction="http://tempuri.org/IService/searchForUsersResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/searchForUsers", ReplyAction="http://tempuri.org/IService1/searchForUsersResponse")]
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.User[]> searchForUsersAsync(int id, string[] userNames, string[] userStatuses);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/InformAboutNotification", ReplyAction="http://tempuri.org/IService/InformAboutNotificationResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/InformAboutNotification", ReplyAction="http://tempuri.org/IService1/InformAboutNotificationResponse")]
         void InformAboutNotification(IssueTrackingSystem.ServiceReference1.User u);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/InformAboutNotification", ReplyAction="http://tempuri.org/IService/InformAboutNotificationResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/InformAboutNotification", ReplyAction="http://tempuri.org/IService1/InformAboutNotificationResponse")]
         System.Threading.Tasks.Task InformAboutNotificationAsync(IssueTrackingSystem.ServiceReference1.User u);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/WriteLetterToUser", ReplyAction="http://tempuri.org/IService/WriteLetterToUserResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/WriteLetterToUser", ReplyAction="http://tempuri.org/IService1/WriteLetterToUserResponse")]
         void WriteLetterToUser(IssueTrackingSystem.ServiceReference1.User u, string subject, string text);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/WriteLetterToUser", ReplyAction="http://tempuri.org/IService/WriteLetterToUserResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/WriteLetterToUser", ReplyAction="http://tempuri.org/IService1/WriteLetterToUserResponse")]
         System.Threading.Tasks.Task WriteLetterToUserAsync(IssueTrackingSystem.ServiceReference1.User u, string subject, string text);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetNotificationsOfUser", ReplyAction="http://tempuri.org/IService/GetNotificationsOfUserResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetNotificationsOfUser", ReplyAction="http://tempuri.org/IService1/GetNotificationsOfUserResponse")]
         IssueTrackingSystem.ServiceReference1.Notification[] GetNotificationsOfUser(string receiver);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetNotificationsOfUser", ReplyAction="http://tempuri.org/IService/GetNotificationsOfUserResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetNotificationsOfUser", ReplyAction="http://tempuri.org/IService1/GetNotificationsOfUserResponse")]
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Notification[]> GetNotificationsOfUserAsync(string receiver);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/EditUserEmail", ReplyAction="http://tempuri.org/IService/EditUserEmailResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/EditUserEmail", ReplyAction="http://tempuri.org/IService1/EditUserEmailResponse")]
         bool EditUserEmail(int id, string email);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/EditUserEmail", ReplyAction="http://tempuri.org/IService/EditUserEmailResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/EditUserEmail", ReplyAction="http://tempuri.org/IService1/EditUserEmailResponse")]
         System.Threading.Tasks.Task<bool> EditUserEmailAsync(int id, string email);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/EditUserBirthDate", ReplyAction="http://tempuri.org/IService/EditUserBirthDateResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/EditUserBirthDate", ReplyAction="http://tempuri.org/IService1/EditUserBirthDateResponse")]
         bool EditUserBirthDate(int id, string birthdate);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/EditUserBirthDate", ReplyAction="http://tempuri.org/IService/EditUserBirthDateResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/EditUserBirthDate", ReplyAction="http://tempuri.org/IService1/EditUserBirthDateResponse")]
         System.Threading.Tasks.Task<bool> EditUserBirthDateAsync(int id, string birthdate);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ChangeUserPassword", ReplyAction="http://tempuri.org/IService/ChangeUserPasswordResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/ChangeUserPassword", ReplyAction="http://tempuri.org/IService1/ChangeUserPasswordResponse")]
         bool ChangeUserPassword(string queryString, string password);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ChangeUserPassword", ReplyAction="http://tempuri.org/IService/ChangeUserPasswordResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/ChangeUserPassword", ReplyAction="http://tempuri.org/IService1/ChangeUserPasswordResponse")]
         System.Threading.Tasks.Task<bool> ChangeUserPasswordAsync(string queryString, string password);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/getAuthenticatedUser", ReplyAction="http://tempuri.org/IService/getAuthenticatedUserResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/getAuthenticatedUser", ReplyAction="http://tempuri.org/IService1/getAuthenticatedUserResponse")]
         IssueTrackingSystem.ServiceReference1.User getAuthenticatedUser(string nickname, string password);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/getAuthenticatedUser", ReplyAction="http://tempuri.org/IService/getAuthenticatedUserResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/getAuthenticatedUser", ReplyAction="http://tempuri.org/IService1/getAuthenticatedUserResponse")]
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.User> getAuthenticatedUserAsync(string nickname, string password);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/EditUserAvatar", ReplyAction="http://tempuri.org/IService/EditUserAvatarResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/EditUserAvatar", ReplyAction="http://tempuri.org/IService1/EditUserAvatarResponse")]
         bool EditUserAvatar(int id, byte[] avatar);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/EditUserAvatar", ReplyAction="http://tempuri.org/IService/EditUserAvatarResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/EditUserAvatar", ReplyAction="http://tempuri.org/IService1/EditUserAvatarResponse")]
         System.Threading.Tasks.Task<bool> EditUserAvatarAsync(int id, byte[] avatar);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/IsPasswordResetLinkValid", ReplyAction="http://tempuri.org/IService/IsPasswordResetLinkValidResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/IsPasswordResetLinkValid", ReplyAction="http://tempuri.org/IService1/IsPasswordResetLinkValidResponse")]
         bool IsPasswordResetLinkValid(string queryString);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/IsPasswordResetLinkValid", ReplyAction="http://tempuri.org/IService/IsPasswordResetLinkValidResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/IsPasswordResetLinkValid", ReplyAction="http://tempuri.org/IService1/IsPasswordResetLinkValidResponse")]
         System.Threading.Tasks.Task<bool> IsPasswordResetLinkValidAsync(string queryString);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetBugAttachmentNames", ReplyAction="http://tempuri.org/IService/GetBugAttachmentNamesResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetBugAttachmentNames", ReplyAction="http://tempuri.org/IService1/GetBugAttachmentNamesResponse")]
         string[] GetBugAttachmentNames(int bugId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetBugAttachmentNames", ReplyAction="http://tempuri.org/IService/GetBugAttachmentNamesResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetBugAttachmentNames", ReplyAction="http://tempuri.org/IService1/GetBugAttachmentNamesResponse")]
         System.Threading.Tasks.Task<string[]> GetBugAttachmentNamesAsync(int bugId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/RemoveNotification", ReplyAction="http://tempuri.org/IService/RemoveNotificationResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/RemoveNotification", ReplyAction="http://tempuri.org/IService1/RemoveNotificationResponse")]
         bool RemoveNotification(int id);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/RemoveNotification", ReplyAction="http://tempuri.org/IService/RemoveNotificationResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/RemoveNotification", ReplyAction="http://tempuri.org/IService1/RemoveNotificationResponse")]
         System.Threading.Tasks.Task<bool> RemoveNotificationAsync(int id);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/deleteExpiredRecords", ReplyAction="http://tempuri.org/IService/deleteExpiredRecordsResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/deleteExpiredRecords", ReplyAction="http://tempuri.org/IService1/deleteExpiredRecordsResponse")]
         void deleteExpiredRecords();
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/deleteExpiredRecords", ReplyAction="http://tempuri.org/IService/deleteExpiredRecordsResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/deleteExpiredRecords", ReplyAction="http://tempuri.org/IService1/deleteExpiredRecordsResponse")]
         System.Threading.Tasks.Task deleteExpiredRecordsAsync();
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetBugAttachment", ReplyAction="http://tempuri.org/IService/GetBugAttachmentResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetBugAttachment", ReplyAction="http://tempuri.org/IService1/GetBugAttachmentResponse")]
         IssueTrackingSystem.ServiceReference1.Attachment GetBugAttachment(int bugId, string attachmentName);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetBugAttachment", ReplyAction="http://tempuri.org/IService/GetBugAttachmentResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetBugAttachment", ReplyAction="http://tempuri.org/IService1/GetBugAttachmentResponse")]
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Attachment> GetBugAttachmentAsync(int bugId, string attachmentName);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/WriteMessage", ReplyAction="http://tempuri.org/IService/WriteMessageResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/WriteMessage", ReplyAction="http://tempuri.org/IService1/WriteMessageResponse")]
         void WriteMessage(string To, string From, string message);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/WriteMessage", ReplyAction="http://tempuri.org/IService/WriteMessageResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/WriteMessage", ReplyAction="http://tempuri.org/IService1/WriteMessageResponse")]
         System.Threading.Tasks.Task WriteMessageAsync(string To, string From, string message);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/MarkRightIssueAnswer", ReplyAction="http://tempuri.org/IService/MarkRightIssueAnswerResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/MarkRightIssueAnswer", ReplyAction="http://tempuri.org/IService1/MarkRightIssueAnswerResponse")]
         bool MarkRightIssueAnswer(int bugId, int selectedItemId, int estimate);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/MarkRightIssueAnswer", ReplyAction="http://tempuri.org/IService/MarkRightIssueAnswerResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/MarkRightIssueAnswer", ReplyAction="http://tempuri.org/IService1/MarkRightIssueAnswerResponse")]
         System.Threading.Tasks.Task<bool> MarkRightIssueAnswerAsync(int bugId, int selectedItemId, int estimate);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/AddMessageToWorkflow", ReplyAction="http://tempuri.org/IService/AddMessageToWorkflowResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/AddMessageToWorkflow", ReplyAction="http://tempuri.org/IService1/AddMessageToWorkflowResponse")]
         void AddMessageToWorkflow(int bugId, IssueTrackingSystem.ServiceReference1.Message message);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/AddMessageToWorkflow", ReplyAction="http://tempuri.org/IService/AddMessageToWorkflowResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/AddMessageToWorkflow", ReplyAction="http://tempuri.org/IService1/AddMessageToWorkflowResponse")]
         System.Threading.Tasks.Task AddMessageToWorkflowAsync(int bugId, IssueTrackingSystem.ServiceReference1.Message message);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/getCategories", ReplyAction="http://tempuri.org/IService/getCategoriesResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/getCategories", ReplyAction="http://tempuri.org/IService1/getCategoriesResponse")]
         IssueTrackingSystem.ServiceReference1.Category[] getCategories();
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/getCategories", ReplyAction="http://tempuri.org/IService/getCategoriesResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/getCategories", ReplyAction="http://tempuri.org/IService1/getCategoriesResponse")]
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Category[]> getCategoriesAsync();
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetMessageLog", ReplyAction="http://tempuri.org/IService/GetMessageLogResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetMessageLog", ReplyAction="http://tempuri.org/IService1/GetMessageLogResponse")]
         IssueTrackingSystem.ServiceReference1.Message[] GetMessageLog(int bugId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetMessageLog", ReplyAction="http://tempuri.org/IService/GetMessageLogResponse")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetMessageLog", ReplyAction="http://tempuri.org/IService1/GetMessageLogResponse")]
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Message[]> GetMessageLogAsync(int bugId);
     }
     
@@ -1217,29 +1217,29 @@ namespace IssueTrackingSystem.ServiceReference1 {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface IServiceChannel : IssueTrackingSystem.ServiceReference1.IService, System.ServiceModel.IClientChannel {
+    public interface IService1Channel : IssueTrackingSystem.ServiceReference1.IService1, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class ServiceClient : System.ServiceModel.ClientBase<IssueTrackingSystem.ServiceReference1.IService>, IssueTrackingSystem.ServiceReference1.IService {
+    public partial class Service1Client : System.ServiceModel.ClientBase<IssueTrackingSystem.ServiceReference1.IService1>, IssueTrackingSystem.ServiceReference1.IService1 {
         
-        public ServiceClient() {
+        public Service1Client() {
         }
         
-        public ServiceClient(string endpointConfigurationName) : 
+        public Service1Client(string endpointConfigurationName) : 
                 base(endpointConfigurationName) {
         }
         
-        public ServiceClient(string endpointConfigurationName, string remoteAddress) : 
+        public Service1Client(string endpointConfigurationName, string remoteAddress) : 
                 base(endpointConfigurationName, remoteAddress) {
         }
         
-        public ServiceClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
+        public Service1Client(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(endpointConfigurationName, remoteAddress) {
         }
         
-        public ServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
+        public Service1Client(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(binding, remoteAddress) {
         }
         
@@ -1340,14 +1340,14 @@ namespace IssueTrackingSystem.ServiceReference1 {
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        IssueTrackingSystem.ServiceReference1.GetDevelopersOfProjectResponse IssueTrackingSystem.ServiceReference1.IService.GetDevelopersOfProject(IssueTrackingSystem.ServiceReference1.GetDevelopersOfProjectRequest request) {
+        IssueTrackingSystem.ServiceReference1.GetDevelopersOfProjectResponse IssueTrackingSystem.ServiceReference1.IService1.GetDevelopersOfProject(IssueTrackingSystem.ServiceReference1.GetDevelopersOfProjectRequest request) {
             return base.Channel.GetDevelopersOfProject(request);
         }
         
         public IssueTrackingSystem.ServiceReference1.User[] GetDevelopersOfProject(string projName, out IssueTrackingSystem.ServiceReference1.User[] invitedDevelopers) {
             IssueTrackingSystem.ServiceReference1.GetDevelopersOfProjectRequest inValue = new IssueTrackingSystem.ServiceReference1.GetDevelopersOfProjectRequest();
             inValue.projName = projName;
-            IssueTrackingSystem.ServiceReference1.GetDevelopersOfProjectResponse retVal = ((IssueTrackingSystem.ServiceReference1.IService)(this)).GetDevelopersOfProject(inValue);
+            IssueTrackingSystem.ServiceReference1.GetDevelopersOfProjectResponse retVal = ((IssueTrackingSystem.ServiceReference1.IService1)(this)).GetDevelopersOfProject(inValue);
             invitedDevelopers = retVal.invitedDevelopers;
             return retVal.GetDevelopersOfProjectResult;
         }

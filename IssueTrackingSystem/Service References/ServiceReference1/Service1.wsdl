@@ -1,0 +1,724 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="Service1" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://yura/WcfIISService/Service1.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://yura/WcfIISService/Service1.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://yura/WcfIISService/Service1.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BTS.Models" />
+      <xsd:import schemaLocation="http://yura/WcfIISService/Service1.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IService1_GetProjectBugs_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetProjectBugs" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetProjectBugs_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetProjectBugsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_AddSolutionOfBug_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddSolutionOfBug" />
+  </wsdl:message>
+  <wsdl:message name="IService1_AddSolutionOfBug_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddSolutionOfBugResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_SetDevIdForBug_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetDevIdForBug" />
+  </wsdl:message>
+  <wsdl:message name="IService1_SetDevIdForBug_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetDevIdForBugResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_ReportBug_InputMessage">
+    <wsdl:part name="parameters" element="tns:ReportBug" />
+  </wsdl:message>
+  <wsdl:message name="IService1_ReportBug_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ReportBugResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_RestartBug_InputMessage">
+    <wsdl:part name="parameters" element="tns:RestartBug" />
+  </wsdl:message>
+  <wsdl:message name="IService1_RestartBug_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RestartBugResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_SetBugStatus_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetBugStatus" />
+  </wsdl:message>
+  <wsdl:message name="IService1_SetBugStatus_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetBugStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_AddProject_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddProject" />
+  </wsdl:message>
+  <wsdl:message name="IService1_AddProject_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddProjectResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetProjectsByName_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetProjectsByName" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetProjectsByName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetProjectsByNameResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetProjectsByCategories_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetProjectsByCategories" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetProjectsByCategories_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetProjectsByCategoriesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_ApproveDeveloperForProject_InputMessage">
+    <wsdl:part name="parameters" element="tns:ApproveDeveloperForProject" />
+  </wsdl:message>
+  <wsdl:message name="IService1_ApproveDeveloperForProject_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ApproveDeveloperForProjectResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_RemoveDevsFromProject_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDevsFromProject" />
+  </wsdl:message>
+  <wsdl:message name="IService1_RemoveDevsFromProject_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDevsFromProjectResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_InviteDeveloperToProject_InputMessage">
+    <wsdl:part name="parameters" element="tns:InviteDeveloperToProject" />
+  </wsdl:message>
+  <wsdl:message name="IService1_InviteDeveloperToProject_OutputMessage">
+    <wsdl:part name="parameters" element="tns:InviteDeveloperToProjectResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetDevelopersOfProject_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDevelopersOfProject" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetDevelopersOfProject_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDevelopersOfProjectResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_ConfirmUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:ConfirmUser" />
+  </wsdl:message>
+  <wsdl:message name="IService1_ConfirmUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ConfirmUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_AddAccount_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddAccount" />
+  </wsdl:message>
+  <wsdl:message name="IService1_AddAccount_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddAccountResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getNickname_InputMessage">
+    <wsdl:part name="parameters" element="tns:getNickname" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getNickname_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getNicknameResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getUsers_InputMessage">
+    <wsdl:part name="parameters" element="tns:getUsers" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getUsers_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getUsersResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_isEmailSent_InputMessage">
+    <wsdl:part name="parameters" element="tns:isEmailSent" />
+  </wsdl:message>
+  <wsdl:message name="IService1_isEmailSent_OutputMessage">
+    <wsdl:part name="parameters" element="tns:isEmailSentResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_searchForUsers_InputMessage">
+    <wsdl:part name="parameters" element="tns:searchForUsers" />
+  </wsdl:message>
+  <wsdl:message name="IService1_searchForUsers_OutputMessage">
+    <wsdl:part name="parameters" element="tns:searchForUsersResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_InformAboutNotification_InputMessage">
+    <wsdl:part name="parameters" element="tns:InformAboutNotification" />
+  </wsdl:message>
+  <wsdl:message name="IService1_InformAboutNotification_OutputMessage">
+    <wsdl:part name="parameters" element="tns:InformAboutNotificationResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_WriteLetterToUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:WriteLetterToUser" />
+  </wsdl:message>
+  <wsdl:message name="IService1_WriteLetterToUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:WriteLetterToUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetNotificationsOfUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetNotificationsOfUser" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetNotificationsOfUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetNotificationsOfUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_EditUserEmail_InputMessage">
+    <wsdl:part name="parameters" element="tns:EditUserEmail" />
+  </wsdl:message>
+  <wsdl:message name="IService1_EditUserEmail_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EditUserEmailResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_EditUserBirthDate_InputMessage">
+    <wsdl:part name="parameters" element="tns:EditUserBirthDate" />
+  </wsdl:message>
+  <wsdl:message name="IService1_EditUserBirthDate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EditUserBirthDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_ChangeUserPassword_InputMessage">
+    <wsdl:part name="parameters" element="tns:ChangeUserPassword" />
+  </wsdl:message>
+  <wsdl:message name="IService1_ChangeUserPassword_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ChangeUserPasswordResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAuthenticatedUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:getAuthenticatedUser" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAuthenticatedUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getAuthenticatedUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_EditUserAvatar_InputMessage">
+    <wsdl:part name="parameters" element="tns:EditUserAvatar" />
+  </wsdl:message>
+  <wsdl:message name="IService1_EditUserAvatar_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EditUserAvatarResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_IsPasswordResetLinkValid_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsPasswordResetLinkValid" />
+  </wsdl:message>
+  <wsdl:message name="IService1_IsPasswordResetLinkValid_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsPasswordResetLinkValidResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetBugAttachmentNames_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBugAttachmentNames" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetBugAttachmentNames_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBugAttachmentNamesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_RemoveNotification_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveNotification" />
+  </wsdl:message>
+  <wsdl:message name="IService1_RemoveNotification_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveNotificationResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_deleteExpiredRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:deleteExpiredRecords" />
+  </wsdl:message>
+  <wsdl:message name="IService1_deleteExpiredRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:deleteExpiredRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetBugAttachment_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBugAttachment" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetBugAttachment_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBugAttachmentResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_WriteMessage_InputMessage">
+    <wsdl:part name="parameters" element="tns:WriteMessage" />
+  </wsdl:message>
+  <wsdl:message name="IService1_WriteMessage_OutputMessage">
+    <wsdl:part name="parameters" element="tns:WriteMessageResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_MarkRightIssueAnswer_InputMessage">
+    <wsdl:part name="parameters" element="tns:MarkRightIssueAnswer" />
+  </wsdl:message>
+  <wsdl:message name="IService1_MarkRightIssueAnswer_OutputMessage">
+    <wsdl:part name="parameters" element="tns:MarkRightIssueAnswerResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_AddMessageToWorkflow_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddMessageToWorkflow" />
+  </wsdl:message>
+  <wsdl:message name="IService1_AddMessageToWorkflow_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddMessageToWorkflowResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getCategories_InputMessage">
+    <wsdl:part name="parameters" element="tns:getCategories" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getCategories_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getCategoriesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetMessageLog_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMessageLog" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetMessageLog_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMessageLogResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IService1">
+    <wsdl:operation name="GetProjectBugs">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/GetProjectBugs" message="tns:IService1_GetProjectBugs_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/GetProjectBugsResponse" message="tns:IService1_GetProjectBugs_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddSolutionOfBug">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/AddSolutionOfBug" message="tns:IService1_AddSolutionOfBug_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/AddSolutionOfBugResponse" message="tns:IService1_AddSolutionOfBug_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetDevIdForBug">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/SetDevIdForBug" message="tns:IService1_SetDevIdForBug_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/SetDevIdForBugResponse" message="tns:IService1_SetDevIdForBug_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ReportBug">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/ReportBug" message="tns:IService1_ReportBug_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/ReportBugResponse" message="tns:IService1_ReportBug_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RestartBug">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/RestartBug" message="tns:IService1_RestartBug_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/RestartBugResponse" message="tns:IService1_RestartBug_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetBugStatus">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/SetBugStatus" message="tns:IService1_SetBugStatus_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/SetBugStatusResponse" message="tns:IService1_SetBugStatus_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddProject">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/AddProject" message="tns:IService1_AddProject_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/AddProjectResponse" message="tns:IService1_AddProject_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetProjectsByName">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/GetProjectsByName" message="tns:IService1_GetProjectsByName_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/GetProjectsByNameResponse" message="tns:IService1_GetProjectsByName_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetProjectsByCategories">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/GetProjectsByCategories" message="tns:IService1_GetProjectsByCategories_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/GetProjectsByCategoriesResponse" message="tns:IService1_GetProjectsByCategories_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ApproveDeveloperForProject">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/ApproveDeveloperForProject" message="tns:IService1_ApproveDeveloperForProject_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/ApproveDeveloperForProjectResponse" message="tns:IService1_ApproveDeveloperForProject_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveDevsFromProject">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/RemoveDevsFromProject" message="tns:IService1_RemoveDevsFromProject_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/RemoveDevsFromProjectResponse" message="tns:IService1_RemoveDevsFromProject_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="InviteDeveloperToProject">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/InviteDeveloperToProject" message="tns:IService1_InviteDeveloperToProject_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/InviteDeveloperToProjectResponse" message="tns:IService1_InviteDeveloperToProject_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDevelopersOfProject">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/GetDevelopersOfProject" message="tns:IService1_GetDevelopersOfProject_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/GetDevelopersOfProjectResponse" message="tns:IService1_GetDevelopersOfProject_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmUser">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/ConfirmUser" message="tns:IService1_ConfirmUser_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/ConfirmUserResponse" message="tns:IService1_ConfirmUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddAccount">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/AddAccount" message="tns:IService1_AddAccount_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/AddAccountResponse" message="tns:IService1_AddAccount_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getNickname">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getNickname" message="tns:IService1_getNickname_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getNicknameResponse" message="tns:IService1_getNickname_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getUsers">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getUsers" message="tns:IService1_getUsers_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getUsersResponse" message="tns:IService1_getUsers_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="isEmailSent">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/isEmailSent" message="tns:IService1_isEmailSent_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/isEmailSentResponse" message="tns:IService1_isEmailSent_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="searchForUsers">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/searchForUsers" message="tns:IService1_searchForUsers_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/searchForUsersResponse" message="tns:IService1_searchForUsers_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="InformAboutNotification">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/InformAboutNotification" message="tns:IService1_InformAboutNotification_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/InformAboutNotificationResponse" message="tns:IService1_InformAboutNotification_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="WriteLetterToUser">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/WriteLetterToUser" message="tns:IService1_WriteLetterToUser_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/WriteLetterToUserResponse" message="tns:IService1_WriteLetterToUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetNotificationsOfUser">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/GetNotificationsOfUser" message="tns:IService1_GetNotificationsOfUser_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/GetNotificationsOfUserResponse" message="tns:IService1_GetNotificationsOfUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EditUserEmail">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/EditUserEmail" message="tns:IService1_EditUserEmail_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/EditUserEmailResponse" message="tns:IService1_EditUserEmail_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EditUserBirthDate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/EditUserBirthDate" message="tns:IService1_EditUserBirthDate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/EditUserBirthDateResponse" message="tns:IService1_EditUserBirthDate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ChangeUserPassword">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/ChangeUserPassword" message="tns:IService1_ChangeUserPassword_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/ChangeUserPasswordResponse" message="tns:IService1_ChangeUserPassword_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getAuthenticatedUser">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getAuthenticatedUser" message="tns:IService1_getAuthenticatedUser_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getAuthenticatedUserResponse" message="tns:IService1_getAuthenticatedUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EditUserAvatar">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/EditUserAvatar" message="tns:IService1_EditUserAvatar_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/EditUserAvatarResponse" message="tns:IService1_EditUserAvatar_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="IsPasswordResetLinkValid">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/IsPasswordResetLinkValid" message="tns:IService1_IsPasswordResetLinkValid_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/IsPasswordResetLinkValidResponse" message="tns:IService1_IsPasswordResetLinkValid_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBugAttachmentNames">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/GetBugAttachmentNames" message="tns:IService1_GetBugAttachmentNames_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/GetBugAttachmentNamesResponse" message="tns:IService1_GetBugAttachmentNames_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveNotification">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/RemoveNotification" message="tns:IService1_RemoveNotification_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/RemoveNotificationResponse" message="tns:IService1_RemoveNotification_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="deleteExpiredRecords">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/deleteExpiredRecords" message="tns:IService1_deleteExpiredRecords_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/deleteExpiredRecordsResponse" message="tns:IService1_deleteExpiredRecords_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBugAttachment">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/GetBugAttachment" message="tns:IService1_GetBugAttachment_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/GetBugAttachmentResponse" message="tns:IService1_GetBugAttachment_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="WriteMessage">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/WriteMessage" message="tns:IService1_WriteMessage_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/WriteMessageResponse" message="tns:IService1_WriteMessage_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="MarkRightIssueAnswer">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/MarkRightIssueAnswer" message="tns:IService1_MarkRightIssueAnswer_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/MarkRightIssueAnswerResponse" message="tns:IService1_MarkRightIssueAnswer_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddMessageToWorkflow">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/AddMessageToWorkflow" message="tns:IService1_AddMessageToWorkflow_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/AddMessageToWorkflowResponse" message="tns:IService1_AddMessageToWorkflow_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getCategories">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getCategories" message="tns:IService1_getCategories_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getCategoriesResponse" message="tns:IService1_getCategories_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMessageLog">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/GetMessageLog" message="tns:IService1_GetMessageLog_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/GetMessageLogResponse" message="tns:IService1_GetMessageLog_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IService1" type="tns:IService1">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetProjectBugs">
+      <soap:operation soapAction="http://tempuri.org/IService1/GetProjectBugs" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddSolutionOfBug">
+      <soap:operation soapAction="http://tempuri.org/IService1/AddSolutionOfBug" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetDevIdForBug">
+      <soap:operation soapAction="http://tempuri.org/IService1/SetDevIdForBug" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReportBug">
+      <soap:operation soapAction="http://tempuri.org/IService1/ReportBug" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RestartBug">
+      <soap:operation soapAction="http://tempuri.org/IService1/RestartBug" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetBugStatus">
+      <soap:operation soapAction="http://tempuri.org/IService1/SetBugStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddProject">
+      <soap:operation soapAction="http://tempuri.org/IService1/AddProject" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetProjectsByName">
+      <soap:operation soapAction="http://tempuri.org/IService1/GetProjectsByName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetProjectsByCategories">
+      <soap:operation soapAction="http://tempuri.org/IService1/GetProjectsByCategories" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ApproveDeveloperForProject">
+      <soap:operation soapAction="http://tempuri.org/IService1/ApproveDeveloperForProject" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveDevsFromProject">
+      <soap:operation soapAction="http://tempuri.org/IService1/RemoveDevsFromProject" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InviteDeveloperToProject">
+      <soap:operation soapAction="http://tempuri.org/IService1/InviteDeveloperToProject" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDevelopersOfProject">
+      <soap:operation soapAction="http://tempuri.org/IService1/GetDevelopersOfProject" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmUser">
+      <soap:operation soapAction="http://tempuri.org/IService1/ConfirmUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddAccount">
+      <soap:operation soapAction="http://tempuri.org/IService1/AddAccount" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getNickname">
+      <soap:operation soapAction="http://tempuri.org/IService1/getNickname" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUsers">
+      <soap:operation soapAction="http://tempuri.org/IService1/getUsers" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="isEmailSent">
+      <soap:operation soapAction="http://tempuri.org/IService1/isEmailSent" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="searchForUsers">
+      <soap:operation soapAction="http://tempuri.org/IService1/searchForUsers" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InformAboutNotification">
+      <soap:operation soapAction="http://tempuri.org/IService1/InformAboutNotification" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WriteLetterToUser">
+      <soap:operation soapAction="http://tempuri.org/IService1/WriteLetterToUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetNotificationsOfUser">
+      <soap:operation soapAction="http://tempuri.org/IService1/GetNotificationsOfUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="EditUserEmail">
+      <soap:operation soapAction="http://tempuri.org/IService1/EditUserEmail" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="EditUserBirthDate">
+      <soap:operation soapAction="http://tempuri.org/IService1/EditUserBirthDate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeUserPassword">
+      <soap:operation soapAction="http://tempuri.org/IService1/ChangeUserPassword" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAuthenticatedUser">
+      <soap:operation soapAction="http://tempuri.org/IService1/getAuthenticatedUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="EditUserAvatar">
+      <soap:operation soapAction="http://tempuri.org/IService1/EditUserAvatar" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsPasswordResetLinkValid">
+      <soap:operation soapAction="http://tempuri.org/IService1/IsPasswordResetLinkValid" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBugAttachmentNames">
+      <soap:operation soapAction="http://tempuri.org/IService1/GetBugAttachmentNames" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveNotification">
+      <soap:operation soapAction="http://tempuri.org/IService1/RemoveNotification" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteExpiredRecords">
+      <soap:operation soapAction="http://tempuri.org/IService1/deleteExpiredRecords" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBugAttachment">
+      <soap:operation soapAction="http://tempuri.org/IService1/GetBugAttachment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WriteMessage">
+      <soap:operation soapAction="http://tempuri.org/IService1/WriteMessage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MarkRightIssueAnswer">
+      <soap:operation soapAction="http://tempuri.org/IService1/MarkRightIssueAnswer" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddMessageToWorkflow">
+      <soap:operation soapAction="http://tempuri.org/IService1/AddMessageToWorkflow" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getCategories">
+      <soap:operation soapAction="http://tempuri.org/IService1/getCategories" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMessageLog">
+      <soap:operation soapAction="http://tempuri.org/IService1/GetMessageLog" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Service1">
+    <wsdl:port name="BasicHttpBinding_IService1" binding="tns:BasicHttpBinding_IService1">
+      <soap:address location="http://yura/WcfIISService/Service1.svc/HelloService" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
