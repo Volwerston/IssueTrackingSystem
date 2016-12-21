@@ -162,13 +162,16 @@ namespace BTS.Models
         public int Id { get; set; }
 
         [DataMember]
+        public int BugId { get; set; }
+
+        [DataMember]
         [Required]
         [MaxLength(20)]
         public string Name { get; set; }
 
         [Required]
         [DataMember]
-        public HttpPostedFileBase Data { get; set; }
+        public byte[] Data { get; set; }
     }
 
     public class BugAttachment

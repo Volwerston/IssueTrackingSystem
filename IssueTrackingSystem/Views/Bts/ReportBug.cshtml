@@ -51,7 +51,7 @@ else
 
                     <div class="form-group">
                         <div class="col-md-3">
-                            @Html.LabelFor(model => model.Attachments, new { htmlAttributes = new { @class = "control-label" } })
+                            @Html.Label("Attachments: ", new { htmlAttributes = new { @class = "control-label" } })
                         </div>
                         <div class="col-md-9">
                             <input type="file" name="Attachments" id="Attachments" multiple />

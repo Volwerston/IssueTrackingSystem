@@ -305,9 +305,6 @@
     <None Include="Service References\ServiceReference1\item3.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\ServiceReference1\item4.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Service References\ServiceReference1\WebService.wsdl" />
   </ItemGroup>
   <ItemGroup>

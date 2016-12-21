@@ -293,7 +293,7 @@ namespace BTS.Controllers
         [HttpPost]
         public string GetProjectsByCategories(int[] categories, string lastId)
         {
-            List<int> categ = new List<int> {};
+            List<int> categ = new List<int> { };
 
             if (categories != null)
             {
@@ -501,9 +501,9 @@ namespace BTS.Controllers
 
                 if (developers != null)
                 {
-                    foreach(Bug bug in projectBugs)
+                    foreach (Bug bug in projectBugs)
                     {
-                        if(bug.DeveloperId != 0)
+                        if (bug.DeveloperId != 0)
                         {
                             bugUsers.Add(developers.Where(x => x.Id == bug.DeveloperId).Single());
                         }
@@ -767,7 +767,7 @@ namespace BTS.Controllers
         {
             List<string> statuses = client.getUsers().Select(x => x.Status).ToList().Distinct().ToList();
 
-            
+
             ViewBag.StatusList = statuses.ToList();
             return View();
         }
@@ -825,7 +825,7 @@ namespace BTS.Controllers
             }
             else
             {
-                toReturn = client.searchForUsers(id, userNames.ToArray(),null);
+                toReturn = client.searchForUsers(id, userNames.ToArray(), null);
             }
 
             anonymous = client.getUsers().Where(x => x.Nickname == "Anonymous").ToList()[0];
@@ -1000,7 +1000,7 @@ namespace BTS.Controllers
 
         [ValidateInput(false)]
         [HttpPost]
-        public ActionResult ReportBug(Bug b)
+        public ActionResult ReportBug(Bug b, HttpPostedFileBase[] Attachments)
         {
 
             bool bugReported = false;
@@ -1018,9 +1018,30 @@ namespace BTS.Controllers
 
                     b.Subject = encodedSubject;
                     b.Description = encodedDescripton;
-                    b.Attachments = null;
 
-                    bugReported = client.ReportBug(b);
+                    List<Attachment> attachments = new List<Attachment>();
+
+                    if(Attachments != null)
+                    {
+                        for(int i = 0; i < Attachments.Count(); ++i)
+                        {
+                            Attachment attachment = new Attachment();
+                            attachment.Name = Attachments[i].FileName;
+                            attachment.BugId = b.Id;
+                            attachment.Data = new byte[Attachments[i].ContentLength];
+                            Attachments[i].InputStream.Read(attachment.Data, 0, Attachments[i].ContentLength);
+                            attachments.Add(attachment);
+                        }
+                    }
+
+                    if (attachments.Count() == 0)
+                    {
+                        bugReported = client.ReportBug(b, null);
+                    }
+                    else
+                    {
+                        bugReported = client.ReportBug(b, attachments.ToArray());
+                    }
                 }
 
                 TempData["projId"] = b.ProjectId;
@@ -1095,7 +1116,14 @@ namespace BTS.Controllers
                     ViewBag.ProjectManager = null;
                 }
 
+                string[] bugAttachmentNames = client.GetBugAttachmentNames(bug.Id);
 
+                if(bugAttachmentNames.Count() == 0)
+                {
+                    bugAttachmentNames = null;
+                }
+
+                ViewBag.BugAttachments = bugAttachmentNames;
 
                 return View(bug);
             }
@@ -1301,7 +1329,7 @@ namespace BTS.Controllers
             {
 
 
-                if(bug.Status != "In progress")
+                if (bug.Status != "In progress")
                 {
                     client.SetBugStatus(id, "In progress");
                 }

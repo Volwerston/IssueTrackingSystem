@@ -72,7 +72,6 @@
             }
             </dd>
         </dl>
-        <br/>
 
         @if (Session["Username"].ToString() == Model.TopicStarter && Model.Status == "Closed")
         {
@@ -80,6 +79,21 @@
             {
                 <input type="submit" class="btn btn-default" style="margin-bottom: 15px;" value="Restart topic" />
             }
+        }
+
+        @if ((string[])ViewBag.BugAttachments != null)
+        {
+        <div class="row" id="attachmentsHolder">
+            <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-8 col-sm-8 col-md-8 col-lg-8 text-center">
+                <h3>Attachments</h3>
+
+                @foreach(string attachment in (string[])ViewBag.BugAttachments)
+                {
+                    <a href="#">@attachment</a><br/>
+                }
+            </div>
+        </div>
+        <br/>
         }
     </div>
 </div>
@@ -151,6 +165,10 @@
         });
     });
 
+        $("#attachmentsHolder a").click(function (e) {
+            e.preventDefault();
+            alert($(this).html());
+        });
     });
 </script> 
 }

@@ -26,7 +26,7 @@ namespace ServiceClasses
         bool SetDevIdForBug(int bugId, int id);
 
         [OperationContract]
-        bool ReportBug(Bug b);
+        bool ReportBug(Bug b, BTS.Models.Attachment[] attachments);
 
 
         [OperationContract]
@@ -102,6 +102,9 @@ namespace ServiceClasses
         bool IsPasswordResetLinkValid(string queryString);
 
         [OperationContract]
+        string[] GetBugAttachmentNames(int bugId);
+
+        [OperationContract]
         bool RemoveNotification(int id);
 
         [OperationContract]
@@ -156,6 +159,46 @@ namespace ServiceClasses
 
             return toReturn;
         }
+
+        public string[] GetBugAttachmentNames(int bugId)
+        {
+
+            List<string> returnList = new List<string>();
+
+            string cmdString = "SELECT NAME FROM Attachments WHERE BUG_ID = @id";
+
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
+            {
+                connection.Open();
+                SqlCommand cmd = new SqlCommand(cmdString, connection);
+                cmd.Parameters.AddWithValue("@id", bugId);
+
+                SqlDataReader rdr = null;
+
+                try
+                {
+                    rdr = cmd.ExecuteReader();
+
+                    while(rdr.Read())
+                    {
+                        string name = rdr["NAME"].ToString();
+                        returnList.Add(name);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErrorTracker tracker = new ErrorTracker();
+                    tracker.LogError(ex.ToString());
+                }
+                finally
+                {
+                    rdr.Close();
+                }
+            }
+
+            return returnList.ToArray();
+        }
+
         public int GetBugId(string subject)
         {
             int toReturn = -1;
@@ -265,15 +308,26 @@ namespace ServiceClasses
             }
             return toReturn;
         }
-        public bool ReportBug(Bug b)
+        public bool ReportBug(Bug b, BTS.Models.Attachment[] attachments)
         {
             bool toReturn = false;
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
-                SqlCommand cmd = new SqlCommand("addBug", connection);
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                string cmdString = "INSERT INTO Bugs (SUBJECT, DESCRIPTION, PROJECT_ID, STATUS, TOPIC_STARTER, AddingTime, StatusChangeDate)"
+                          + "VALUES(@Subject, @Description, @ProjectId, @Status, @TopicStarter, GETDATE(), GETDATE());";
+
+                if(attachments != null)
+                {
+                    for(int i = 0; i < attachments.Count(); ++i)
+                    {
+                        cmdString += "INSERT INTO Attachments (NAME, DATA, BUG_ID) VALUES(@Name" + i + ", @Data" + i + ", IDENT_CURRENT('Bugs'));";
+                    }
+                }
+
+                SqlCommand cmd = new SqlCommand(cmdString, connection);
 
                 SqlParameter subject = new SqlParameter("@Subject", b.Subject);
                 SqlParameter description = new SqlParameter("@Description", b.Description);
@@ -287,17 +341,26 @@ namespace ServiceClasses
                 cmd.Parameters.Add(status);
                 cmd.Parameters.Add(topicStarter);
 
+                if(attachments != null)
+                {
+                    for(int i = 0; i < attachments.Count(); ++i)
+                    {
+                        cmd.Parameters.AddWithValue("@Name" + i, attachments[i].Name);
+
+                        SqlParameter paramData = new SqlParameter("@Data" + i, SqlDbType.Binary);
+                        paramData.Value = attachments[i].Data;
+                        cmd.Parameters.Add(paramData);
+                    }
+                }
+
                 SqlTransaction transaction = connection.BeginTransaction("AddNewBug");
                 cmd.Transaction = transaction;
 
                 try
                 {
-                    if ((int)cmd.ExecuteScalar() == 1)
-                    {
-                        toReturn = true;
-                    }
-
+                    cmd.ExecuteNonQuery();
                     transaction.Commit();
+                    toReturn = true;
                 }
                 catch (Exception ex)
                 {
@@ -311,6 +374,7 @@ namespace ServiceClasses
 
             return toReturn;
         }
+
         public bool RestartBug(int bugId)
         {
 

@@ -5,8 +5,7 @@
       <xsd:import schemaLocation="http://localhost:8080/?xsd=xsd0" namespace="http://tempuri.org/" />
       <xsd:import schemaLocation="http://localhost:8080/?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
       <xsd:import schemaLocation="http://localhost:8080/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BTS.Models" />
-      <xsd:import schemaLocation="http://localhost:8080/?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/System.Web" />
-      <xsd:import schemaLocation="http://localhost:8080/?xsd=xsd4" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://localhost:8080/?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="IService_GetProjectBugs_InputMessage">
@@ -177,11 +176,11 @@
   <wsdl:message name="IService_IsPasswordResetLinkValid_OutputMessage">
     <wsdl:part name="parameters" element="tns:IsPasswordResetLinkValidResponse" />
   </wsdl:message>
-  <wsdl:message name="IService_AddAttachments_InputMessage">
-    <wsdl:part name="parameters" element="tns:AddAttachments" />
+  <wsdl:message name="IService_GetBugAttachmentNames_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBugAttachmentNames" />
   </wsdl:message>
-  <wsdl:message name="IService_AddAttachments_OutputMessage">
-    <wsdl:part name="parameters" element="tns:AddAttachmentsResponse" />
+  <wsdl:message name="IService_GetBugAttachmentNames_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBugAttachmentNamesResponse" />
   </wsdl:message>
   <wsdl:message name="IService_RemoveNotification_InputMessage">
     <wsdl:part name="parameters" element="tns:RemoveNotification" />
@@ -338,9 +337,9 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IService/IsPasswordResetLinkValid" message="tns:IService_IsPasswordResetLinkValid_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IService/IsPasswordResetLinkValidResponse" message="tns:IService_IsPasswordResetLinkValid_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="AddAttachments">
-      <wsdl:input wsaw:Action="http://tempuri.org/IService/AddAttachments" message="tns:IService_AddAttachments_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IService/AddAttachmentsResponse" message="tns:IService_AddAttachments_OutputMessage" />
+    <wsdl:operation name="GetBugAttachmentNames">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetBugAttachmentNames" message="tns:IService_GetBugAttachmentNames_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetBugAttachmentNamesResponse" message="tns:IService_GetBugAttachmentNames_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="RemoveNotification">
       <wsdl:input wsaw:Action="http://tempuri.org/IService/RemoveNotification" message="tns:IService_RemoveNotification_InputMessage" />
@@ -625,8 +624,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="AddAttachments">
-      <soap:operation soapAction="http://tempuri.org/IService/AddAttachments" style="document" />
+    <wsdl:operation name="GetBugAttachmentNames">
+      <soap:operation soapAction="http://tempuri.org/IService/GetBugAttachmentNames" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

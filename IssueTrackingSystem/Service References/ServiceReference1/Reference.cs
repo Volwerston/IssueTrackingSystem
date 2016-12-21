@@ -135,9 +135,6 @@ namespace IssueTrackingSystem.ServiceReference1 {
         private System.DateTime AddingTimeField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Web.HttpPostedFileBase[] AttachmentsField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string DescriptionField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
@@ -189,19 +186,6 @@ namespace IssueTrackingSystem.ServiceReference1 {
                 if ((this.AddingTimeField.Equals(value) != true)) {
                     this.AddingTimeField = value;
                     this.RaisePropertyChanged("AddingTime");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Web.HttpPostedFileBase[] Attachments {
-            get {
-                return this.AttachmentsField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.AttachmentsField, value) != true)) {
-                    this.AttachmentsField = value;
-                    this.RaisePropertyChanged("Attachments");
                 }
             }
         }
@@ -345,6 +329,99 @@ namespace IssueTrackingSystem.ServiceReference1 {
                 if ((object.ReferenceEquals(this.TopicStarterField, value) != true)) {
                     this.TopicStarterField = value;
                     this.RaisePropertyChanged("TopicStarter");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="Attachment", Namespace="http://schemas.datacontract.org/2004/07/BTS.Models")]
+    [System.SerializableAttribute()]
+    public partial class Attachment : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int BugIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private byte[] DataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int IdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string NameField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int BugId {
+            get {
+                return this.BugIdField;
+            }
+            set {
+                if ((this.BugIdField.Equals(value) != true)) {
+                    this.BugIdField = value;
+                    this.RaisePropertyChanged("BugId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public byte[] Data {
+            get {
+                return this.DataField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.DataField, value) != true)) {
+                    this.DataField = value;
+                    this.RaisePropertyChanged("Data");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int Id {
+            get {
+                return this.IdField;
+            }
+            set {
+                if ((this.IdField.Equals(value) != true)) {
+                    this.IdField = value;
+                    this.RaisePropertyChanged("Id");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Name {
+            get {
+                return this.NameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.NameField, value) != true)) {
+                    this.NameField = value;
+                    this.RaisePropertyChanged("Name");
                 }
             }
         }
@@ -898,10 +975,10 @@ namespace IssueTrackingSystem.ServiceReference1 {
         System.Threading.Tasks.Task<bool> SetDevIdForBugAsync(int bugId, int id);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ReportBug", ReplyAction="http://tempuri.org/IService/ReportBugResponse")]
-        bool ReportBug(IssueTrackingSystem.ServiceReference1.Bug b);
+        bool ReportBug(IssueTrackingSystem.ServiceReference1.Bug b, IssueTrackingSystem.ServiceReference1.Attachment[] attachments);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ReportBug", ReplyAction="http://tempuri.org/IService/ReportBugResponse")]
-        System.Threading.Tasks.Task<bool> ReportBugAsync(IssueTrackingSystem.ServiceReference1.Bug b);
+        System.Threading.Tasks.Task<bool> ReportBugAsync(IssueTrackingSystem.ServiceReference1.Bug b, IssueTrackingSystem.ServiceReference1.Attachment[] attachments);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/RestartBug", ReplyAction="http://tempuri.org/IService/RestartBugResponse")]
         bool RestartBug(int bugId);
@@ -928,10 +1005,10 @@ namespace IssueTrackingSystem.ServiceReference1 {
         System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Project[]> GetProjectsByNameAsync(string name);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetProjectsByCategories", ReplyAction="http://tempuri.org/IService/GetProjectsByCategoriesResponse")]
-        IssueTrackingSystem.ServiceReference1.Project[] GetProjectsByCategories(int[] categories,string lastId);
+        IssueTrackingSystem.ServiceReference1.Project[] GetProjectsByCategories(int[] categories, string lastId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetProjectsByCategories", ReplyAction="http://tempuri.org/IService/GetProjectsByCategoriesResponse")]
-        System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Project[]> GetProjectsByCategoriesAsync(int[] categories,string lastId);
+        System.Threading.Tasks.Task<IssueTrackingSystem.ServiceReference1.Project[]> GetProjectsByCategoriesAsync(int[] categories, string lastId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ApproveDeveloperForProject", ReplyAction="http://tempuri.org/IService/ApproveDeveloperForProjectResponse")]
         void ApproveDeveloperForProject(string projectName, int userId);
@@ -1048,11 +1125,11 @@ namespace IssueTrackingSystem.ServiceReference1 {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/IsPasswordResetLinkValid", ReplyAction="http://tempuri.org/IService/IsPasswordResetLinkValidResponse")]
         System.Threading.Tasks.Task<bool> IsPasswordResetLinkValidAsync(string queryString);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/AddAttachments", ReplyAction="http://tempuri.org/IService/AddAttachmentsResponse")]
-        bool AddAttachments(System.Web.HttpPostedFileBase[] attachments, int id);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetBugAttachmentNames", ReplyAction="http://tempuri.org/IService/GetBugAttachmentNamesResponse")]
+        string[] GetBugAttachmentNames(int bugId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/AddAttachments", ReplyAction="http://tempuri.org/IService/AddAttachmentsResponse")]
-        System.Threading.Tasks.Task<bool> AddAttachmentsAsync(System.Web.HttpPostedFileBase[] attachments, int id);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetBugAttachmentNames", ReplyAction="http://tempuri.org/IService/GetBugAttachmentNamesResponse")]
+        System.Threading.Tasks.Task<string[]> GetBugAttachmentNamesAsync(int bugId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/RemoveNotification", ReplyAction="http://tempuri.org/IService/RemoveNotificationResponse")]
         bool RemoveNotification(int id);
@@ -1184,12 +1261,12 @@ namespace IssueTrackingSystem.ServiceReference1 {
             return base.Channel.SetDevIdForBugAsync(bugId, id);
         }
         
-        public bool ReportBug(IssueTrackingSystem.ServiceReference1.Bug b) {
-            return base.Channel.ReportBug(b);
+        public bool ReportBug(IssueTrackingSystem.ServiceReference1.Bug b, IssueTrackingSystem.ServiceReference1.Attachment[] attachments) {
+            return base.Channel.ReportBug(b, attachments);
         }
         
-        public System.Threading.Tasks.Task<bool> ReportBugAsync(IssueTrackingSystem.ServiceReference1.Bug b) {
-            return base.Channel.ReportBugAsync(b);
+        public System.Threading.Tasks.Task<bool> ReportBugAsync(IssueTrackingSystem.ServiceReference1.Bug b, IssueTrackingSystem.ServiceReference1.Attachment[] attachments) {
+            return base.Channel.ReportBugAsync(b, attachments);
         }
         
         public bool RestartBug(int bugId) {
@@ -1393,12 +1470,12 @@ namespace IssueTrackingSystem.ServiceReference1 {
             return base.Channel.IsPasswordResetLinkValidAsync(queryString);
         }
         
-        public bool AddAttachments(System.Web.HttpPostedFileBase[] attachments, int id) {
-            return base.Channel.AddAttachments(attachments, id);
+        public string[] GetBugAttachmentNames(int bugId) {
+            return base.Channel.GetBugAttachmentNames(bugId);
         }
         
-        public System.Threading.Tasks.Task<bool> AddAttachmentsAsync(System.Web.HttpPostedFileBase[] attachments, int id) {
-            return base.Channel.AddAttachmentsAsync(attachments, id);
+        public System.Threading.Tasks.Task<string[]> GetBugAttachmentNamesAsync(int bugId) {
+            return base.Channel.GetBugAttachmentNamesAsync(bugId);
         }
         
         public bool RemoveNotification(int id) {
