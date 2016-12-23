@@ -121,6 +121,16 @@ namespace BTS.Models
         public IEnumerable<HttpPostedFileBase> Attachments { get; set; }
     }
 
+    public class LoggedError
+    {
+        public string ControllerName { get; set; }
+        public string ActionName { get; set; }
+        public string ErrorText { get; set; }
+        public string AddingTime { get; set; }
+        public string Username { get; set; }
+        public int UserId { get; set; }
+    }
+
     public class Message
     {
         public int Id { get; set; }

@@ -8,6 +8,8 @@ using IssueTrackingSystem.Common;
 using System.Text;
 using System.Data;
 using IssueTrackingSystem.ServiceReference1;
+using System.IO;
+using System.Globalization;
 
 namespace BTS.Controllers
 {
@@ -1475,6 +1477,87 @@ namespace BTS.Controllers
 
 
             return JsonConvert.SerializeObject(toReturn);
+        }
+
+        public ActionResult LoggedErrorsView()
+        {
+            return View();
+        }
+
+        public ActionResult GetLoggedErrors()
+        {
+            List<BTS.Models.LoggedError> errors = new List<BTS.Models.LoggedError>();
+
+
+            string year = DateTime.Now.Year.ToString();
+            string month = DateTime.Now.ToString("MMMM", CultureInfo.InvariantCulture);
+
+            string filePath = "D:/IssueTrackingSystem/Error log/" + year + "/" + month + "/ErrorLog.txt";
+
+            try
+            {
+                string line = "";
+
+                using (StreamReader rdr = new StreamReader(filePath))
+                {
+                    while (line != null)
+                    {
+                        BTS.Models.LoggedError error = new BTS.Models.LoggedError();
+
+                        line = rdr.ReadLine();
+
+                        // read information for controller's name
+                        error.ControllerName += line.Substring(11);
+
+                        line = rdr.ReadLine();
+                        // read information about action's name
+                        error.ActionName = line.Substring(7);
+
+                        line = rdr.ReadLine();
+
+                        // get information about error
+                        error.ErrorText += line.Substring(6);
+
+                        while (true)
+                        {
+                            line = rdr.ReadLine();
+
+                            if(line.Count() > 4 && line.Substring(0, 4) == "Time")
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                error.ErrorText += line + "<br/>";
+                            }
+                        }
+
+                        // get error's time
+                        string dayData = line.Substring(6);
+                        error.AddingTime = line.Substring(6);
+
+                        // get username
+                        line = rdr.ReadLine();
+                        error.Username = line.Substring(10);
+
+                        // get user id
+                        line = rdr.ReadLine();
+                        error.UserId = Convert.ToInt32(line.Substring(9));
+
+                        // get rid of final underscore
+                        line = rdr.ReadLine();
+
+                        errors.Add(error);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                ErrorTracker tracker = new ErrorTracker();
+                tracker.LogError(ex.ToString());
+            }
+
+            return Json(errors);
         }
     }
 }

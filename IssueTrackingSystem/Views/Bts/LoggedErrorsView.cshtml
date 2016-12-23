@@ -1,0 +1,21 @@
+﻿
+@{
+    ViewBag.Title = "LoggedErrorsView";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+<link href="~/Content/bootstrap.css" rel="stylesheet" />
+<link href="~/Content/dataTables.bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/angular.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-datatables/0.5.6/angular-datatables.js"></script>
+<script src="~/Scripts/LogErrorScript.js"></script>
+
+<div style="margin: 10px 10px 10px 10px; padding: 10px 10px 10px 10px">
+    <div ng-app="LogErrorApp">
+        <div ng-controller="homeCtrl">
+            <table id="entry-grid" datatable="" dt-options="dtOptions" dt-columns="dtColumns" class="table table-hover"></table>
+        </div>
+    </div>
+</div>

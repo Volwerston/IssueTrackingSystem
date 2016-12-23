@@ -63,9 +63,9 @@
 
         <dl class="dl-horizontal">
             <dt style="margin-bottom: 10px;">Project Manager: </dt>
-            <dd>@pmName</dd>
+            <dd><a href="@Url.Action("ExternalAccountPage", "Bts", new { id = ((User)ViewBag.ProjectManager).Id })">@pmName</a></dd>
             <dt style="margin-bottom: 10px;">Developer: </dt>
-            <dd id="developerData">@developerName
+            <dd id="developerData"><a href="@Url.Action("ExternalAccountPage", "Bts", new { id = Model.DeveloperId })">@developerName</a>
             @if(Session["Status"].ToString() == "Project Manager" && Session["Username"].ToString() == pmName && Model.Status != "Closed")
             {
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#changeDev"><span class="glyphicon glyphicon-edit"></span></button>

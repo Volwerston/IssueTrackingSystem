@@ -34,8 +34,9 @@ namespace IssueTrackingSystem.Common
             linesToAppend.Add("Controller: " + HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString());
             linesToAppend.Add("Action: " + HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString());
             linesToAppend.Add("Error: " + errorData + "\n");
-            linesToAppend.Add("Date: " + DateTime.Now.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture));
-            linesToAppend.Add("Time: " + DateTime.Now.ToString("hh:mm:ss zz tt", CultureInfo.InvariantCulture));
+            linesToAppend.Add("Time: " + DateTime.Now.ToString());
+            linesToAppend.Add("Username: " + HttpContext.Current.Session["Username"].ToString());
+            linesToAppend.Add("User ID: " + HttpContext.Current.Session["Id"].ToString());
             linesToAppend.Add("--------------------- ");
 
             File.AppendAllLines(filePath, linesToAppend);

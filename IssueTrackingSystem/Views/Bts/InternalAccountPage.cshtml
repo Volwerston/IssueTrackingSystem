@@ -89,8 +89,20 @@ else
                 {
                     <text> <div class="row">
                             <div class="col-sm-offset-4 col-md-offset-4 col-lg-offset-4 col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                                <button type="button" class="btn btn-default btn-info" onclick='location.href="@Url.Action("AddProject", "Bts")"'>
+                                <button type="button" class="btn btn-info btn-block" onclick='location.href="@Url.Action("AddProject", "Bts")"'>
                                     Add project
+                                </button>
+                            </div>
+                        </div>
+                    </text>
+                }
+
+                @if (Session["Status"].ToString() == "Admin")
+                {
+                    <text> <div class="row">
+                            <div class="col-sm-offset-4 col-md-offset-4 col-lg-offset-4 col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                <button type="button" class="btn btn-info btn-block" onclick='location.href="@Url.Action("LoggedErrorsView", "Bts")"'>
+                                    Trace errors
                                 </button>
                             </div>
                         </div>
