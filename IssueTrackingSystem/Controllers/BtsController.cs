@@ -1291,9 +1291,12 @@ namespace BTS.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult BugWorkflowPage(int id, string messageToAdd, string projName, int recipientId, string Recipient)
         {
             ViewBag.ProjectName = projName;
+
+            messageToAdd =  HttpUtility.HtmlEncode(messageToAdd);
 
             string[] urlSearch = messageToAdd.Split(' ');
 
@@ -1504,15 +1507,6 @@ namespace BTS.Controllers
                     {
                         BTS.Models.LoggedError error = new BTS.Models.LoggedError();
 
-                        line = rdr.ReadLine();
-
-                        // read information for controller's name
-                        error.ControllerName += line.Substring(11);
-
-                        line = rdr.ReadLine();
-                        // read information about action's name
-                        error.ActionName = line.Substring(7);
-
                         // read information about error's type
                         line = rdr.ReadLine();
 
@@ -1553,8 +1547,6 @@ namespace BTS.Controllers
                         line = rdr.ReadLine();
 
                         errors.Add(error);
-
-                        throw new Exception("dd");
                     }
                 }
             }

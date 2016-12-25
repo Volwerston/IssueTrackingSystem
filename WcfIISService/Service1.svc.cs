@@ -26,7 +26,7 @@ namespace WcfIISService
 
             string cmdString = "SELECT * FROM Attachments WHERE BUG_ID = @id AND NAME=@name";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
 
@@ -67,7 +67,7 @@ namespace WcfIISService
             bool toReturn = false;
             string cmdString = "UPDATE Bugs SET Solution='" + solution + "' WHERE ID=" + bugId + ";";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -100,7 +100,7 @@ namespace WcfIISService
 
             string cmdString = "SELECT NAME FROM Attachments WHERE BUG_ID = @id";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -137,7 +137,7 @@ namespace WcfIISService
             int toReturn = -1;
             string cmdString = "SELECT ID FROM Bugs WHERE SUBJECT='" + subject + "'";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -175,7 +175,7 @@ namespace WcfIISService
 
             string cmdString = "SELECT * FROM Bugs WHERE PROJECT_ID = '" + proj.Id + "';";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -245,7 +245,7 @@ namespace WcfIISService
         {
             bool toReturn = false;
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
 
@@ -316,7 +316,7 @@ namespace WcfIISService
             string cmdString = "UPDATE Bugs SET STATUS = 'Assigned', Solution = NULL, StatusChangeDate=GETDATE(), ESTIMATE = NULL WHERE ID=@id; "
      + "UPDATE Messages SET CORRECT=0 WHERE BUG_ID = @id;";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -350,7 +350,7 @@ namespace WcfIISService
 
             string cmdString = "UPDATE Bugs SET STATUS=@Status, StatusChangeDate=GETDATE() WHERE ID= @id";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -384,7 +384,7 @@ namespace WcfIISService
 
             string cmdString = "UPDATE Bugs SET DEVELOPER_ID=" + id + ", StatusChangeDate = GETDATE() WHERE ID=" + bugId + ";";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -420,7 +420,7 @@ namespace WcfIISService
                 cmdString += "INSERT INTO ProjectCategory VALUES('" + proj.Name + "', " + categoryId + ");";
             }
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -472,7 +472,7 @@ namespace WcfIISService
             {
                 string cmdString = "SELECT * FROM Projects WHERE UPPER(NAME) LIKE '%" + name.ToUpper() + "%';";
 
-                using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+                using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
                 {
                     connection.Open();
                     SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -548,7 +548,7 @@ namespace WcfIISService
                 }
 
 
-                using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+                using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
                 {
                     connection.Open();
                     SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -598,7 +598,7 @@ namespace WcfIISService
             string cmdString = "UPDATE ProjectDeveloper SET Approved=1 WHERE PROJ_NAME='" + projectName + "' AND DEV_ID=" + userId + ";";
 
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -643,7 +643,7 @@ namespace WcfIISService
             cmdString += ";";
 
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -674,7 +674,7 @@ namespace WcfIISService
             string cmdString = "INSERT INTO ProjectDeveloper(PROJ_NAME, DEV_ID, Approved) VALUES('" + projectName + "', " + devId + ", 0);";
 
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -708,7 +708,7 @@ namespace WcfIISService
                 + "FROM Users A inner join ProjectDeveloper B ON A.ID = B.DEV_ID "
                 + "WHERE B.PROJ_NAME='" + projName + "';";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -804,7 +804,7 @@ namespace WcfIISService
                 param.Value = DBNull.Value;
             }
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand insertCmd = new SqlCommand(insertCmdString, connection);
@@ -837,7 +837,7 @@ namespace WcfIISService
 
             string cmdString = "UPDATE Users SET Confirmed=1 WHERE ID=" + userId + ";";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -867,7 +867,7 @@ namespace WcfIISService
             string checkCmdString = "SELECT * FROM Users WHERE NICKNAME = '" + u.Nickname
                 + "' OR EMAIL = '" + u.Email + "';";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand checkCmd = new SqlCommand(checkCmdString, connection);
@@ -911,7 +911,7 @@ namespace WcfIISService
             string toReturn = "";
             string cmdString = "SELECT * FROM Users WHERE EMAIL='" + email + "';";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 using (SqlCommand cmd = new SqlCommand(cmdString, connection))
@@ -951,7 +951,7 @@ namespace WcfIISService
 
             string cmdString = "SELECT * FROM Users;";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 using (SqlCommand cmd = new SqlCommand(cmdString, connection))
@@ -1018,7 +1018,7 @@ namespace WcfIISService
             bool toReturn = false;
 
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand("ResetPassword", connection);
@@ -1116,7 +1116,7 @@ namespace WcfIISService
                 cmdString += "));";
             }
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 if (cmdString != "")
@@ -1187,7 +1187,7 @@ namespace WcfIISService
         {
             string cmdString = "SELECT COUNT(ID) FROM Notifications WHERE RECEIVER=@receiver";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -1256,7 +1256,7 @@ namespace WcfIISService
 
             string cmdString = "SELECT * FROM Notifications WHERE RECEIVER='" + receiver + "';";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -1313,7 +1313,7 @@ namespace WcfIISService
 
             string cmdString = "UPDATE Users SET EMAIL='" + email + "' WHERE ID=" + id + ";";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -1344,7 +1344,7 @@ namespace WcfIISService
 
             string cmdString = "UPDATE Users SET BIRTHDATE=CONVERT(smalldatetime, '" + birthdate + "', 104) WHERE ID=" + id + ";";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -1432,7 +1432,7 @@ namespace WcfIISService
             string cmdString = "SELECT * FROM Users WHERE NICKNAME='" + nickname +
                 "' AND PASSWORD='" + encryptedPassword + "';";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 using (SqlCommand cmd = new SqlCommand(cmdString, connection))
@@ -1462,7 +1462,6 @@ namespace WcfIISService
                     }
                     catch (Exception ex)
                     {
-                        reader.Close();
                         transaction.Rollback();
 
                          
@@ -1478,7 +1477,7 @@ namespace WcfIISService
 
             bool toReturn = false;
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(SPName, connection);
@@ -1527,7 +1526,7 @@ namespace WcfIISService
                 param.Value = DBNull.Value;
             }
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -1571,7 +1570,7 @@ namespace WcfIISService
 
             string cmdString = "DELETE FROM Notifications WHERE ID=@id;";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -1599,7 +1598,7 @@ namespace WcfIISService
         }
         public void deleteExpiredRecords()
         {
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand("DeleteExpiredRecords", connection);
@@ -1628,7 +1627,7 @@ namespace WcfIISService
             string cmdString = "INSERT INTO Notifications(RECEIVER, SENDER, MESSAGE, SEND_TIME) VALUES('" + To + "', '" + From + "','"
              + message + "', CONVERT(smalldatetime, GETDATE(), 104));";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -1655,7 +1654,7 @@ namespace WcfIISService
                 + message.MessageText + "'," + "CONVERT(smalldatetime, GETDATE(), 104), '" + message.SenderNick + "', " + bugId + ", 0,'"
                 + message.UserToReply + "', " + message.MessageToReplyId + ");";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -1683,7 +1682,7 @@ namespace WcfIISService
             string cmdString = "UPDATE Messages SET CORRECT=1 WHERE ID=" + selectedItemId +
                 "; UPDATE Bugs SET ESTIMATE=" + estimate + ", STATUS='Closed' WHERE ID=" + bugId + ";";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -1713,7 +1712,7 @@ namespace WcfIISService
 
             string cmdString = "SELECT * FROM Categories;";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);
@@ -1756,7 +1755,7 @@ namespace WcfIISService
 
             string cmdString = "SELECT * FROM Messages WHERE BUG_ID=" + bugId + ";";
 
-            using (SqlConnection connection = new SqlConnection("data source=.; database=BtsDB; integrated security=SSPI"))
+            using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
                 connection.Open();
                 SqlCommand cmd = new SqlCommand(cmdString, connection);

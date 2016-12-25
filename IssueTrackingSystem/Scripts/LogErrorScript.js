@@ -2,8 +2,6 @@
 app.controller('homeCtrl', ['$scope', '$http', 'DTOptionsBuilder', 'DTColumnBuilder', 
     function ($scope, $http, DTOptionsBuilder, DTColumnBuilder) {
         $scope.dtColumns = [
-            DTColumnBuilder.newColumn("ControllerName", "Controller"),
-            DTColumnBuilder.newColumn("ActionName", "Action"),
             DTColumnBuilder.newColumn("ErrorType", "Error Type"),
             DTColumnBuilder.newColumn("ErrorText", "Error"),
             DTColumnBuilder.newColumn("AddingTime", "Time"),

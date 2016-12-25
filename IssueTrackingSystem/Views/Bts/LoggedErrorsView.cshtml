@@ -18,8 +18,6 @@
             <table  id="entry-grid" datatable="" dt-options="dtOptions" dt-columns="dtColumns" class="table table-hover">
                 <thead>
                     <tr>
-                        <th>Controller</th>
-                        <th>Action</th>
                         <th>Error Type</th>
                         <th>Error</th>
                         <th>Time</th>
@@ -29,8 +27,6 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="error in dtColumns">
-                        <td>{{error.ControllerName}}</td>
-                        <td>{{error.ActionName}}</td>
                         <td>{{error.ErrorType}}</td>
                         <td>{{error.ErrorText}}</td>
                         <td>{{error.AddingTime}}</td>
