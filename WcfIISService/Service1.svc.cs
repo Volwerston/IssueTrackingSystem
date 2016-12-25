@@ -17,6 +17,7 @@ namespace WcfIISService
 {
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "Service1" in code, svc and config file together.
     // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
+
     public class Service1 : IService1
     {
         public BTS.Models.Attachment GetBugAttachment(int bugId, string attachmentName)
@@ -49,8 +50,8 @@ namespace WcfIISService
                 }
                 catch (Exception ex)
                 {
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                     toReturn = null;
                 }
                 finally
@@ -84,8 +85,8 @@ namespace WcfIISService
                     transaction.Rollback();
                     toReturn = false;
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error",ex.ToString());
                 }
             }
 
@@ -119,8 +120,8 @@ namespace WcfIISService
                 }
                 catch (Exception ex)
                 {
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
                 finally
                 {
@@ -161,8 +162,8 @@ namespace WcfIISService
                     rdr.Close();
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.Message);
+                     
+                    ErrorTracker.LogError("DB query error", ex.Message);
                 }
             }
 
@@ -229,8 +230,8 @@ namespace WcfIISService
                     rdr.Close();
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.Message);
+                     
+                    ErrorTracker.LogError("DB query error", ex.Message);
                 }
             }
 
@@ -299,8 +300,8 @@ namespace WcfIISService
                     toReturn = false;
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.Message);
+                     
+                    ErrorTracker.LogError("DB query error", ex.Message);
                 }
             }
 
@@ -336,8 +337,8 @@ namespace WcfIISService
                     toReturn = false;
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
 
@@ -370,8 +371,8 @@ namespace WcfIISService
                     toReturn = false;
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
 
@@ -456,8 +457,8 @@ namespace WcfIISService
                     toReturn = false;
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
 
@@ -509,8 +510,8 @@ namespace WcfIISService
                         reader.Close();
                         transaction.Rollback();
 
-                        ErrorTracker tracker = new ErrorTracker();
-                        tracker.LogError(ex.Message);
+                         
+                        ErrorTracker.LogError("DB query error", ex.Message);
                     }
                 }
             }
@@ -582,8 +583,8 @@ namespace WcfIISService
                     {
                         transaction.Rollback();
 
-                        ErrorTracker tracker = new ErrorTracker();
-                        tracker.LogError(ex.Message);
+                         
+                        ErrorTracker.LogError("DB query error", ex.Message);
                     }
                 }
             }
@@ -612,8 +613,8 @@ namespace WcfIISService
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
         }
@@ -659,8 +660,8 @@ namespace WcfIISService
                 {
                     toReturn = false;
                     transaction.Rollback();
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
 
@@ -691,8 +692,8 @@ namespace WcfIISService
                     toReturn = false;
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
 
@@ -767,8 +768,8 @@ namespace WcfIISService
                 {
                     rdr.Close();
                     transaction.Rollback();
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
 
@@ -823,8 +824,8 @@ namespace WcfIISService
                 {
                     transaction2.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.Message);
+                     
+                    ErrorTracker.LogError("DB query error", ex.Message);
 
                     return "Fail";
                 }
@@ -854,8 +855,8 @@ namespace WcfIISService
                     toReturn = false;
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
 
@@ -899,8 +900,8 @@ namespace WcfIISService
                     reader.Close();
                     transaction1.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.Message);
+                     
+                    ErrorTracker.LogError("DB query error", ex.Message);
                     return "Fail";
                 }
             }
@@ -936,8 +937,8 @@ namespace WcfIISService
                         reader.Close();
                         transaction.Rollback();
 
-                        ErrorTracker tracker = new ErrorTracker();
-                        tracker.LogError(ex.Message);
+                         
+                        ErrorTracker.LogError("DB query error", ex.Message);
                     }
                 }
             }
@@ -1004,8 +1005,8 @@ namespace WcfIISService
                         reader.Close();
                         transaction.Rollback();
 
-                        ErrorTracker tracker = new ErrorTracker();
-                        tracker.LogError(ex.Message);
+                         
+                        ErrorTracker.LogError("DB query error", ex.Message);
                     }
                 }
             }
@@ -1053,8 +1054,8 @@ namespace WcfIISService
                     rdr.Close();
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
 
@@ -1169,8 +1170,8 @@ namespace WcfIISService
                     {
                         reader.Close();
                         transaction.Rollback();
-                        ErrorTracker tracker = new ErrorTracker();
-                        tracker.LogError(ex.Message);
+                         
+                        ErrorTracker.LogError("DB query error", ex.Message);
                     }
                 }
             }
@@ -1206,8 +1207,8 @@ namespace WcfIISService
                 {
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
 
                 if (numOfNotifications == 1)
@@ -1245,8 +1246,8 @@ namespace WcfIISService
             }
             catch (Exception ex)
             {
-                ErrorTracker tracker = new ErrorTracker();
-                tracker.LogError(ex.Message);
+                 
+                ErrorTracker.LogError("SMTP error", ex.Message);
             }
         }
         public List<Notification> GetNotificationsOfUser(string receiver)
@@ -1290,8 +1291,8 @@ namespace WcfIISService
                 {
                     rdr.Close();
                     transaction.Rollback();
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
 
@@ -1329,8 +1330,8 @@ namespace WcfIISService
                 {
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.Message);
+                     
+                    ErrorTracker.LogError("DB query error", ex.Message);
 
                 }
             }
@@ -1360,8 +1361,8 @@ namespace WcfIISService
                 {
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.Message);
+                     
+                    ErrorTracker.LogError("DB query error", ex.Message);
                 }
             }
 
@@ -1414,8 +1415,8 @@ namespace WcfIISService
             }
             catch (Exception ex)
             {
-                ErrorTracker tracker = new ErrorTracker();
-                tracker.LogError(ex.Message);
+                 
+                ErrorTracker.LogError("DB query error", ex.Message);
 
                 return false;
             }
@@ -1464,8 +1465,8 @@ namespace WcfIISService
                         reader.Close();
                         transaction.Rollback();
 
-                        ErrorTracker tracker = new ErrorTracker();
-                        tracker.LogError(ex.Message);
+                         
+                        ErrorTracker.LogError("DB query error", ex.Message);
                     }
                 }
             }
@@ -1500,8 +1501,8 @@ namespace WcfIISService
                 {
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.Message);
+                     
+                    ErrorTracker.LogError("DB query error", ex.Message);
                     toReturn = false;
                 }
             }
@@ -1589,8 +1590,8 @@ namespace WcfIISService
                     toReturn = false;
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
 
@@ -1617,8 +1618,8 @@ namespace WcfIISService
                 {
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.Message);
+                     
+                    ErrorTracker.LogError("DB query error", ex.Message);
                 }
             }
         }
@@ -1643,8 +1644,8 @@ namespace WcfIISService
                 {
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
         }
@@ -1670,8 +1671,8 @@ namespace WcfIISService
                 {
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
         }
@@ -1700,8 +1701,8 @@ namespace WcfIISService
                     toReturn = false;
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
             return toReturn;
@@ -1742,8 +1743,8 @@ namespace WcfIISService
                     rdr.Close();
                     transaction.Rollback();
 
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.Message);
+                     
+                    ErrorTracker.LogError("DB query error", ex.Message);
                 }
             }
 
@@ -1803,8 +1804,8 @@ namespace WcfIISService
                 {
                     rdr.Close();
                     transaction.Rollback();
-                    ErrorTracker tracker = new ErrorTracker();
-                    tracker.LogError(ex.ToString());
+                     
+                    ErrorTracker.LogError("DB query error", ex.ToString());
                 }
             }
 

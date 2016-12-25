@@ -12,8 +12,7 @@ namespace IssueTrackingSystem.Controllers
         // GET: Error
         public ActionResult PageNotFound()
         {
-            ErrorTracker tracker = new ErrorTracker();
-            tracker.LogError("404 - Page Not Found");
+            ErrorTracker.LogError("Not found error", "404 - Page Not Found");
 
             return View();
         }

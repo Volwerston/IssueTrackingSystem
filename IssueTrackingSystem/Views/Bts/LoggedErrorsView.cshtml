@@ -5,9 +5,9 @@
 }
 
 <link href="~/Content/bootstrap.css" rel="stylesheet" />
-<link href="~/Content/dataTables.bootstrap.min.css" rel="stylesheet" />
-<script src="~/Scripts/jquery-1.10.2.js"></script>
-<script src="~/Scripts/jquery.dataTables.min.js"></script>
+<link href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
 <script src="~/Scripts/angular.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-datatables/0.5.6/angular-datatables.js"></script>
 <script src="~/Scripts/LogErrorScript.js"></script>
@@ -15,7 +15,30 @@
 <div style="margin: 10px 10px 10px 10px; padding: 10px 10px 10px 10px">
     <div ng-app="LogErrorApp">
         <div ng-controller="homeCtrl">
-            <table id="entry-grid" datatable="" dt-options="dtOptions" dt-columns="dtColumns" class="table table-hover"></table>
+            <table  id="entry-grid" datatable="" dt-options="dtOptions" dt-columns="dtColumns" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Controller</th>
+                        <th>Action</th>
+                        <th>Error Type</th>
+                        <th>Error</th>
+                        <th>Time</th>
+                        <th>Nickname</th>
+                        <th>User IS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="error in dtColumns">
+                        <td>{{error.ControllerName}}</td>
+                        <td>{{error.ActionName}}</td>
+                        <td>{{error.ErrorType}}</td>
+                        <td>{{error.ErrorText}}</td>
+                        <td>{{error.AddingTime}}</td>
+                        <td>{{error.UserName}}</td>
+                        <td>{{error.UserId}}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

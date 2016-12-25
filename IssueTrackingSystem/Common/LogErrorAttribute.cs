@@ -13,8 +13,7 @@ namespace IssueTrackingSystem.Common
         {
             base.OnException(filterContext);
 
-            ErrorTracker tracker = new ErrorTracker();
-            tracker.LogError(filterContext.Exception.Message);
+            ErrorTracker.LogError("Runtime Error", filterContext.Exception.Message);
         }
     }
 }

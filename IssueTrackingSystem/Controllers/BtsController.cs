@@ -1513,9 +1513,14 @@ namespace BTS.Controllers
                         // read information about action's name
                         error.ActionName = line.Substring(7);
 
+                        // read information about error's type
                         line = rdr.ReadLine();
 
-                        // get information about error
+                        error.ErrorType = line.Substring(6);
+
+                        // read information about error
+                        line = rdr.ReadLine();
+
                         error.ErrorText += line.Substring(6);
 
                         while (true)
@@ -1532,15 +1537,15 @@ namespace BTS.Controllers
                             }
                         }
 
-                        // get error's time
+                        // read error's time
                         string dayData = line.Substring(6);
                         error.AddingTime = line.Substring(6);
 
-                        // get username
+                        // read username
                         line = rdr.ReadLine();
                         error.Username = line.Substring(10);
 
-                        // get user id
+                        // read user id
                         line = rdr.ReadLine();
                         error.UserId = Convert.ToInt32(line.Substring(9));
 
@@ -1548,13 +1553,14 @@ namespace BTS.Controllers
                         line = rdr.ReadLine();
 
                         errors.Add(error);
+
+                        throw new Exception("dd");
                     }
                 }
             }
             catch(Exception ex)
             {
-                ErrorTracker tracker = new ErrorTracker();
-                tracker.LogError(ex.ToString());
+                ErrorTracker.LogError("Back-end error", ex.ToString());
             }
 
             return Json(errors);

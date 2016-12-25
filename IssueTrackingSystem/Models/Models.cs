@@ -125,6 +125,7 @@ namespace BTS.Models
     {
         public string ControllerName { get; set; }
         public string ActionName { get; set; }
+        public string ErrorType { get; set; }
         public string ErrorText { get; set; }
         public string AddingTime { get; set; }
         public string Username { get; set; }

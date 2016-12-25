@@ -10,7 +10,7 @@ namespace IssueTrackingSystem.Common
 {
     public class ErrorTracker
     {
-        public void LogError(string errorData)
+        public static void LogError(string errorType, string errorData)
         {
             
             string year = DateTime.Now.Year.ToString();
@@ -33,6 +33,7 @@ namespace IssueTrackingSystem.Common
             List<string> linesToAppend = new List<string>();
             linesToAppend.Add("Controller: " + HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString());
             linesToAppend.Add("Action: " + HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString());
+            linesToAppend.Add("Type: " + errorType);
             linesToAppend.Add("Error: " + errorData + "\n");
             linesToAppend.Add("Time: " + DateTime.Now.ToString());
             linesToAppend.Add("Username: " + HttpContext.Current.Session["Username"].ToString());
