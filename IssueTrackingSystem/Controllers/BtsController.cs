@@ -560,7 +560,7 @@ namespace BTS.Controllers
             usrNames.Remove("");
             string[] userNames = usrNames.ToArray();
 
-            anonymous = client.getUsers().Where(x => x.Nickname == "Anonymous").ToList()[0];
+            anonymous = client.getUsers().Where(x => x.Nickname == "Anonymous").ToList().SingleOrDefault();
 
             User[] invitedDevs = null;
             User[] currDevelopers = client.GetDevelopersOfProject(projectName, out invitedDevs);
@@ -711,7 +711,7 @@ namespace BTS.Controllers
 
                 User dev = client.getUsers().Where(x => x.Id == devId).ToList().SingleOrDefault();
 
-                User admin = client.getUsers().Where(x => x.Status == "Admin").ToList()[0];
+                User admin = client.getUsers().Where(x => x.Status == "Admin").ToList().SingleOrDefault();
 
                 string text = "You were invited to the <a href=\"" + Url.Action("ShowProject", "Bts", new { name = proj.Name }) + "\">" + projectName + "</a> project. Please go to the project page to accept invitation";
 
@@ -828,7 +828,7 @@ namespace BTS.Controllers
                 toReturn = client.searchForUsers(id, userNames.ToArray(), null);
             }
 
-            anonymous = client.getUsers().Where(x => x.Nickname == "Anonymous").ToList()[0];
+            anonymous = client.getUsers().Where(x => x.Nickname == "Anonymous").ToList().SingleOrDefault();
 
 
             if (toReturn != null)
@@ -1079,13 +1079,13 @@ namespace BTS.Controllers
         {
             ViewBag.ProjectName = projName;
 
-            Project proj = client.GetProjectsByName(projName)[0];
+            Project proj = client.GetProjectsByName(projName).SingleOrDefault();
 
             Bug bug = null;
 
             if (proj != null)
             {
-                bug = client.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
+                bug = client.GetProjectBugs(proj).Where(x => x.Id == id).ToList().SingleOrDefault();
             }
 
             if (bug != null)
@@ -1242,13 +1242,13 @@ namespace BTS.Controllers
         {
             ViewBag.ProjectName = projName;
 
-            Project proj = client.GetProjectsByName(projName)[0];
+            Project proj = client.GetProjectsByName(projName).SingleOrDefault();
 
             Bug bug = null;
 
             if (proj != null)
             {
-                bug = client.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
+                bug = client.GetProjectBugs(proj).Where(x => x.Id == id).ToList().SingleOrDefault();
             }
 
             if (bug != null)
@@ -1436,13 +1436,13 @@ namespace BTS.Controllers
 
             ViewBag.ProjectName = projName;
 
-            Project proj = client.GetProjectsByName(projName)[0];
+            Project proj = client.GetProjectsByName(projName).SingleOrDefault();
 
             Bug bug = null;
 
             if (proj != null)
             {
-                bug = client.GetProjectBugs(proj).Where(x => x.Id == id).ToList()[0];
+                bug = client.GetProjectBugs(proj).Where(x => x.Id == id).ToList().SingleOrDefault();
             }
 
             if (bug != null)

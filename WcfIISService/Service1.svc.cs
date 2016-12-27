@@ -28,35 +28,49 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
 
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                cmd.Parameters.AddWithValue("@id", bugId);
-                cmd.Parameters.AddWithValue("@name", attachmentName);
-
-                SqlDataReader rdr = null;
+                bool ok = true;
 
                 try
                 {
-                    rdr = cmd.ExecuteReader();
-
-                    if (rdr.Read())
-                    {
-                        toReturn = new BTS.Models.Attachment();
-                        toReturn.Name = rdr["NAME"].ToString();
-                        toReturn.BugId = int.Parse(rdr["BUG_ID"].ToString());
-                        toReturn.Data = (byte[])rdr["DATA"];
-                    }
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
-                    toReturn = null;
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
                 }
-                finally
+
+                if (ok)
                 {
-                    rdr.Close();
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    cmd.Parameters.AddWithValue("@id", bugId);
+                    cmd.Parameters.AddWithValue("@name", attachmentName);
+
+                    SqlDataReader rdr = null;
+
+                    try
+                    {
+                        rdr = cmd.ExecuteReader();
+
+                        if (rdr.Read())
+                        {
+                            toReturn = new BTS.Models.Attachment();
+                            toReturn.Name = rdr["NAME"].ToString();
+                            toReturn.BugId = int.Parse(rdr["BUG_ID"].ToString());
+                            toReturn.Data = (byte[])rdr["DATA"];
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                        toReturn = null;
+                    }
+                    finally
+                    {
+                        rdr.Close();
+                    }
                 }
             }
 
@@ -69,24 +83,38 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("SolutionAddTransaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    toReturn = true;
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
-                    toReturn = false;
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error",ex.ToString());
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("SolutionAddTransaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        toReturn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        toReturn = false;
+
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
 
@@ -102,30 +130,44 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                cmd.Parameters.AddWithValue("@id", bugId);
-
-                SqlDataReader rdr = null;
+                bool ok = true;
 
                 try
                 {
-                    rdr = cmd.ExecuteReader();
-
-                    while (rdr.Read())
-                    {
-                        string name = rdr["NAME"].ToString();
-                        returnList.Add(name);
-                    }
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
                 }
-                finally
+
+                if (ok)
                 {
-                    rdr.Close();
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    cmd.Parameters.AddWithValue("@id", bugId);
+
+                    SqlDataReader rdr = null;
+
+                    try
+                    {
+                        rdr = cmd.ExecuteReader();
+
+                        while (rdr.Read())
+                        {
+                            string name = rdr["NAME"].ToString();
+                            returnList.Add(name);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
+                    finally
+                    {
+                        rdr.Close();
+                    }
                 }
             }
 
@@ -139,31 +181,45 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("GetBugId");
-                cmd.Transaction = transaction;
-                SqlDataReader rdr = null;
+                bool ok = true;
 
                 try
                 {
-                    rdr = cmd.ExecuteReader();
-
-                    if (rdr.Read())
-                    {
-                        toReturn = Convert.ToInt32(rdr["ID"].ToString());
-                    }
-                    rdr.Close();
-                    transaction.Commit();
-
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    rdr.Close();
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.Message);
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("GetBugId");
+                    cmd.Transaction = transaction;
+                    SqlDataReader rdr = null;
+
+                    try
+                    {
+                        rdr = cmd.ExecuteReader();
+
+                        if (rdr.Read())
+                        {
+                            toReturn = Convert.ToInt32(rdr["ID"].ToString());
+                        }
+                        rdr.Close();
+                        transaction.Commit();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        rdr.Close();
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.Message);
+                    }
                 }
             }
 
@@ -177,61 +233,75 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-
-                SqlTransaction transaction = connection.BeginTransaction("BugsOfProject");
-
-                cmd.Transaction = transaction;
-
-                SqlDataReader rdr = null;
+                bool ok = true;
 
                 try
                 {
-                    rdr = cmd.ExecuteReader();
-
-
-                    while (rdr.Read())
-                    {
-                        Bug bug = new Bug();
-
-                        bug.Id = Convert.ToInt32(rdr["ID"].ToString());
-                        bug.Subject = rdr["SUBJECT"].ToString();
-                        bug.Description = rdr["DESCRIPTION"].ToString();
-                        bug.Status = rdr["STATUS"].ToString();
-                        bug.TopicStarter = rdr["TOPIC_STARTER"].ToString();
-                        bug.StatusChangeDate = Convert.ToDateTime(rdr["StatusChangeDate"].ToString());
-                        bug.AddingTime = Convert.ToDateTime(rdr["AddingTime"].ToString());
-
-                        if (rdr["DEVELOPER_ID"] != DBNull.Value)
-                        {
-                            bug.DeveloperId = Convert.ToInt32(rdr["DEVELOPER_ID"].ToString());
-                        }
-
-                        if (rdr["ESTIMATE"] != DBNull.Value)
-                        {
-                            bug.Estimate = Convert.ToInt32(rdr["ESTIMATE"].ToString());
-                        }
-
-                        if (rdr["Solution"] != DBNull.Value)
-                        {
-                            bug.Solution = rdr["Solution"].ToString();
-                        }
-
-
-                        toReturn.Add(bug);
-                    }
-
-                    rdr.Close();
-                    transaction.Commit();
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    rdr.Close();
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.Message);
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+
+                    SqlTransaction transaction = connection.BeginTransaction("BugsOfProject");
+
+                    cmd.Transaction = transaction;
+
+                    SqlDataReader rdr = null;
+
+                    try
+                    {
+                        rdr = cmd.ExecuteReader();
+
+
+                        while (rdr.Read())
+                        {
+                            Bug bug = new Bug();
+
+                            bug.Id = Convert.ToInt32(rdr["ID"].ToString());
+                            bug.Subject = rdr["SUBJECT"].ToString();
+                            bug.Description = rdr["DESCRIPTION"].ToString();
+                            bug.Status = rdr["STATUS"].ToString();
+                            bug.TopicStarter = rdr["TOPIC_STARTER"].ToString();
+                            bug.StatusChangeDate = Convert.ToDateTime(rdr["StatusChangeDate"].ToString());
+                            bug.AddingTime = Convert.ToDateTime(rdr["AddingTime"].ToString());
+
+                            if (rdr["DEVELOPER_ID"] != DBNull.Value)
+                            {
+                                bug.DeveloperId = Convert.ToInt32(rdr["DEVELOPER_ID"].ToString());
+                            }
+
+                            if (rdr["ESTIMATE"] != DBNull.Value)
+                            {
+                                bug.Estimate = Convert.ToInt32(rdr["ESTIMATE"].ToString());
+                            }
+
+                            if (rdr["Solution"] != DBNull.Value)
+                            {
+                                bug.Solution = rdr["Solution"].ToString();
+                            }
+
+
+                            toReturn.Add(bug);
+                        }
+
+                        rdr.Close();
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        rdr.Close();
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.Message);
+                    }
                 }
             }
 
@@ -247,61 +317,75 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-
-                string cmdString = "INSERT INTO Bugs (SUBJECT, DESCRIPTION, PROJECT_ID, STATUS, TOPIC_STARTER, AddingTime, StatusChangeDate)"
-                          + "VALUES(@Subject, @Description, @ProjectId, @Status, @TopicStarter, GETDATE(), GETDATE());";
-
-                if (attachments != null)
-                {
-                    for (int i = 0; i < attachments.Count(); ++i)
-                    {
-                        cmdString += "INSERT INTO Attachments (NAME, DATA, BUG_ID) VALUES(@Name" + i + ", @Data" + i + ", IDENT_CURRENT('Bugs'));";
-                    }
-                }
-
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-
-                SqlParameter subject = new SqlParameter("@Subject", b.Subject);
-                SqlParameter description = new SqlParameter("@Description", b.Description);
-                SqlParameter projId = new SqlParameter("@ProjectId", b.ProjectId);
-                SqlParameter status = new SqlParameter("@Status", b.Status);
-                SqlParameter topicStarter = new SqlParameter("@TopicStarter", b.TopicStarter);
-
-                cmd.Parameters.Add(subject);
-                cmd.Parameters.Add(description);
-                cmd.Parameters.Add(projId);
-                cmd.Parameters.Add(status);
-                cmd.Parameters.Add(topicStarter);
-
-                if (attachments != null)
-                {
-                    for (int i = 0; i < attachments.Count(); ++i)
-                    {
-                        cmd.Parameters.AddWithValue("@Name" + i, attachments[i].Name);
-
-                        SqlParameter paramData = new SqlParameter("@Data" + i, SqlDbType.Binary);
-                        paramData.Value = attachments[i].Data;
-                        cmd.Parameters.Add(paramData);
-                    }
-                }
-
-                SqlTransaction transaction = connection.BeginTransaction("AddNewBug");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    toReturn = true;
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    toReturn = false;
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.Message);
+                if (ok)
+                {
+
+                    string cmdString = "INSERT INTO Bugs (SUBJECT, DESCRIPTION, PROJECT_ID, STATUS, TOPIC_STARTER, AddingTime, StatusChangeDate)"
+                          + "VALUES(@Subject, @Description, @ProjectId, @Status, @TopicStarter, GETDATE(), GETDATE());";
+
+                    if (attachments != null)
+                    {
+                        for (int i = 0; i < attachments.Count(); ++i)
+                        {
+                            cmdString += "INSERT INTO Attachments (NAME, DATA, BUG_ID) VALUES(@Name" + i + ", @Data" + i + ", IDENT_CURRENT('Bugs'));";
+                        }
+                    }
+
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+
+                    SqlParameter subject = new SqlParameter("@Subject", b.Subject);
+                    SqlParameter description = new SqlParameter("@Description", b.Description);
+                    SqlParameter projId = new SqlParameter("@ProjectId", b.ProjectId);
+                    SqlParameter status = new SqlParameter("@Status", b.Status);
+                    SqlParameter topicStarter = new SqlParameter("@TopicStarter", b.TopicStarter);
+
+                    cmd.Parameters.Add(subject);
+                    cmd.Parameters.Add(description);
+                    cmd.Parameters.Add(projId);
+                    cmd.Parameters.Add(status);
+                    cmd.Parameters.Add(topicStarter);
+
+                    if (attachments != null)
+                    {
+                        for (int i = 0; i < attachments.Count(); ++i)
+                        {
+                            cmd.Parameters.AddWithValue("@Name" + i, attachments[i].Name);
+
+                            SqlParameter paramData = new SqlParameter("@Data" + i, SqlDbType.Binary);
+                            paramData.Value = attachments[i].Data;
+                            cmd.Parameters.Add(paramData);
+                        }
+                    }
+
+                    SqlTransaction transaction = connection.BeginTransaction("AddNewBug");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        toReturn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        toReturn = false;
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.Message);
+                    }
                 }
             }
 
@@ -318,27 +402,41 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                cmd.Parameters.AddWithValue("@id", bugId);
-
-                SqlTransaction transaction = connection.BeginTransaction("MessageAddTransaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-
-                    toReturn = true;
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    toReturn = false;
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    cmd.Parameters.AddWithValue("@id", bugId);
+
+                    SqlTransaction transaction = connection.BeginTransaction("MessageAddTransaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+
+                        toReturn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        toReturn = false;
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
 
@@ -352,27 +450,41 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                cmd.Parameters.AddWithValue("@Status", status);
-                cmd.Parameters.AddWithValue("@id", bugId);
-
-                SqlTransaction transaction = connection.BeginTransaction("BugStatusTransaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    toReturn = true;
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    toReturn = false;
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    cmd.Parameters.AddWithValue("@Status", status);
+                    cmd.Parameters.AddWithValue("@id", bugId);
+
+                    SqlTransaction transaction = connection.BeginTransaction("BugStatusTransaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        toReturn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        toReturn = false;
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
 
@@ -386,21 +498,35 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("AlterDevId");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    toReturn = true;
+                    connection.Open();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    toReturn = false;
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
+
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("AlterDevId");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        toReturn = true;
+                    }
+                    catch
+                    {
+                        toReturn = false;
+                        transaction.Rollback();
+                    }
                 }
             }
 
@@ -422,43 +548,57 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("ProjectAddTransaction");
-                cmd.Transaction = transaction;
-
-                cmd.Parameters.AddWithValue("@Name", proj.Name);
-                cmd.Parameters.AddWithValue("@Descr", proj.Description);
-
-
-                SqlParameter param = new SqlParameter("@Logo", SqlDbType.Binary);
-
-                if (proj.Logo != null)
-                {
-                    param.Value = proj.Logo;
-                }
-                else
-                {
-                    param.Value = DBNull.Value;
-                }
-
-                cmd.Parameters.Add(param);
-
-                cmd.Parameters.AddWithValue("@PmId", proj.PmId.ToString());
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    toReturn = true;
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    toReturn = false;
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("ProjectAddTransaction");
+                    cmd.Transaction = transaction;
+
+                    cmd.Parameters.AddWithValue("@Name", proj.Name);
+                    cmd.Parameters.AddWithValue("@Descr", proj.Description);
+
+
+                    SqlParameter param = new SqlParameter("@Logo", SqlDbType.Binary);
+
+                    if (proj.Logo != null)
+                    {
+                        param.Value = proj.Logo;
+                    }
+                    else
+                    {
+                        param.Value = DBNull.Value;
+                    }
+
+                    cmd.Parameters.Add(param);
+
+                    cmd.Parameters.AddWithValue("@PmId", proj.PmId.ToString());
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        toReturn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        toReturn = false;
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
 
@@ -474,44 +614,58 @@ namespace WcfIISService
 
                 using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
                 {
-                    connection.Open();
-                    SqlCommand cmd = new SqlCommand(cmdString, connection);
-
-                    SqlTransaction transaction = connection.BeginTransaction("FindByTitle");
-                    cmd.Transaction = transaction;
-                    SqlDataReader reader = null;
+                    bool ok = true;
 
                     try
                     {
-                        reader = cmd.ExecuteReader();
-
-                        while (reader.Read())
-                        {
-                            Project project = new Project();
-                            project.Id = Convert.ToInt32(reader["ID"].ToString());
-                            project.Description = reader["DESCRIPTION"].ToString();
-                            project.Name = reader["NAME"].ToString();
-                            project.PmId = int.Parse(reader["PmId"].ToString());
-
-                            if (reader["LOGO"] != DBNull.Value)
-                            {
-                                project.Logo = (byte[])reader["LOGO"];
-                            }
-
-                            toReturn.Add(project);
-                        }
-
-                        reader.Close();
-                        transaction.Commit();
-
+                        connection.Open();
                     }
                     catch (Exception ex)
                     {
-                        reader.Close();
-                        transaction.Rollback();
+                        ok = false;
+                        ErrorTracker.LogError("DB connection error", ex.ToString());
+                    }
 
-                         
-                        ErrorTracker.LogError("DB query error", ex.Message);
+                    if (ok)
+                    {
+                        SqlCommand cmd = new SqlCommand(cmdString, connection);
+
+                        SqlTransaction transaction = connection.BeginTransaction("FindByTitle");
+                        cmd.Transaction = transaction;
+                        SqlDataReader reader = null;
+
+                        try
+                        {
+                            reader = cmd.ExecuteReader();
+
+                            while (reader.Read())
+                            {
+                                Project project = new Project();
+                                project.Id = Convert.ToInt32(reader["ID"].ToString());
+                                project.Description = reader["DESCRIPTION"].ToString();
+                                project.Name = reader["NAME"].ToString();
+                                project.PmId = int.Parse(reader["PmId"].ToString());
+
+                                if (reader["LOGO"] != DBNull.Value)
+                                {
+                                    project.Logo = (byte[])reader["LOGO"];
+                                }
+
+                                toReturn.Add(project);
+                            }
+
+                            reader.Close();
+                            transaction.Commit();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            reader.Close();
+                            transaction.Rollback();
+
+
+                            ErrorTracker.LogError("DB query error", ex.Message);
+                        }
                     }
                 }
             }
@@ -550,41 +704,55 @@ namespace WcfIISService
 
                 using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
                 {
-                    connection.Open();
-                    SqlCommand cmd = new SqlCommand(cmdString, connection);
-                    SqlTransaction transaction = connection.BeginTransaction("Categories");
-                    cmd.Transaction = transaction;
+                    bool ok = true;
 
                     try
                     {
-                        SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                        DataTable table = new DataTable();
-                        adapter.Fill(table);
-
-                        foreach (DataRow row in table.Rows)
-                        {
-                            Project project = new Project();
-                            project.Id = Convert.ToInt32(row["ID"].ToString());
-                            project.Description = row["DESCRIPTION"].ToString();
-                            project.Name = row["NAME"].ToString();
-                            project.PmId = int.Parse(row["PmId"].ToString());
-
-                            if (row["LOGO"] != DBNull.Value)
-                            {
-                                project.Logo = (byte[])row["LOGO"];
-                            }
-
-                            toReturn.Add(project);
-                        }
-
-                        transaction.Commit();
+                        connection.Open();
                     }
                     catch (Exception ex)
                     {
-                        transaction.Rollback();
+                        ok = false;
+                        ErrorTracker.LogError("DB connection error", ex.ToString());
+                    }
 
-                         
-                        ErrorTracker.LogError("DB query error", ex.Message);
+                    if (ok)
+                    {
+                        SqlCommand cmd = new SqlCommand(cmdString, connection);
+                        SqlTransaction transaction = connection.BeginTransaction("Categories");
+                        cmd.Transaction = transaction;
+
+                        try
+                        {
+                            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                            DataTable table = new DataTable();
+                            adapter.Fill(table);
+
+                            foreach (DataRow row in table.Rows)
+                            {
+                                Project project = new Project();
+                                project.Id = Convert.ToInt32(row["ID"].ToString());
+                                project.Description = row["DESCRIPTION"].ToString();
+                                project.Name = row["NAME"].ToString();
+                                project.PmId = int.Parse(row["PmId"].ToString());
+
+                                if (row["LOGO"] != DBNull.Value)
+                                {
+                                    project.Logo = (byte[])row["LOGO"];
+                                }
+
+                                toReturn.Add(project);
+                            }
+
+                            transaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+
+
+                            ErrorTracker.LogError("DB query error", ex.Message);
+                        }
                     }
                 }
             }
@@ -600,21 +768,35 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("DevApproveTransaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
+
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("DevApproveTransaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
         }
@@ -645,23 +827,37 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("EraseDevsTransaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    toReturn = true;
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    toReturn = false;
-                    transaction.Rollback();
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
+
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("EraseDevsTransaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        toReturn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        toReturn = false;
+                        transaction.Rollback();
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
 
@@ -676,24 +872,38 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("InsertDevTransaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    toReturn = true;
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    toReturn = false;
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("InsertDevTransaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        toReturn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        toReturn = false;
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
 
@@ -710,66 +920,80 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("ExtractProjectDevelopers");
-                cmd.Transaction = transaction;
-                SqlDataReader rdr = null;
+                bool ok = true;
 
                 try
                 {
-                    rdr = cmd.ExecuteReader();
+                    connection.Open();
+                }
+                catch (Exception ex)
+                {
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                    toReturn = new List<User>();
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("ExtractProjectDevelopers");
+                    cmd.Transaction = transaction;
+                    SqlDataReader rdr = null;
 
-                    while (rdr.Read())
+                    try
                     {
-                        User u = new User();
+                        rdr = cmd.ExecuteReader();
 
-                        u.Id = Convert.ToInt32(rdr["ID"].ToString());
-                        u.Name = rdr["NAME"].ToString();
-                        u.Surname = rdr["SURNAME"].ToString();
-                        u.Nickname = rdr["NICKNAME"].ToString();
-                        u.Status = rdr["STATUS"].ToString();
+                        toReturn = new List<User>();
 
-                        if (rdr["Confirmed"] != DBNull.Value)
+                        while (rdr.Read())
                         {
-                            u.Confirmed = Convert.ToBoolean(rdr["Confirmed"].ToString());
-                        }
-                        else
-                        {
-                            u.Confirmed = false;
-                        }
+                            User u = new User();
 
-                        if (u.Confirmed)
-                        {
-                            if (rdr["Approved"] != DBNull.Value)
+                            u.Id = Convert.ToInt32(rdr["ID"].ToString());
+                            u.Name = rdr["NAME"].ToString();
+                            u.Surname = rdr["SURNAME"].ToString();
+                            u.Nickname = rdr["NICKNAME"].ToString();
+                            u.Status = rdr["STATUS"].ToString();
+
+                            if (rdr["Confirmed"] != DBNull.Value)
                             {
-                                if (Convert.ToBoolean(rdr["Approved"].ToString()))
+                                u.Confirmed = Convert.ToBoolean(rdr["Confirmed"].ToString());
+                            }
+                            else
+                            {
+                                u.Confirmed = false;
+                            }
+
+                            if (u.Confirmed)
+                            {
+                                if (rdr["Approved"] != DBNull.Value)
                                 {
-                                    toReturn.Add(u);
+                                    if (Convert.ToBoolean(rdr["Approved"].ToString()))
+                                    {
+                                        toReturn.Add(u);
+                                    }
+                                    else
+                                    {
+                                        invitedDevs.Add(u);
+                                    }
                                 }
                                 else
                                 {
                                     invitedDevs.Add(u);
                                 }
                             }
-                            else
-                            {
-                                invitedDevs.Add(u);
-                            }
                         }
-                    }
 
-                    rdr.Close();
-                    transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    rdr.Close();
-                    transaction.Rollback();
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                        rdr.Close();
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        rdr.Close();
+                        transaction.Rollback();
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
 
@@ -806,27 +1030,45 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand insertCmd = new SqlCommand(insertCmdString, connection);
-                SqlTransaction transaction2 = connection.BeginTransaction("SampleTransaction");
-                insertCmd.Parameters.Add(param);
-
-                insertCmd.Transaction = transaction2;
+                bool ok = true;
 
                 try
                 {
-                    insertCmd.ExecuteNonQuery();
-                    transaction2.Commit();
-
-                    return "Success";
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    transaction2.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.Message);
+                if (ok)
+                {
+                    SqlCommand insertCmd = new SqlCommand(insertCmdString, connection);
+                    SqlTransaction transaction2 = connection.BeginTransaction("SampleTransaction");
+                    insertCmd.Parameters.Add(param);
 
+                    insertCmd.Transaction = transaction2;
+
+                    try
+                    {
+                        insertCmd.ExecuteNonQuery();
+                        transaction2.Commit();
+
+                        return "Success";
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction2.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.Message);
+
+                        return "Fail";
+                    }
+                }
+                else
+                {
                     return "Fail";
                 }
             }
@@ -839,24 +1081,38 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("UserConfirmTransaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    toReturn = true;
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    toReturn = false;
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("UserConfirmTransaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        toReturn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        toReturn = false;
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
 
@@ -869,39 +1125,57 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand checkCmd = new SqlCommand(checkCmdString, connection);
-                SqlTransaction transaction1 = connection.BeginTransaction("SampleTransaction");
-                SqlDataReader reader = null;
-
-                checkCmd.Transaction = transaction1;
+                bool ok = true;
 
                 try
                 {
-                    reader = checkCmd.ExecuteReader();
-
-                    bool isOk = !(reader.HasRows);
-                    reader.Close();
-                    transaction1.Commit();
-
-                    if (!isOk)
-                    {
-                        return "Duplicate";
-                    }
-                    else
-                    {
-                        string toReturn = insertAccount(u);
-
-                        return toReturn;
-                    }
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    reader.Close();
-                    transaction1.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.Message);
+                if (ok)
+                {
+                    SqlCommand checkCmd = new SqlCommand(checkCmdString, connection);
+                    SqlTransaction transaction1 = connection.BeginTransaction("SampleTransaction");
+                    SqlDataReader reader = null;
+
+                    checkCmd.Transaction = transaction1;
+
+                    try
+                    {
+                        reader = checkCmd.ExecuteReader();
+
+                        bool isOk = !(reader.HasRows);
+                        reader.Close();
+                        transaction1.Commit();
+
+                        if (!isOk)
+                        {
+                            return "Duplicate";
+                        }
+                        else
+                        {
+                            string toReturn = insertAccount(u);
+
+                            return toReturn;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        reader.Close();
+                        transaction1.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.Message);
+                        return "Fail";
+                    }
+                }
+                else
+                {
                     return "Fail";
                 }
             }
@@ -913,32 +1187,46 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                using (SqlCommand cmd = new SqlCommand(cmdString, connection))
+                bool ok = true;
+
+                try
                 {
-                    SqlTransaction transaction = connection.BeginTransaction("PasswordRequest");
-                    SqlDataReader reader = null;
-                    cmd.Transaction = transaction;
+                    connection.Open();
+                }
+                catch (Exception ex)
+                {
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                    try
+                if (ok)
+                {
+                    using (SqlCommand cmd = new SqlCommand(cmdString, connection))
                     {
-                        reader = cmd.ExecuteReader();
+                        SqlTransaction transaction = connection.BeginTransaction("PasswordRequest");
+                        SqlDataReader reader = null;
+                        cmd.Transaction = transaction;
 
-                        if (reader.Read())
+                        try
                         {
-                            toReturn = reader["NICKNAME"].ToString();
+                            reader = cmd.ExecuteReader();
+
+                            if (reader.Read())
+                            {
+                                toReturn = reader["NICKNAME"].ToString();
+                            }
+
+                            reader.Close();
+                            transaction.Commit();
                         }
+                        catch (Exception ex)
+                        {
+                            reader.Close();
+                            transaction.Rollback();
 
-                        reader.Close();
-                        transaction.Commit();
-                    }
-                    catch (Exception ex)
-                    {
-                        reader.Close();
-                        transaction.Rollback();
 
-                         
-                        ErrorTracker.LogError("DB query error", ex.Message);
+                            ErrorTracker.LogError("DB query error", ex.Message);
+                        }
                     }
                 }
             }
@@ -953,60 +1241,74 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                using (SqlCommand cmd = new SqlCommand(cmdString, connection))
+                bool ok = true;
+
+                try
                 {
-                    SqlTransaction transaction = connection.BeginTransaction("ExtractUsers");
-                    cmd.Transaction = transaction;
-                    SqlDataReader reader = null;
+                    connection.Open();
+                }
+                catch (Exception ex)
+                {
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                    try
+                if (ok)
+                {
+                    using (SqlCommand cmd = new SqlCommand(cmdString, connection))
                     {
+                        SqlTransaction transaction = connection.BeginTransaction("ExtractUsers");
+                        cmd.Transaction = transaction;
+                        SqlDataReader reader = null;
 
-                        reader = cmd.ExecuteReader();
-
-                        while (reader.Read())
+                        try
                         {
-                            User user = new User();
 
-                            user.Id = Convert.ToInt32(reader["ID"].ToString());
-                            user.Name = reader["NAME"].ToString();
-                            user.Surname = reader["SURNAME"].ToString();
-                            user.Nickname = reader["NICKNAME"].ToString();
-                            user.BirthDate = Convert.ToDateTime(reader["BIRTHDATE"].ToString());
-                            user.Password = reader["PASSWORD"].ToString();
-                            user.Status = reader["STATUS"].ToString();
-                            user.Email = reader["EMAIL"].ToString();
+                            reader = cmd.ExecuteReader();
 
-                            if (reader["Confirmed"] != DBNull.Value)
+                            while (reader.Read())
                             {
-                                user.Confirmed = Convert.ToBoolean(reader["Confirmed"].ToString());
-                            }
-                            else user.Confirmed = false;
+                                User user = new User();
 
-                            if (reader["AVATAR"] != DBNull.Value)
-                            {
-                                user.Avatar = (byte[])(reader["AVATAR"]);
-                            }
-                            else
-                            {
-                                user.Avatar = null;
+                                user.Id = Convert.ToInt32(reader["ID"].ToString());
+                                user.Name = reader["NAME"].ToString();
+                                user.Surname = reader["SURNAME"].ToString();
+                                user.Nickname = reader["NICKNAME"].ToString();
+                                user.BirthDate = Convert.ToDateTime(reader["BIRTHDATE"].ToString());
+                                user.Password = reader["PASSWORD"].ToString();
+                                user.Status = reader["STATUS"].ToString();
+                                user.Email = reader["EMAIL"].ToString();
+
+                                if (reader["Confirmed"] != DBNull.Value)
+                                {
+                                    user.Confirmed = Convert.ToBoolean(reader["Confirmed"].ToString());
+                                }
+                                else user.Confirmed = false;
+
+                                if (reader["AVATAR"] != DBNull.Value)
+                                {
+                                    user.Avatar = (byte[])(reader["AVATAR"]);
+                                }
+                                else
+                                {
+                                    user.Avatar = null;
+                                }
+
+                                toReturn.Add(user);
                             }
 
-                            toReturn.Add(user);
+                            reader.Close();
+                            transaction.Commit();
+
                         }
+                        catch (Exception ex)
+                        {
+                            reader.Close();
+                            transaction.Rollback();
 
-                        reader.Close();
-                        transaction.Commit();
 
-                    }
-                    catch (Exception ex)
-                    {
-                        reader.Close();
-                        transaction.Rollback();
-
-                         
-                        ErrorTracker.LogError("DB query error", ex.Message);
+                            ErrorTracker.LogError("DB query error", ex.Message);
+                        }
                     }
                 }
             }
@@ -1020,42 +1322,56 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand("ResetPassword", connection);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                string nickname = getNickname(email);
-
-                SqlParameter paramUsername = new SqlParameter("@UserName", nickname);
-
-                cmd.Parameters.Add(paramUsername);
-
-                SqlTransaction transaction = connection.BeginTransaction("PasswordResetTransaction");
-                cmd.Transaction = transaction;
-                SqlDataReader rdr = null;
+                bool ok = true;
 
                 try
                 {
-                    rdr = cmd.ExecuteReader();
-
-                    while (rdr.Read())
-                    {
-                        if (Convert.ToBoolean(rdr["ReturnCode"]))
-                        {
-                            toReturn = SendPasswordResetLetter(rdr["Email"].ToString(), nickname, rdr["UniqueId"].ToString());
-                        }
-                    }
-
-                    rdr.Close();
-                    transaction.Commit();
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    rdr.Close();
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand("ResetPassword", connection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    string nickname = getNickname(email);
+
+                    SqlParameter paramUsername = new SqlParameter("@UserName", nickname);
+
+                    cmd.Parameters.Add(paramUsername);
+
+                    SqlTransaction transaction = connection.BeginTransaction("PasswordResetTransaction");
+                    cmd.Transaction = transaction;
+                    SqlDataReader rdr = null;
+
+                    try
+                    {
+                        rdr = cmd.ExecuteReader();
+
+                        while (rdr.Read())
+                        {
+                            if (Convert.ToBoolean(rdr["ReturnCode"]))
+                            {
+                                toReturn = SendPasswordResetLetter(rdr["Email"].ToString(), nickname, rdr["UniqueId"].ToString());
+                            }
+                        }
+
+                        rdr.Close();
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        rdr.Close();
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
 
@@ -1118,60 +1434,74 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                if (cmdString != "")
+                bool ok = true;
+
+                try
                 {
-                    SqlCommand cmd = new SqlCommand(cmdString, connection);
-                    SqlTransaction transaction = connection.BeginTransaction("UserSearch");
-                    cmd.Transaction = transaction;
-                    SqlDataReader reader = null;
+                    connection.Open();
+                }
+                catch (Exception ex)
+                {
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                    try
+                if (ok)
+                {
+                    if (cmdString != "")
                     {
-                        reader = cmd.ExecuteReader();
+                        SqlCommand cmd = new SqlCommand(cmdString, connection);
+                        SqlTransaction transaction = connection.BeginTransaction("UserSearch");
+                        cmd.Transaction = transaction;
+                        SqlDataReader reader = null;
 
-                        toReturn = new List<User>();
-
-                        while (reader.Read())
+                        try
                         {
-                            User user = new User();
+                            reader = cmd.ExecuteReader();
 
-                            user.Id = Convert.ToInt32(reader["ID"].ToString());
-                            user.Name = reader["NAME"].ToString();
-                            user.Surname = reader["SURNAME"].ToString();
-                            user.Nickname = reader["NICKNAME"].ToString();
-                            user.BirthDate = Convert.ToDateTime(reader["BIRTHDATE"].ToString());
-                            user.Password = reader["PASSWORD"].ToString();
-                            user.Status = reader["STATUS"].ToString();
-                            user.Email = reader["EMAIL"].ToString();
+                            toReturn = new List<User>();
 
-                            if (reader["Confirmed"] != DBNull.Value)
+                            while (reader.Read())
                             {
-                                user.Confirmed = Convert.ToBoolean(reader["Confirmed"].ToString());
-                            }
-                            else user.Confirmed = false;
+                                User user = new User();
 
-                            if (reader["AVATAR"] != DBNull.Value)
-                            {
-                                user.Avatar = (byte[])(reader["AVATAR"]);
-                            }
-                            else
-                            {
-                                user.Avatar = null;
+                                user.Id = Convert.ToInt32(reader["ID"].ToString());
+                                user.Name = reader["NAME"].ToString();
+                                user.Surname = reader["SURNAME"].ToString();
+                                user.Nickname = reader["NICKNAME"].ToString();
+                                user.BirthDate = Convert.ToDateTime(reader["BIRTHDATE"].ToString());
+                                user.Password = reader["PASSWORD"].ToString();
+                                user.Status = reader["STATUS"].ToString();
+                                user.Email = reader["EMAIL"].ToString();
+
+                                if (reader["Confirmed"] != DBNull.Value)
+                                {
+                                    user.Confirmed = Convert.ToBoolean(reader["Confirmed"].ToString());
+                                }
+                                else user.Confirmed = false;
+
+                                if (reader["AVATAR"] != DBNull.Value)
+                                {
+                                    user.Avatar = (byte[])(reader["AVATAR"]);
+                                }
+                                else
+                                {
+                                    user.Avatar = null;
+                                }
+
+                                toReturn.Add(user);
                             }
 
-                            toReturn.Add(user);
+                            reader.Close();
+                            transaction.Commit();
                         }
+                        catch (Exception ex)
+                        {
+                            reader.Close();
+                            transaction.Rollback();
 
-                        reader.Close();
-                        transaction.Commit();
-                    }
-                    catch (Exception ex)
-                    {
-                        reader.Close();
-                        transaction.Rollback();
-                         
-                        ErrorTracker.LogError("DB query error", ex.Message);
+                            ErrorTracker.LogError("DB query error", ex.Message);
+                        }
                     }
                 }
             }
@@ -1189,37 +1519,52 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                cmd.Parameters.AddWithValue("@receiver", u.Nickname);
-
-                int numOfNotifications = 0;
-
-                SqlTransaction transaction = connection.BeginTransaction("InformTransaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    numOfNotifications = (int)cmd.ExecuteScalar();
-                    transaction.Commit();
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
-
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
                 }
 
-                if (numOfNotifications == 1)
+                if (ok)
                 {
-                    string subject = "New message";
-                    string text = "Hello, " + u.Name + ", <br/> You received new message on your account. <br/>"
-                        + "Follow this link to check current notifications: http://its.local <br/> Issue Tracking System";
-                    WriteLetterToUser(u, subject, text);
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    cmd.Parameters.AddWithValue("@receiver", u.Nickname);
+
+                    int numOfNotifications = 0;
+
+                    SqlTransaction transaction = connection.BeginTransaction("InformTransaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        numOfNotifications = (int)cmd.ExecuteScalar();
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
+
+                    if (numOfNotifications == 1)
+                    {
+                        string subject = "New message";
+                        string text = "Hello, " + u.Name + ", <br/> You received new message on your account. <br/>"
+                            + "Follow this link to check current notifications: http://its.local <br/> Issue Tracking System";
+                        WriteLetterToUser(u, subject, text);
+                    }
                 }
             }
         }
+
         public void WriteLetterToUser(User u, string subject, string text)
         {
             string smtpHost = "smtp.gmail.com";
@@ -1246,7 +1591,6 @@ namespace WcfIISService
             }
             catch (Exception ex)
             {
-                 
                 ErrorTracker.LogError("SMTP error", ex.Message);
             }
         }
@@ -1258,41 +1602,55 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("UserNotificationsTransaction");
-                cmd.Transaction = transaction;
-                SqlDataReader rdr = null;
+                bool ok = true;
 
                 try
                 {
-                    rdr = cmd.ExecuteReader();
-
-                    toReturn = new List<Notification>();
-
-                    while (rdr.Read())
-                    {
-                        Notification n = new Notification();
-
-                        n.Sender = rdr["SENDER"].ToString();
-                        n.Receiver = rdr["RECEIVER"].ToString();
-                        n.SendDate = Convert.ToDateTime(rdr["SEND_TIME"].ToString());
-                        n.Message = rdr["MESSAGE"].ToString();
-                        n.Id = int.Parse(rdr["ID"].ToString());
-
-                        toReturn.Add(n);
-                    }
-
-                    rdr.Close();
-                    transaction.Commit();
-
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    rdr.Close();
-                    transaction.Rollback();
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
+
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("UserNotificationsTransaction");
+                    cmd.Transaction = transaction;
+                    SqlDataReader rdr = null;
+
+                    try
+                    {
+                        rdr = cmd.ExecuteReader();
+
+                        toReturn = new List<Notification>();
+
+                        while (rdr.Read())
+                        {
+                            Notification n = new Notification();
+
+                            n.Sender = rdr["SENDER"].ToString();
+                            n.Receiver = rdr["RECEIVER"].ToString();
+                            n.SendDate = Convert.ToDateTime(rdr["SEND_TIME"].ToString());
+                            n.Message = rdr["MESSAGE"].ToString();
+                            n.Id = int.Parse(rdr["ID"].ToString());
+
+                            toReturn.Add(n);
+                        }
+
+                        rdr.Close();
+                        transaction.Commit();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        rdr.Close();
+                        transaction.Rollback();
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
 
@@ -1315,24 +1673,35 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("EditEmail");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    toReturn = true;
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.Message);
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("EditEmail");
+                    cmd.Transaction = transaction;
 
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        toReturn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        ErrorTracker.LogError("DB query error", ex.Message);
+                    }
                 }
             }
 
@@ -1346,23 +1715,37 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("EditBirthDate");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    toReturn = true;
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.Message);
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("EditBirthDate");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        toReturn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.Message);
+                    }
                 }
             }
 
@@ -1434,38 +1817,52 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                using (SqlCommand cmd = new SqlCommand(cmdString, connection))
+                bool ok = true;
+
+                try
                 {
-                    SqlTransaction transaction = connection.BeginTransaction("FindUserTransaction");
-                    cmd.Transaction = transaction;
+                    connection.Open();
+                }
+                catch (Exception ex)
+                {
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                    try
+                if (ok)
+                {
+                    using (SqlCommand cmd = new SqlCommand(cmdString, connection))
                     {
-                        reader = cmd.ExecuteReader();
+                        SqlTransaction transaction = connection.BeginTransaction("FindUserTransaction");
+                        cmd.Transaction = transaction;
 
-                        if (reader.Read())
+                        try
                         {
-                            toReturn.Id = Convert.ToInt32(reader["ID"].ToString());
-                            toReturn.Status = reader["STATUS"].ToString();
+                            reader = cmd.ExecuteReader();
 
-                            if (reader["Confirmed"] != DBNull.Value)
+                            if (reader.Read())
                             {
-                                toReturn.Confirmed = Convert.ToBoolean(reader["Confirmed"].ToString());
+                                toReturn.Id = Convert.ToInt32(reader["ID"].ToString());
+                                toReturn.Status = reader["STATUS"].ToString();
+
+                                if (reader["Confirmed"] != DBNull.Value)
+                                {
+                                    toReturn.Confirmed = Convert.ToBoolean(reader["Confirmed"].ToString());
+                                }
+                                else toReturn.Confirmed = false;
                             }
-                            else toReturn.Confirmed = false;
+
+                            reader.Close();
+                            transaction.Commit();
+
                         }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
 
-                        reader.Close();
-                        transaction.Commit();
 
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-
-                         
-                        ErrorTracker.LogError("DB query error", ex.Message);
+                            ErrorTracker.LogError("DB query error", ex.Message);
+                        }
                     }
                 }
             }
@@ -1479,30 +1876,44 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(SPName, connection);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                foreach (SqlParameter parameter in SPParameters)
-                {
-                    cmd.Parameters.Add(parameter);
-                }
-
-                SqlTransaction transaction = connection.BeginTransaction("ExecuteCommand");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    toReturn = Convert.ToBoolean(cmd.ExecuteScalar());
-                    transaction.Commit();
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.Message);
-                    toReturn = false;
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(SPName, connection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    foreach (SqlParameter parameter in SPParameters)
+                    {
+                        cmd.Parameters.Add(parameter);
+                    }
+
+                    SqlTransaction transaction = connection.BeginTransaction("ExecuteCommand");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        toReturn = Convert.ToBoolean(cmd.ExecuteScalar());
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.Message);
+                        toReturn = false;
+                    }
                 }
             }
 
@@ -1528,22 +1939,36 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                cmd.Parameters.Add(param);
-                SqlTransaction transaction = connection.BeginTransaction("EditAvatar");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-
-                    toReturn = true;
+                    connection.Open();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
+
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    cmd.Parameters.Add(param);
+                    SqlTransaction transaction = connection.BeginTransaction("EditAvatar");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+
+                        toReturn = true;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                    }
                 }
             }
 
@@ -1572,25 +1997,39 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                cmd.Parameters.AddWithValue("@id", id);
-                SqlTransaction transaction = connection.BeginTransaction("NotificationRemoveTransaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    toReturn = true;
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    toReturn = false;
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    cmd.Parameters.AddWithValue("@id", id);
+                    SqlTransaction transaction = connection.BeginTransaction("NotificationRemoveTransaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        toReturn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        toReturn = false;
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
 
@@ -1600,25 +2039,39 @@ namespace WcfIISService
         {
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand("DeleteExpiredRecords", connection);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                SqlTransaction transaction = connection.BeginTransaction("ExpiredRecordsDeleting");
-
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.Message);
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand("DeleteExpiredRecords", connection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    SqlTransaction transaction = connection.BeginTransaction("ExpiredRecordsDeleting");
+
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.Message);
+                    }
                 }
             }
         }
@@ -1629,22 +2082,36 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("NotificationAddTransaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("NotificationAddTransaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
         }
@@ -1656,22 +2123,36 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("MessageAddTransaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("MessageAddTransaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
         }
@@ -1684,24 +2165,38 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("RightAnswerTransaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
-                    toReturn = true;
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    toReturn = false;
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("RightAnswerTransaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        toReturn = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        toReturn = false;
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
             return toReturn;
@@ -1714,36 +2209,50 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlDataReader rdr = null;
-
-                SqlTransaction transaction = connection.BeginTransaction("CategoriesTrasaction");
-                cmd.Transaction = transaction;
+                bool ok = true;
 
                 try
                 {
-                    rdr = cmd.ExecuteReader();
-
-                    while (rdr.Read())
-                    {
-                        Category category = new Category();
-                        category.Title = rdr["TITLE"].ToString();
-                        category.Id = Convert.ToInt32(rdr["ID"].ToString());
-                        toReturn.Add(category);
-                    }
-
-                    rdr.Close();
-                    transaction.Commit();
-
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    rdr.Close();
-                    transaction.Rollback();
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
 
-                     
-                    ErrorTracker.LogError("DB query error", ex.Message);
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlDataReader rdr = null;
+
+                    SqlTransaction transaction = connection.BeginTransaction("CategoriesTrasaction");
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        rdr = cmd.ExecuteReader();
+
+                        while (rdr.Read())
+                        {
+                            Category category = new Category();
+                            category.Title = rdr["TITLE"].ToString();
+                            category.Id = Convert.ToInt32(rdr["ID"].ToString());
+                            toReturn.Add(category);
+                        }
+
+                        rdr.Close();
+                        transaction.Commit();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        rdr.Close();
+                        transaction.Rollback();
+
+
+                        ErrorTracker.LogError("DB query error", ex.Message);
+                    }
                 }
             }
 
@@ -1757,54 +2266,68 @@ namespace WcfIISService
 
             using (SqlConnection connection = new SqlConnection("data source=.\\SQLEXPRESS; database=BtsDB; integrated security=SSPI"))
             {
-                connection.Open();
-                SqlCommand cmd = new SqlCommand(cmdString, connection);
-                SqlTransaction transaction = connection.BeginTransaction("ExtractMessages");
-                cmd.Transaction = transaction;
-                SqlDataReader rdr = null;
+                bool ok = true;
 
                 try
                 {
-                    rdr = cmd.ExecuteReader();
-
-                    toReturn = new List<Message>();
-
-                    while (rdr.Read())
-                    {
-                        Message toAdd = new Message();
-
-                        toAdd.Id = Convert.ToInt32(rdr["ID"].ToString());
-                        toAdd.MessageText = rdr["MESSAGE"].ToString();
-                        toAdd.SenderNick = rdr["SENDER_NICKNAME"].ToString();
-                        toAdd.AddingTime = Convert.ToDateTime(rdr["ADD_TIME"].ToString());
-                        toAdd.BugId = Convert.ToInt32(rdr["BUG_ID"].ToString());
-                        toAdd.Correct = Convert.ToBoolean(rdr["CORRECT"].ToString());
-
-                        toAdd.MessageText.Replace('_', ' ');
-
-                        if (rdr["UserToReply"] != DBNull.Value)
-                        {
-                            toAdd.UserToReply = rdr["UserToReply"].ToString();
-                        }
-
-                        if (rdr["MessageIdToReply"] != DBNull.Value)
-                        {
-                            toAdd.MessageToReplyId = Convert.ToInt32(rdr["MessageIdToReply"].ToString());
-                        }
-
-                        toReturn.Add(toAdd);
-                    }
-
-                    rdr.Close();
-                    transaction.Commit();
-
+                    connection.Open();
                 }
                 catch (Exception ex)
                 {
-                    rdr.Close();
-                    transaction.Rollback();
-                     
-                    ErrorTracker.LogError("DB query error", ex.ToString());
+                    ok = false;
+                    ErrorTracker.LogError("DB connection error", ex.ToString());
+                }
+
+                if (ok)
+                {
+                    SqlCommand cmd = new SqlCommand(cmdString, connection);
+                    SqlTransaction transaction = connection.BeginTransaction("ExtractMessages");
+                    cmd.Transaction = transaction;
+                    SqlDataReader rdr = null;
+
+                    try
+                    {
+                        rdr = cmd.ExecuteReader();
+
+                        toReturn = new List<Message>();
+
+                        while (rdr.Read())
+                        {
+                            Message toAdd = new Message();
+
+                            toAdd.Id = Convert.ToInt32(rdr["ID"].ToString());
+                            toAdd.MessageText = rdr["MESSAGE"].ToString();
+                            toAdd.SenderNick = rdr["SENDER_NICKNAME"].ToString();
+                            toAdd.AddingTime = Convert.ToDateTime(rdr["ADD_TIME"].ToString());
+                            toAdd.BugId = Convert.ToInt32(rdr["BUG_ID"].ToString());
+                            toAdd.Correct = Convert.ToBoolean(rdr["CORRECT"].ToString());
+
+                            toAdd.MessageText.Replace('_', ' ');
+
+                            if (rdr["UserToReply"] != DBNull.Value)
+                            {
+                                toAdd.UserToReply = rdr["UserToReply"].ToString();
+                            }
+
+                            if (rdr["MessageIdToReply"] != DBNull.Value)
+                            {
+                                toAdd.MessageToReplyId = Convert.ToInt32(rdr["MessageIdToReply"].ToString());
+                            }
+
+                            toReturn.Add(toAdd);
+                        }
+
+                        rdr.Close();
+                        transaction.Commit();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        rdr.Close();
+                        transaction.Rollback();
+
+                        ErrorTracker.LogError("DB query error", ex.ToString());
+                    }
                 }
             }
 

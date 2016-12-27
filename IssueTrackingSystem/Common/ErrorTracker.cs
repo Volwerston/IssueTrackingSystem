@@ -12,7 +12,7 @@ namespace IssueTrackingSystem.Common
     {
         public static void LogError(string errorType, string errorData)
         {
-            
+
             string year = DateTime.Now.Year.ToString();
             string month = DateTime.Now.ToString("MMMM", CultureInfo.InvariantCulture);
 
@@ -34,8 +34,16 @@ namespace IssueTrackingSystem.Common
             linesToAppend.Add("Type: " + errorType);
             linesToAppend.Add("Error: " + errorData + "\n");
             linesToAppend.Add("Time: " + DateTime.Now.ToString());
-            linesToAppend.Add("Username: " + HttpContext.Current.Session["Username"].ToString());
-            linesToAppend.Add("User ID: " + HttpContext.Current.Session["Id"].ToString());
+            if (HttpContext.Current != null)
+            {
+                linesToAppend.Add("Username: " + HttpContext.Current.Session["Username"].ToString());
+                linesToAppend.Add("User ID: " + HttpContext.Current.Session["Id"].ToString());
+            }
+            else
+            {
+                linesToAppend.Add("Username: - ");
+                linesToAppend.Add("User ID: 0 ");
+            }
             linesToAppend.Add("--------------------- ");
 
             File.AppendAllLines(filePath, linesToAppend);
