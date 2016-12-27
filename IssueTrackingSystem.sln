@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IssueTrackingSystem", "Issu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfIISService", "WcfIISService\WcfIISService.csproj", "{669C6374-3CC9-42CA-AFE7-62D39D42A2EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITSTest", "ITSTest\ITSTest.csproj", "{1675F45B-B034-48B4-AFD4-59EB56F42A6F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{669C6374-3CC9-42CA-AFE7-62D39D42A2EB} = {669C6374-3CC9-42CA-AFE7-62D39D42A2EB}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +26,10 @@ Global
 		{669C6374-3CC9-42CA-AFE7-62D39D42A2EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{669C6374-3CC9-42CA-AFE7-62D39D42A2EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{669C6374-3CC9-42CA-AFE7-62D39D42A2EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1675F45B-B034-48B4-AFD4-59EB56F42A6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1675F45B-B034-48B4-AFD4-59EB56F42A6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1675F45B-B034-48B4-AFD4-59EB56F42A6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1675F45B-B034-48B4-AFD4-59EB56F42A6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

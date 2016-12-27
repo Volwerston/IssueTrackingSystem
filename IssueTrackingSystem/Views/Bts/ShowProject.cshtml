@@ -489,10 +489,10 @@ else
 
         function showList(numOfList, numOfItems) {
             var toAppend = '<table class="table"><thead><tr><th>' +
-                '<button onclick="changeSortOrder(\'byId\')" class="btn btn-default">Id <span class="glyphicon glyphicon-arrow-down" id="byId"></span></button></th><th>' +
-                '<button onclick="changeSortOrder(\'bySubject\')" class="btn btn-default">Subject <span class="glyphicon glyphicon-arrow-down" id="bySubject"></span></button></th><th>' +
-                '<button onclick="changeSortOrder(\'byStatus\')" class="btn btn-default">Status <span class="glyphicon glyphicon-arrow-down" id="byStatus"></button></th><th>' +
-                '<button onclick="changeSortOrder(\'byDate\')" class="btn btn-default">Added on <span class="glyphicon glyphicon-arrow-down" id="byDate"></span></button></th><th>' +
+                '<button onclick="changeSortOrder(\'byId\')" class="btn btn-default"  id="byId">Id</button></th><th>' +
+                '<button onclick="changeSortOrder(\'bySubject\')" class="btn btn-default" id="bySubject">Subject</button></th><th>' +
+                '<button onclick="changeSortOrder(\'byStatus\')" class="btn btn-default" id="byStatus">Status</button></th><th>' +
+                '<button onclick="changeSortOrder(\'byDate\')" id="byDate" class="btn btn-default">Added on</button></th><th>' +
                 'Description</th><th>'
                  + 'Reported</th><th>'
                  + 'Developer</th>'
@@ -523,7 +523,7 @@ else
 
                     var numOfDays = @DateTime.Now.Day -currEntries[i].AddingTime.substr(8, 2);
 
-                    toAppend += '<tr class="tableEntry" id="trow' + currEntries[i].Id + '" onmouseenter="setWhite(' + currEntries[i].Id + ')" onmouseleave="setNormal(' + currEntries[i].Id + ')" onclick="moveToBug(' + currEntries[i].Id + ')"><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
+                    toAppend += '<tr class="tableEntry" id="trow' + currEntries[i].Id + '" onmouseenter="setWhite(' + currEntries[i].Id + ')" onmouseleave="setNormal(' + currEntries[i].Id + ')" onclick="moveToBug(' + currEntries[i].Id + ')"><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td class="statusData">'
                                 + currEntries[i].Status + ' (' + numOfDays + ' days)</td><td>' + addTime + '</td><td>' + text + '</td>'
                     + '<td>' + currEntries[i].TopicStarter + '</td>';
 
@@ -560,7 +560,7 @@ else
 
                     var numOfDays = @DateTime.Now.Day -currEntries[i].AddingTime.substr(8, 2);
 
-                    toAppend += '<tr class="tableEntry" id="trow' + currEntries[i].Id + '" onmouseenter="setWhite(' + currEntries[i].Id + ')" onmouseleave="setNormal(' + currEntries[i].Id + ')" onclick="moveToBug(' + currEntries[i].Id + ')"><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td>'
+                    toAppend += '<tr class="tableEntry" id="trow' + currEntries[i].Id + '" onmouseenter="setWhite(' + currEntries[i].Id + ')" onmouseleave="setNormal(' + currEntries[i].Id + ')" onclick="moveToBug(' + currEntries[i].Id + ')"><td>' + currEntries[i].Id + '</td><td>' + currEntries[i].Subject + '</td><td class="statusData">'
                                 + currEntries[i].Status + '<br/> (' + numOfDays + ' days) </td><td>' + addTime + '</td><td>' + text + '</td>'
                          + '<td>' + currEntries[i].TopicStarter + '</td>';
 
@@ -585,10 +585,30 @@ else
 
             $("#tableData").append(toAppend);
 
+            $('.statusData').each(function (index) {
+                
+                if (currEntries[(numOfList - 1) * numOfItems + index].Status == "Pending")
+                {
+                    $(this).wrapInner('<span class="label label-default"></span>');
+                }
+                else if (currEntries[(numOfList - 1) * numOfItems + index].Status == "Assigned")
+                {
+                    $(this).wrapInner('<span class="label label-primary"></span>');
+                }
+                else if(currEntries[(numOfList-1)*numOfItems + index].Status == "In progress")
+                {
+                    $(this).wrapInner('<span class="label label-info"></span>');
+                }
+                else 
+                {
+                    $(this).wrapInner('<span class="label label-success"></span>');
+                }
+            });
+
             if(sortOrderId != null)
             {
-                $("#" + sortOrderId).removeClass("glyphicon-arrow-down");
-                $("#" + sortOrderId).addClass("glyphicon-arrow-up");
+                $("#" + sortOrderId).removeClass("btn-info");
+                $("#" + sortOrderId).addClass("btn-success");
             }
         }
 

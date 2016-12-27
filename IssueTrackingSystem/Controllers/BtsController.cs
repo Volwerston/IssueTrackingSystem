@@ -1417,8 +1417,11 @@ namespace BTS.Controllers
                 + "\">" + bug.TopicStarter + "</a> closed discusion of <a href=\"" + Url.Action("BugDescriptionPage", "Bts", new { id = bugId, projName = projectName }) + "\">" + "bug #" + bugId
                 + "</a> in project <a href=\"" + Url.Action("ShowProject", "Bts", new { name = projectName }) + "\">" + projectName + "</a>";
 
-                client.WriteMessage(bugDeveloper.Nickname, bug.TopicStarter, message);
-                client.InformAboutNotification(bugDeveloper);
+                if (bugDeveloper != null)
+                {
+                    client.WriteMessage(bugDeveloper.Nickname, bug.TopicStarter, message);
+                    client.InformAboutNotification(bugDeveloper);
+                }
 
                 client.WriteMessage(pm.Nickname, bug.TopicStarter, message);
                 client.InformAboutNotification(pm);

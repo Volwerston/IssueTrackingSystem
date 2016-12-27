@@ -63,12 +63,11 @@
 
 
         function getDivForDeveloper(userData, source) {
-            return '<div class="row" id="developer' + userData.Id + '">'
-                + '<div class="col-md-offset-3 col-md-6 col-sm-offset-3 col-sm-6 col-xs-6 col-xs-offset-3">'
-                          + '<a href="@Url.Action("ExternalAccountPage", "Bts")' + '/?id=' + userData.Id + '">'
+            return '<div id="developer' + userData.Id + '" style="float: left; max-width: 50%;">'
+          + '<a href="@Url.Action("ExternalAccountPage", "Bts")' + '/?id=' + userData.Id + '">'
                  + '<div class="row" style="margin: 10px 10px 10px 10px; padding: 10px 10px 10px 10px; background-color: rgb(16, 219, 131); border-radius: 5px;">'
                    + '<div class="col-md-offset-1 col-sm-offset-1 col-xs-offset-1">'
-        + '<img src="' + source + '" class="img-responsive col-md-10 col-sm-10 col-xs-10" style="margin: 10px 10px 10px 10px" />'
+        + '<img src="' + source + '" class="img-responsive col-md-10 col-sm-10 col-xs-10" style="margin: 10px 10px 10px 10px; max-height: 150px;" />'
    + '</div>'
                 + '<div class="col-md-offset-1 col-sm-offset-1 col-xs-offset-1 col-md-10 col-sm-10 col-xs-10">'
    +     '<div class="row text-center" style="background-color: rgb(0, 255, 144); margin-bottom: 5px; border-radius: 5px;">'
@@ -77,13 +76,12 @@
      + '<div class="row text-center" style="background-color: rgb(0, 255, 144); margin-bottom: 5px; border-radius: 5px;">'
         +   '<p>' + userData.Nickname + '</p>'
        + '</div>'
-                + '</a>'
+          + '</a>'
      + '<div class="row text-center" style="margin-bottom: 5px; border-radius: 5px;">'
         + '<button type="button" class="btn btn-info btn-block" onclick="inviteDev(' + userData.Id + ')">Invite</button>'
        + '</div>'
   + '</div>'
    + '</div>'
-            + '</div>'
             + '</div>';
         }
 
